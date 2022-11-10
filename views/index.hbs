@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{eventname}}</title>
+</head>
+
+<body>
+    {{> header }}
+    <img src="{{eventlogo}}">
+    <h1>Welcome to {{eventname}}!</h1>
+    <div class="countdown">
+
+    </div>
+    <div>
+        {{#if starttime}}
+        <h2>Starts time: <b>{{starttime}}</b></h2>
+        {{/if}}
+        {{#if endtime}}
+        <h2>End time: <b>{{endtime}}</b></h2>
+        {{/if}}
+    </div>
+    {{> footer }}
+    <p>Made by the <a href="https://github.com/BCACTF" target="_blank">BCA CTF Club</a>.</p>
+</body>
+
+</html>
