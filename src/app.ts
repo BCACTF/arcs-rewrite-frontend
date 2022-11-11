@@ -3,9 +3,9 @@ import path from 'path';
 import logger from 'morgan';
 import routes from './routes';
 import hbs from 'hbs';
-import dotenv from 'dotenv';
-dotenv.config();
+import envManager from './envManager';
 
+envManager.loadEnvs();
 const app = express();
 app.use(logger('dev'));
 app.use(express.json());
