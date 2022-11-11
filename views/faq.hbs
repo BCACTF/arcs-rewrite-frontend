@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+{{> head title=(concat 'FAQ | ' eventname)}}
+
+<body>
+    {{> header }}
+    <h1>FAQ</h1>
+
+    <h2>What is {{eventname}}?</h2>
+    <p>{{eventname}} is a cybersecurity CTF competition targeted at middle and high schoolers. Inspired by other
+        high-school CTFs like <a href="https://picoctf.org/">picoCTF</a>, {{eventname}} is a collection of cybersecurity
+        problems in categories like web exploitation, binary exploitation, cryptography, reverse engineering, and
+        forensics. Like other CTFs, when your team solves a problem, you will find or receive a "flag" (a string of text
+        in the form <code>bcactf{example_flag}</code>) which you will submit to the server to gain points.</p>
+    <h2>Can I compete in {{eventname}}?</h2>
+    <p>Yes! The criteria for prize eligibility are on the <a href="/rules">rules page</a>, but anyone anywhere can
+        participate. There will be a global scoreboard and an additional board for
+        eligible teams only.</p>
+    <h2>How do I join and participate?</h2>
+    <p>To join, simply create an account <a href="/register>">here</a> and
+        follow the instructions.
+        {{#if discordlink}}
+            Feel free to make a team with some friends or find others on our <a href="{{discordlink}}">Discord</a>.
+        {{/if}}There is no cost to participate. You will simply need a
+        working computer, a modern web browser, and internet access. It will be helpful to have the ability to install
+        software.
+    </p>
+    <h2>How difficult is {{eventname}}?</h2>
+    <p>{{eventname}} has a wide range of problems across many difficulties. Everyone from fledgling CTF teams up to the
+        best high school groups should find challenging problems at their skill level.</p>
+    <h2>How is it scored?</h2>
+    <p>Each challenge is worth a set amount of points based on its difficulty. When your team solves a problem by
+        submitting the correct flag, your team will get the amount of points specified by the problem. There is no
+        penalty for incorrect submissions. The team with the highest score at the end of the contest wins; ties will be
+        broken by the first team to reach their score, earlier is better.</p>
+    <h2>Who are we?</h2>
+    <p>The <a href="https://github.com/BCACTF" target="_blank">Bergen County Academies CTF Club</a> is a group of CTF
+        enthusiasts at the Bergen County Academies high school. We created {{eventname}} to share our love of CTFs
+        with high schoolers everywhere.</p>
+    {{> footer }}
+</body>
+
+</html>
