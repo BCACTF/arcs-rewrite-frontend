@@ -1,10 +1,10 @@
 import express from 'express';
+import home from './home';
+import rules from './rules';
+
 const router = express.Router();
 
-router.get('/', function (req, res, next) {
-    res.render('index', {
-        eventname: process.env.EVENT_NAME
-    });
-});
+router.use(home);
+router.use(rules);
 
 export default router;
