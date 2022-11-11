@@ -20,7 +20,7 @@ app.set("view engine", "hbs");
 hbs.registerHelper('concat', function () {
     var str = "";
     Array.from(arguments).forEach(e => {
-        str += (typeof e === "string" ? e : "")
+        str += (typeof e === "string" ? e : "");
     });
     return str;
 
