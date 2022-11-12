@@ -5,6 +5,11 @@
 <body>
     {{> header }}
     <h1>Register</h1>
+    {{#if error}}
+    <div class="errorBox">
+        <p>{{{error}}}</p>
+    </div>
+    {{/if}}
     <p>You'll be asked to join or create a team later.</p>
     <form action="/register" method="post">
         <label for="username">Username</label>
