@@ -4,12 +4,17 @@ import logger from 'morgan';
 import hbs from 'hbs';
 import envManager from './envManager';
 import routes from './routes';
+import log from './logger';
 
+log.info("Application started");
+log.debug("Loading environment variables");
 envManager.loadEnvs();
+log.info("Environment variables loaded");
+// TODO: Test if able to connect oand query database
+log.debug("Creating express application...");
 const app = express();
 const port = 3000;
-// TODO: add logging configuration
-app.use(logger('dev'));
+app.use(logger('tiny'));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -28,7 +33,8 @@ hbs.registerHelper('concat', function () {
 hbs.registerPartials(path.join(__dirname, "../", "views/partials"));
 
 app.use(routes);
+log.info("Express application created");
 
 app.listen(port, () => {
-    return console.log(`Server started at http://localhost:${port}`);
+    log.info(`Server started at http://localhost:${port}`);
 });
