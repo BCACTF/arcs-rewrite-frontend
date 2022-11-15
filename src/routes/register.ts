@@ -13,24 +13,20 @@ router.get('/register', function (req, res) {
 });
 
 router.post('/register', async function (req, res) {
-    const users = await queries.getUsers();
-    const userExists = users.rows.find(user => user.username === req.body.username);
-    const emailExists = users.rows.find(user => user.email === req.body.email);
-    if (!(userExists || emailExists)) {
+    let userExists = await queries.checkIfExistingNameorEmail(req.body.email, req.body.username);
+    if (!userExists) {
         log.debug(`Attemping to register user ${req.body.username} ${req.body.email}`);
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        let hashedPassword = await bcrypt.hash(req.body.password, 10);
         let uuid = crypto.randomUUID();
-        await queries.addUser(uuid, req.body.username, req.body.email, hashedPassword, req.body.eligible);
-        log.info(`Registered user ${req.body.username} ${req.body.email} ${hashedPassword}`);
+        await queries.addUser(uuid, req.body.email, req.body.username, hashedPassword, req.body.eligible);
+        log.info(`Registered user ${req.body.email} ${req.body.username} ${hashedPassword}`);
         res.redirect('/login');
     } else {
-        log.info(`Attempted registration of existing user ${req.body.username} ${req.body.email}`);
+        log.info(`Attempted registration of existing username/email: ${req.body.username} ${req.body.email}`);
         res.render('register', {
             error: "Username or email already in use, <a href='/login'>Log in instead?</a>"
         });
     }
-
-
 });
 
 
