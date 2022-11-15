@@ -11,11 +11,21 @@
     </div>
     {{/if}}
     <p>You'll be asked to join or create a team later.</p>
+    <h2>Password Requirements</h2>
+    <ul>
+        <li>At least 8 characters</li>
+        <li>At least 1 uppercase letter</li>
+        <li>At least 1 lowercase letter</li>
+        <li>At least 1 number</li>
+        <li>At least 1 special character</li>
+    </ul>
     <form action="/register" method="post">
         <label for="username">Username</label>
         <input type="text" name="username" id="username" required>
         <label for="password">Password</label>
         <input type="password" name="password" id="password" required>
+        <label for="password2">Confirm Password</label>
+        <input type="password" name="password2" id="password2" required>
         <label for="email">Email</label>
         <input type="email" name="email" id="email" required>
         <label for="eligible">Eligible</label>
