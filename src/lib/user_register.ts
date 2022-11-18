@@ -33,7 +33,7 @@ export default async function registerUser(req: any, res: any) {
         });
     }
 
-    let userExists = await queries.checkIfExistingNameorEmail(req.body.email, req.body.username);
+    let userExists = await queries.checkIfExistingUser(req.body.email, req.body.username);
     if (!userExists) {
         log.debug(`Attemping to register user ${req.body.username} ${req.body.email}`);
         let hashedPassword = await hash(req.body.password, 10);

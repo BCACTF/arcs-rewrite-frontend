@@ -1,4 +1,5 @@
 import express from 'express';
+import loginUser from '../lib/user_login';
 const router = express.Router();
 
 router.get('/login', function (req, res) {
@@ -7,8 +8,6 @@ router.get('/login', function (req, res) {
     });
 });
 
-router.post('/login', function (req, res) {
-    // TODO
-});
+router.post('/login', loginUser);
 
 export default router;

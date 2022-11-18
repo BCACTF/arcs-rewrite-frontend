@@ -15,16 +15,30 @@ class queries {
         }
     }
 
-    static async checkIfExistingNameorEmail(email: string, name: string) {
-        try {
-            log.debug(`Attemping to run query "SELECT COUNT(*) FROM public.users WHERE email='${email}' OR name='${name}'"`);
-            const client = await pool.connect();
-            const matchCount = await client.query(`SELECT COUNT(*) FROM public.users WHERE email='${email}' OR name='${name}'`);
-            client.release();
-            log.info(`Ran query "SELECT COUNT(*) FROM public.users WHERE email='${email}' OR name='${name}'"`);
-            return Boolean(parseInt(matchCount.rows[0].count));
-        } catch (error) {
-            log.error(`Error running query "SELECT COUNT(*) FROM public.users WHERE email='${email}' OR name='${name}'": ${error}`);
+    static async checkIfExistingUser(name: string, email?: string,) {
+        if (typeof (email) === 'undefined') {
+            try {
+                log.debug(`Attemping to run query "SELECT * FROM public.users WHERE name='${name}'"`);
+                const client = await pool.connect();
+                const user = await client.query(`SELECT * FROM public.users WHERE name='${name}'`);
+                client.release();
+                log.info(`Ran query "SELECT * FROM public.users WHERE name='${name}'"`);
+                return user;
+            } catch (error) {
+                log.error(`Error running query "SELECT * FROM public.users WHERE name='${name}'": ${error}`);
+            }
+        }
+        else {
+            try {
+                log.debug(`Attemping to run query "SELECT COUNT(*) FROM public.users WHERE email='${email}' OR name='${name}'"`);
+                const client = await pool.connect();
+                const matchCount = await client.query(`SELECT COUNT(*) FROM public.users WHERE email='${email}' OR name='${name}'`);
+                client.release();
+                log.info(`Ran query "SELECT COUNT(*) FROM public.users WHERE email='${email}' OR name='${name}'"`);
+                return Boolean(parseInt(matchCount.rows[0].count));
+            } catch (error) {
+                log.error(`Error running query "SELECT COUNT(*) FROM public.users WHERE email='${email}' OR name='${name}'": ${error}`);
+            }
         }
     }
 
