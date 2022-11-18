@@ -6,7 +6,7 @@ import register from './register';
 import login from './login';
 import resetPassword from './resetPassword';
 import notFound from './404';
-import log from '../logger';
+import log from '../lib/logger';
 
 const router = express.Router();
 

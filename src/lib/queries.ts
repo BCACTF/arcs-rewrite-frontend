@@ -1,4 +1,4 @@
-import pool from './dbconnector';
+import pool from './db_connector';
 import log from './logger';
 
 class queries {

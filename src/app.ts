@@ -2,9 +2,9 @@ import express from 'express';
 import path from 'path';
 import logger from 'morgan';
 import hbs from 'hbs';
-import envManager from './envManager';
+import envManager from './lib/env_manager';
 import routes from './routes';
-import log from './logger';
+import log from './lib/logger';
 
 log.info("Application started");
 log.debug("Loading environment variables");

@@ -1,5 +1,5 @@
 import { Pool } from 'pg';
-import envManager from './envManager';
+import envManager from './env_manager';
 envManager.loadEnvs();
 
 export default new Pool({
