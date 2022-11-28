@@ -3,6 +3,7 @@ import log from './logger';
 
 const envDefaults = {
     "EVENT_NAME": "BCACTF",
+    "SESSION_SECRET": "secret"
 }
 
 function loadEnvs() {

@@ -27,6 +27,7 @@ export default async function registerUser(req: any, res: any) {
         passwordMeetsRequirements = false;
     }
     if (!passwordMeetsRequirements) {
+        // TODO: say what part doesn't meet requirements
         return res.render('register', {
             eventname: process.env.EVENT_NAME,
             error: "Password does not meet requirements"

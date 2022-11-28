@@ -1,4 +1,6 @@
 import express from 'express';
+import sessions from 'express-session';
+import cookieParser from 'cookie-parser';
 import path from 'path';
 import logger from 'morgan';
 import hbs from 'hbs';
@@ -10,16 +12,27 @@ log.info("Application started");
 log.debug("Loading environment variables");
 envManager.loadEnvs();
 log.info("Environment variables loaded");
-// TODO: Test if able to connect oand query database
+// TODO: Test if able to connect and query database
 log.debug("Creating express application...");
 const app = express();
 const port = 3000;
-app.use(logger('tiny'));
 
+app.use(logger('tiny'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(__dirname + "/public"));
-
+app.use(sessions({
+    secret: process.env.SESSION_SECRET,
+    saveUninitialized: true,
+    cookie: { maxAge: 1000 * 60 * 60 * 24 },
+    resave: false
+}));
+declare module "express-session" {
+    interface SessionData {
+        user: string;
+    }
+}
+app.use(cookieParser());
 app.set("views", path.join(__dirname, "../", "views"));
 app.set("view engine", "hbs");
 hbs.registerHelper('concat', function () {
@@ -28,7 +41,6 @@ hbs.registerHelper('concat', function () {
         str += (typeof e === "string" ? e : "");
     });
     return str;
-
 });
 hbs.registerPartials(path.join(__dirname, "../", "views/partials"));
 

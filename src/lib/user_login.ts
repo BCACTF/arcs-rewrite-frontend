@@ -1,4 +1,4 @@
-import { compare, hash } from 'bcrypt';
+import { compare } from 'bcrypt';
 import log from './logger';
 import queries from './queries';
 
@@ -17,7 +17,7 @@ export default async function loginUser(req: any, res: any) {
     let match = await compare(password, hashedPassword);
     if (match) {
         log.info(`User ${user} logged in`);
-        // login
+        req.session.user = user;
     }
     else {
         log.info(`User ${user} provided incorrect password`);

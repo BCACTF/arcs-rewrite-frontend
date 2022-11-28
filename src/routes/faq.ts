@@ -3,7 +3,8 @@ const router = express.Router();
 
 router.get('/faq', function (req, res) {
     res.render('faq', {
-        eventname: process.env.EVENT_NAME
+        eventname: process.env.EVENT_NAME,
+        user: req.session.user
     });
 });
 
