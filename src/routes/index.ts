@@ -6,6 +6,7 @@ import register from './register';
 import login from './login';
 import resetPassword from './resetPassword';
 import logout from './logout';
+import team from './team';
 import notFound from './404';
 import log from '../lib/logger';
 
@@ -19,6 +20,7 @@ router.use(register);
 router.use(login);
 router.use(resetPassword);
 router.use(logout);
+router.use(team);
 router.use(notFound);
 log.info("Routes added");
 
