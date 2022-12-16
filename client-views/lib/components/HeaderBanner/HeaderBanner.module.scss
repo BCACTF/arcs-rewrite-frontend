@@ -1,0 +1,32 @@
+$base-hue: 240;
+$base-saturation: 33%;
+
+$base-lightness: 16%;
+$base-opacity: 80%;
+
+$base-background-color: hsla($base-hue, $base-saturation, $base-lightness, $base-opacity);
+
+.header-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 4rem;
+
+    
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 1rem;
+    padding-right: 1rem;
+
+    background-color: $base-background-color;
+    backdrop-filter: blur(5px);
+    z-index: 100;
+}
+
+.spacer {
+    margin-left: auto;
+    content: " ";
+}
+
