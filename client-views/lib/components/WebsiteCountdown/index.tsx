@@ -1,9 +1,10 @@
 import { CSSProperties, FC, ReactNode } from "react";
-import { CompetitionMetadata, Environment, JsonDate } from "../../metadata/general"
-import useInterval from "../../hooks/useInterval";
-import useRerender from "../../hooks/useRerender";
-import now, { DurationComponents, durationToComponents } from "../../utils/dates";
-import { wrapInSpan } from "../../utils/html";
+import { Environment } from "metadata/env";
+import { CompetitionMetadata, JsonDate } from "metadata/general"
+import useInterval from "hooks/useInterval";
+import useRerender from "hooks/useRerender";
+import now, { DurationComponents, durationToComponents } from "utils/dates";
+import { wrapInSpan } from "utils/html";
 
 export interface WebsiteCountdownProps {
     compMeta: CompetitionMetadata;
