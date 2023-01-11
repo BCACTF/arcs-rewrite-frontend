@@ -5,6 +5,7 @@ import NoSsr from "components/NoSsr/NoSsr";
 import HeaderBanner from "components/HeaderBanner";
 
 // Hooks
+import useAccount from "hooks/useAccount";
 
 // Types
 import { FC } from 'react';
@@ -30,6 +31,7 @@ interface HomeProps {
 }
 
 const Home: FC<HomeProps> = ({ compMeta, envData, account }) => {
+    const [session, signIn, signOut] = useAccount();
     return (
         <div className={styles.container}>
             <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Home"/>
@@ -64,7 +66,7 @@ export const getServerSideProps: GetServerSideProps<HomeProps> = async context =
     } = {
         envData: getEnvironment(),
         compMeta: getCompetitionMetadata(),
-        account: getAccount(context),
+        account: await getAccount(context),
     };
     return { props };
 };

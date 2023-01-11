@@ -12,6 +12,7 @@ import { CompetitionMetadata } from "metadata/general";
 // Styles
 import rawStyles from './HeaderBanner.module.scss';
 import { wrapCamelCase } from "utils/styles/camelcase";
+import SignInButton from "./SignInButton";
 const [styles, builder] = wrapCamelCase(rawStyles);
 
 // Utils
@@ -32,7 +33,7 @@ const HeaderBanner: FC<HeaderBannerProps> = ({ account, meta }) => {
 
         {account.loggedIn
             ? <AccountDropdown info={account.info} />
-            : <></>//<SignInButton/>
+            : <SignInButton/>
         }
     </div>
 };

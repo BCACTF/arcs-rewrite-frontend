@@ -45,24 +45,35 @@ const teamItemText: Record<TeamAffiliationState, string> = {
 };
 
 
-const AccountDropdown: FC<AccountDropdownProps> = ({ info: { holderName, teamAffiliationState, id: userId, isAdminClientSide } }) => {
+const AccountDropdown: FC<AccountDropdownProps> = (
+    {
+        info: {
+            holderName,
+            teamAffiliationState,
+            id: userId,
+            isAdminClientSide
+        },
+    },
+) => {
     const [open, setDropdownOpen] = useState(false);
 
-    return <div className={builder.flexContainer.IF(open).open()} onClick={() => setDropdownOpen(b => !b)}>
-        <span className={styles.accountNameSpan}>{holderName}</span>
-        <div className={builder.chevron.IF(open).open()}/>
-        <div className={builder.dropdownContainer.IF(open).open()}>
-            {
-                isAdminClientSide
-                    ? <DropdownEntry href={"/admin"} entryText={"Admin Panel"} open={open}/>
-                    : <DropdownEntry href={"/team"} entryText={teamItemText[teamAffiliationState]} open={open}/>
-            }
-            <DropdownEntry href={"/challs?include=bookmark"} entryText={"Bookmarks"} open={open}/>
-            <DropdownEntry href={`/stats/user/${userId}`} entryText={"User Stats"} open={open}/>
-            <DropdownEntry href={"/account/settings"} entryText={"Settings"} open={open}/>
-            <DropdownEntry href={"/signout"} entryText={"Sign Out"} open={open}/>
+    return (
+        <div className={builder.flexContainer.IF(open).open()} onClick={() => setDropdownOpen(b => !b)}>
+            <span className={styles.accountNameSpan}>{holderName}</span>
+            <div className={builder.chevron.IF(open).open()}/>
+            <div className={builder.dropdownContainer.IF(open).open()}>
+                {
+                    isAdminClientSide
+                        ? <DropdownEntry href={"/admin"} entryText={"Admin Panel"} open={open}/>
+                        : <DropdownEntry href={"/team"} entryText={teamItemText[teamAffiliationState]} open={open}/>
+                }
+                <DropdownEntry href={"/challs?include=bookmark"} entryText={"Bookmarks"} open={open}/>
+                <DropdownEntry href={`/stats/user/${userId}`} entryText={"User Stats"} open={open}/>
+                <DropdownEntry href={"/account/settings"} entryText={"Settings"} open={open}/>
+                <DropdownEntry href={"/account/signout"} entryText={"Sign Out"} open={open}/>
+            </div>
         </div>
-    </div>
+    );
 };
 
 export default AccountDropdown;

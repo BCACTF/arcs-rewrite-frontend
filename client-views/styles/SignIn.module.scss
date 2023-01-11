@@ -1,0 +1,29 @@
+.outer-container {
+    width: 100vw;
+    height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    overflow-x: clip;
+    overflow-y: scroll;
+
+    
+}
+
+.inner-container {
+    width: max(20vw, 18rem);
+    height: max(20vh, 30rem);
+
+    background-color: #444444;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    &>* {
+        margin-bottom: 1rem;
+    }
+}

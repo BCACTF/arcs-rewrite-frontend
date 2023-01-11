@@ -1,0 +1,51 @@
+$container-height: 3.5rem;
+
+$icon-size: calc($container-height * 0.7);
+$icon-horizontal-margin-left: calc(($container-height - $icon-size) / 2);
+$icon-horizontal-margin-right: 1rem;
+
+$radius: calc($container-height / 8);
+
+$font-size: calc($icon-size / 1.7);
+$text-top-offset: calc($font-size / 11);
+
+.form {
+    width: 100%;
+    appearance: none;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.container {
+    width: 88%;
+    height: $container-height;
+    
+    border-radius: $radius;
+    border: none;
+    padding-left: 0.2rem;
+
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+    font-size: $font-size;
+
+    font-family:sans-serif;
+
+    user-select: none;
+    cursor: pointer;
+    span {
+        margin-top: 0.1rem;
+    }
+}
+
+.icon {
+    max-width: $icon-size;
+    max-height: $icon-size;
+    margin-left: $icon-horizontal-margin-left;
+    margin-right: $icon-horizontal-margin-right;
+
+}
