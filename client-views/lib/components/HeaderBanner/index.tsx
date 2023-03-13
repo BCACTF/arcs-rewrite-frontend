@@ -5,7 +5,7 @@ import AccountDropdown from "./AccountDropdown";
 
 
 // Types
-import { AccountState } from "account/types";
+import { MyUser, UserState } from "account/types";
 import { FC } from "react"
 import { CompetitionMetadata } from "metadata/general";
 
@@ -21,21 +21,23 @@ const [styles, builder] = wrapCamelCase(rawStyles);
 
 
 interface HeaderBannerProps {
-    account: AccountState;
+    account: MyUser | null;
     meta: CompetitionMetadata;
 }
 
 
 const HeaderBanner: FC<HeaderBannerProps> = ({ account, meta }) => {
-    return <div className={styles.headerContainer} >
+    console.log("HeaderBanner", account);
 
-        <div className={styles.spacer}/>
-
-        {account.loggedIn
-            ? <AccountDropdown info={account.info} />
-            : <SignInButton/>
-        }
-    </div>
+;    return (
+        <div className={styles.headerContainer} >
+            <div className={styles.spacer}/>
+            {account
+                ? <AccountDropdown info={account} />
+                : <SignInButton/>
+            }
+        </div>
+    );
 };
 
 export default HeaderBanner;

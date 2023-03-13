@@ -8,7 +8,7 @@ import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 
 // Types
 import { FC, useState } from "react"
-import { AccountInfo } from "account/types";
+import { MyUser } from "account/types";
 
 
 // Styles
@@ -35,7 +35,7 @@ export const DropdownEntry: FC<DropdownEntryProps> = ({ href, entryText, open })
 );
 
 interface AccountDropdownProps {
-    info: AccountInfo;
+    info: MyUser;
 }
 
 const teamItemText: Record<TeamAffiliationState, string> = {
@@ -49,7 +49,6 @@ const AccountDropdown: FC<AccountDropdownProps> = (
     {
         info: {
             holderName,
-            teamAffiliationState,
             id: userId,
             isAdminClientSide
         },
@@ -62,11 +61,11 @@ const AccountDropdown: FC<AccountDropdownProps> = (
             <span className={styles.accountNameSpan}>{holderName}</span>
             <div className={builder.chevron.IF(open).open()}/>
             <div className={builder.dropdownContainer.IF(open).open()}>
-                {
+                {/* {
                     isAdminClientSide
                         ? <DropdownEntry href={"/admin"} entryText={"Admin Panel"} open={open}/>
                         : <DropdownEntry href={"/team"} entryText={teamItemText[teamAffiliationState]} open={open}/>
-                }
+                } */}
                 <DropdownEntry href={"/challs?include=bookmark"} entryText={"Bookmarks"} open={open}/>
                 <DropdownEntry href={`/stats/user/${userId}`} entryText={"User Stats"} open={open}/>
                 <DropdownEntry href={"/account/settings"} entryText={"Settings"} open={open}/>

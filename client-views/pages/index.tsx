@@ -12,7 +12,7 @@ import { FC } from 'react';
 import { GetServerSideProps } from 'next';
 import { CompetitionMetadata } from 'metadata/general';
 import { Environment } from 'metadata/env';
-import { AccountState } from "account/types";
+import { MyUser, serMyUser, UserState } from "account/types";
 
 // Styles
 import rawStyles from 'Home.module.scss';
@@ -27,7 +27,7 @@ import getAccount from "account/validation";
 interface HomeProps {
     compMeta: CompetitionMetadata;
     envData: Environment;
-    account: AccountState;
+    account: MyUser | null;
 }
 
 const Home: FC<HomeProps> = ({ compMeta, envData, account }) => {
@@ -62,7 +62,7 @@ export const getServerSideProps: GetServerSideProps<HomeProps> = async context =
     const props: {
         envData: Environment,
         compMeta: CompetitionMetadata,
-        account: AccountState,
+        account: MyUser | null,
     } = {
         envData: getEnvironment(),
         compMeta: getCompetitionMetadata(),

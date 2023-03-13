@@ -10,7 +10,7 @@ import { FC, useEffect } from 'react';
 import { GetServerSideProps } from 'next';
 import { CompetitionMetadata } from 'metadata/general';
 import { Environment } from 'metadata/env';
-import { AccountState } from "account/types";
+import { MyUser } from "account/types";
 
 // Styles
 import rawStyles from 'SignIn.module.scss';
@@ -29,7 +29,7 @@ import { getProviders } from 'next-auth/react';
 interface SignInProps {
     compMeta: CompetitionMetadata;
     envData: Environment;
-    account: AccountState;
+    account: MyUser | null;
     providers: Exclude<Awaited<ReturnType<typeof getProviders>>, null>;
 }
 
@@ -37,7 +37,7 @@ interface SignInProps {
 const SignIn: FC<SignInProps> = ({ providers, account, envData, compMeta }) => {
 
     useEffect(
-        () => { account.loggedIn && Router.replace("/"); },
+        () => { if (account) Router.replace("/"); },
         [account],
     );
 

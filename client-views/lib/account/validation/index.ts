@@ -6,11 +6,12 @@
 
 // Types
 import { GetServerSidePropsContext } from "next";
-import { AccountState } from "account/types";
+import { MyUser, UserState } from "account/types";
 import { Eligibility, TeamAffiliationState } from "account/types/team";
 import { getToken } from "next-auth/jwt";
 import { authOptions } from "pages/api/auth/[...nextauth]";
-import { unstable_getServerSession } from "next-auth";
+import { getServerSession } from "next-auth";
+import { UserId } from "account/types/newtypes";
 
 
 // Styles
@@ -18,36 +19,43 @@ import { unstable_getServerSession } from "next-auth";
 
 // Utils
 
-
-const getAccount = async ({ req, res }: GetServerSidePropsContext): Promise<AccountState> => {
-    // const token = context.req.cookies.authtoken;
-    // if (!token) return { loggedIn: false, };
-
-    await unstable_getServerSession(req, res, authOptions);
+const getAccount = async ({ req, res }: GetServerSidePropsContext): Promise<MyUser | null> => {
+    const session = await getServerSession(req, res, authOptions);
 
     const token = await getToken({ req });
-    
-    if (!token) return { loggedIn: false };
 
+    if (!token) return null;
 
+    const id = UserId.parse(`user:oauth:github:${token?.sub}`);
+    const holderName = token?.name ?? "Avery Calaman";
+    const email = token?.email ?? "me@example.com";
 
-    return {
-        loggedIn: true,
-        info: {
-            id: `user:github-oauth:${token?.sub}`,
-            holderName: token?.name ?? "Avery Calaman",
-            isAdminClientSide: false,
-            teamAffiliationState: TeamAffiliationState.ACCEPTED,
-            affiliatedTeam: {
-                id: "team:0123456789abcdef",
-                name: "Swift Salad",
-                eligibility: Eligibility.US_HIGH_SCHOOL,
-            }
+    console.trace({ id, token });
+
+    if (!id) return null;
+
+    const account = {
+        id,
+        isAdminClientSide: false,
+        
+        isMe: true as const,
+        holderName,
+        email,
+
+        affiliatedTeam: {
+            id: "team:0123456789abcdef",
+            name: "Swift Salad",
+            eligibility: Eligibility.US_HIGH_SCHOOL,
         },
-    }
+        score: {
+            total: 0,
+            solves: [],
+        }
+    };
+
+    console.trace(account);
+    return account;
 };
-
-
 
 
 export default getAccount;

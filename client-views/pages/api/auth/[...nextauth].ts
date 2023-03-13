@@ -44,6 +44,12 @@ export const authOptions: AuthOptions = {
         error: '/account/error',
         newUser: '/account/new-user',
     },
+    callbacks: {
+        jwt(params) {
+            console.log(params);
+            return params.token;
+        },
+    },
     secret: process.env.NEXTAUTH_SECRET,
 };
 
