@@ -1,6 +1,6 @@
 import NoSsr from '../NoSsr/NoSsr';
 
-import { FC } from "react";
+import React, { FC } from "react";
 
 import styles from './FloatingEasterEgg.module.scss';
 

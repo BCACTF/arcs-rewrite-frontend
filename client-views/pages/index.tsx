@@ -8,16 +8,16 @@ import HeaderBanner from "components/HeaderBanner";
 import useAccount from "hooks/useAccount";
 
 // Types
-import { FC } from 'react';
+import React, { FC } from 'react';
 import { GetServerSideProps } from 'next';
 import { CompetitionMetadata } from 'metadata/general';
 import { Environment } from 'metadata/env';
 import { MyUser, serMyUser, UserState } from "account/types";
 
 // Styles
-import rawStyles from 'Home.module.scss';
-import { wrapCamelCase } from "utils/styles/camelcase";
-const [styles, builder] = wrapCamelCase(rawStyles);
+// import rawStyles from 'Home.module.scss';
+// import { wrapCamelCase } from "utils/styles/camelcase";
+// const [styles, builder] = wrapCamelCase(rawStyles);
 
 // Utils
 import { getCompetitionMetadata } from "metadata/general";
@@ -33,17 +33,15 @@ interface HomeProps {
 const Home: FC<HomeProps> = ({ compMeta, envData, account }) => {
     const [session, signIn, signOut] = useAccount();
     return (
-        <div className={styles.container}>
+        <div className={"boop"}>
             <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Home"/>
-
             <HeaderBanner account={account} meta={compMeta} />
-
             <NoSsr>
                 <WebsiteCountdown
                     compMeta={compMeta}
                     envConfig={envData}
                     style={{fontSize: "4rem"}}
-                    className={{ numbers: styles.yellow }}
+                    className={{ numbers: "yellow" }}
                     // formatters={{
                     //     numbers: {
                     //         d: n => `${n}`.padStart(2, " "),
@@ -52,7 +50,7 @@ const Home: FC<HomeProps> = ({ compMeta, envData, account }) => {
                     //         s: n => `${n}`.padStart(2, " "),
                     //     }
                     // }}
-                    formatter={({days, hours, minutes, seconds}) => <div className={styles.yellow}>{"T+"} {days}{"d"} {hours}{":"}{minutes}{":"}{seconds}</div>} />
+                    formatter={({days, hours, minutes, seconds}) => <div className={""}>{"T+"} {days}{"d"} {hours}{":"}{minutes}{":"}{seconds}</div>} />
             </NoSsr>
         </div>
     )

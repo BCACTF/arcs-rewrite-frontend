@@ -2,7 +2,6 @@ import validateChallUpdateAuth from "auth/challenges";
 import { updateChallenges } from "challenges";
 import { NextApiHandler } from "next";
 
-let intervalHandle = setInterval(() => updateChallenges(), 30000);
 
 const handler: NextApiHandler = async (req, res) =>  {
     const requestMethod = req.method;

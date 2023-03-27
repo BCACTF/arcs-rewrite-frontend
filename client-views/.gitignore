@@ -40,3 +40,5 @@ next-env.d.ts
 
 *.sql
 *.png
+
+test-challs.json

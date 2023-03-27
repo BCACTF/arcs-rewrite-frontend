@@ -19,7 +19,7 @@ const [styles, builder] = wrapCamelCase(rawStyles);
 
 // Utilities
 import { getEnvironment } from "metadata/env";
-import { safeRandomChars } from "utils/random";
+import { safeRandomChars, safeRandomFlagChars } from "utils/random";
 
 
 interface Err404Props {
@@ -28,8 +28,8 @@ interface Err404Props {
 }
 
 const Err404: FC<Err404Props> = ({ compMeta, envData }) => {
-    const [randomL] = useStorage("/404 | randomL", () => safeRandomChars(10));
-    const [randomR] = useStorage("/404 | randomR", () => safeRandomChars(10));
+    const [randomL] = useStorage("/404 | randomL", () => safeRandomFlagChars(10));
+    const [randomR] = useStorage("/404 | randomR", () => safeRandomFlagChars(10));
     
     
     return <div className={styles.container}>

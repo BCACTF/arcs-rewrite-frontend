@@ -1,0 +1,37 @@
+$checkbox-unchecked-color: #ffffff44;
+
+.check-box {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+
+    .check-box-input {
+        appearance: none;
+        background-color: transparent;
+        margin: 0;
+        padding: 0;
+        margin-right: 0.5rem;
+    
+        // Unchecked Base Styles
+        color: $checkbox-unchecked-color;
+    
+        width: 1.15rem;
+        height: 1.15rem;
+    
+        border: 0.110rem solid white;
+        border-radius: 0.2rem;
+
+        &:checked {
+            background-color: rgb(79, 79, 255);
+        }
+    }
+
+    .check-box-label {
+        padding-bottom: 0.25rem;
+    }
+}
+
+

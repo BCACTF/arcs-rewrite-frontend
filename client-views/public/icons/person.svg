@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="128"
+   height="128"
+   viewBox="0 0 128 128.00001"
+   version="1.1"
+   id="svg8"
+   inkscape:version="1.0.1 (c497b03c, 2020-09-10)"
+   sodipodi:docname="person.svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="5.2259071"
+     inkscape:cx="63.785506"
+     inkscape:cy="56.266588"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     inkscape:document-rotation="0"
+     showgrid="false"
+     units="px"
+     inkscape:window-width="1680"
+     inkscape:window-height="1022"
+     inkscape:window-x="0"
+     inkscape:window-y="28"
+     inkscape:window-maximized="0" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       id="path48"
+       style="opacity:0.99;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none"
+       d="M 63.892578 14.5 A 13 13 0 0 0 51 27.5 A 13 13 0 0 0 64 40.5 A 13 13 0 0 0 77 27.5 A 13 13 0 0 0 64 14.5 A 13 13 0 0 0 63.892578 14.5 z M 54.5 42.5 C 48.96 42.5 44.5 46.96 44.5 52.5 L 44.5 82.5 C 44.5 86.805736 47.198672 90.449127 51 91.863281 L 51 112.5 C 51 115.824 53.676 118.5 57 118.5 L 71 118.5 C 74.324 118.5 77 115.824 77 112.5 L 77 91.863281 C 80.801328 90.449127 83.5 86.805736 83.5 82.5 L 83.5 52.5 C 83.5 46.96 79.04 42.5 73.5 42.5 L 71 42.5 L 57 42.5 L 54.5 42.5 z " />
+  </g>
+</svg>

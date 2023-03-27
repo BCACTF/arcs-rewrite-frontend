@@ -1,6 +1,16 @@
 {
-    "extends": ["next/core-web-vitals", "eslint:recommended", "plugin:@typescript-eslint/recommended"],
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        
+        "plugin:react/recommended",
+        "plugin:react-hooks/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "plugins": ["@typescript-eslint"],
     "globals": {
         "JSX":"readonly"
-    }
+    },
+    "ignorePatterns": ["*.config.js"],
+    "root": true
 }
