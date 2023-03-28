@@ -9,13 +9,16 @@ interface FilterState {
 }
 
 export interface FilterStateHook {
-    currState: FilterState;
-    setSearch:     (newStr: string) => void;
-    setCategory:   (cat: string, selected: boolean) => void;
-    setTag:        (tag: string, selected: boolean) => void;
-    setPointsLow:  (points: number) => void;
-    setPointsHigh: (points: number) => void;
-    clearPoints:   () => void;
+    currState:          FilterState;
+    setSearch:          (newStr: string) => void;
+    setCategory:        (cat: string, selected: boolean) => void;
+    setTag:             (tag: string, selected: boolean) => void;
+    setPointsLow:       (points: number) => void;
+    setPointsHigh:      (points: number) => void;
+    setUnknownBound:    (points: number) => void;
+    clearPoints:        (newVal?: [number, number]) => void;
+
+    matches:            (chall: ClientSideMeta) => void;
 }
 
 const useFilter = (): FilterStateHook => {
@@ -34,7 +37,11 @@ const useFilter = (): FilterStateHook => {
         setCurrState(newState);
     }, [currState]);
 
-    const setCategory = useCallback((category: string, selected: boolean) => {
+    const setCategory = useCallback((categoryUnformatted: string, selected: boolean) => {
+        const category = categoryUnformatted.toUpperCase();
+
+        console.log({ category, selected });
+
         const newSet = new Set(currState.categories);
         if (selected) newSet.add(category);
         else newSet.delete(category);
@@ -53,23 +60,41 @@ const useFilter = (): FilterStateHook => {
     }, [currState]);
 
     const setPointsLow = useCallback((val: number) => {
+        const [, currHigh] = currState.points ?? [val, val];
+        const newLow = val;
+        const newHigh =  Math.max(currHigh, val);
         const newState: FilterState = {
             ...currState,
-            points: [val, currState.points?.[1] ?? NaN],
+            points: [newLow, newHigh],
         };
         setCurrState(newState);
     }, [currState]);
     const setPointsHigh = useCallback((val: number) => {
+        const [currLow, ] = currState.points ?? [val, val];
+        const newLow = Math.min(currLow, val);
+        const newHigh =  val;
         const newState: FilterState = {
             ...currState,
-            points: [currState.points?.[0] ?? NaN, val],
+            points: [newLow, newHigh],
         };
         setCurrState(newState);
     }, [currState]);
-    const clearPoints = useCallback(() => {
+    const setUnknownBound = useCallback((val: number) => {
+        const [currLow, currHigh] = currState.points ?? [val, val];
+
+        const newLow = Math.min(val, currLow);
+        const newHigh = Math.max(val, currHigh);
+
         const newState: FilterState = {
             ...currState,
-            points: null,
+            points: [newLow, newHigh],
+        };
+        setCurrState(newState);
+    }, [currState]);
+    const clearPoints = useCallback((newVal?: [number, number]) => {
+        const newState: FilterState = {
+            ...currState,
+            points: newVal ?? null,
         };
         setCurrState(newState);
     }, [currState]);
@@ -78,11 +103,11 @@ const useFilter = (): FilterStateHook => {
         // if (!searchMatches(chall, currState.search)) return false;
 
         const stateCategories = currState.categories;
-        if (stateCategories) if (!chall.categories.some(cat => stateCategories.has(cat))) return false;
+        if (stateCategories) if (!chall.categories.some(cat => stateCategories.has(cat.toUpperCase()))) return false;
 
 
         const stateTags = currState.tags;
-        if (stateTags) if (!chall.tags.some(tag => stateTags?.has(tag))) return false;
+        if (stateTags) if (!chall.tags.some(tag => stateTags.has(tag.toUpperCase()))) return false;
 
         const points = currState.points;
         if (points) if (!(chall.points >= points[0]) || !(chall.points <= points[1])) return false;
@@ -90,15 +115,23 @@ const useFilter = (): FilterStateHook => {
         return true;
     }, [currState]);
 
+    console.log(currState);
+
     return useMemo(() => ({
         currState,
         
         setSearch,
         setCategory, setTag,
-        setPointsLow, setPointsHigh, clearPoints,
+        setPointsLow, setPointsHigh, setUnknownBound, clearPoints,
 
         matches,
-    }), [currState, setSearch, setCategory, setTag, setPointsLow, setPointsHigh, clearPoints, matches]);
+    }), [
+        currState,
+        setSearch,
+        setCategory, setTag,
+        setPointsLow, setPointsHigh, setUnknownBound, clearPoints,
+        matches,
+    ]);
 };
 
 export default useFilter;

@@ -1,20 +1,17 @@
 // Components
-import Collapsible from "react-collapsible";
+import { ReactSVG } from "react-svg";
 
 // Hooks
 
 
 // Types
-
-import { FC } from "react"
+import React, { FC } from "react";
+import { ChallDropProps } from "./ChallDrop";
 
 
 // Styles
 import rawStyles from './ChallDropHeader.module.scss';
 import { wrapCamelCase } from "utils/styles/camelcase";
-import { ClientSideMeta } from "cache/challs";
-import { ReactSVG } from "react-svg";
-import { ChallDropProps } from "./ChallDrop";
 const [styles, builder] = wrapCamelCase(rawStyles);
 
 
@@ -24,26 +21,29 @@ const Tag = ({ name }: { name: string }) => (<span className={styles.tag}>{name}
 
 const ChallDropHeader: FC<ChallDropProps & { open: boolean }> = ({ metadata: { name, solveCount, categories, points, tags }, solved, open }) => (
     <div className={builder.dropHeader.IF(open).open()}>
-        <ReactSVG className={builder.chevron.IF(open).open()} src="/icons/chevron.svg" wrapper={"span"} />
+        <ReactSVG className={`${builder.chevron.IF(open).open()} mx-4 mt-0.5 flex w-4`} src="/icons/chevron.svg" wrapper={"span"} />
 
         <h3 className={styles.title}>{name}</h3>
 
-        <span className={builder.tagSpan.IF(open).open()}>
+        <span className="py-4 my-auto mx-4 w-32 overflow-scroll overflow-y-hidden">
             {tags.map((tag, idx) => <Tag name={tag} key={idx} />)}
         </span>
 
-        <span className={builder.categoryPointSpan.IF(open).open()}>
-            <span aria-label="category" className={styles.category}>{categories[0]}</span>
-            <span className={styles.points}>{points} points</span>
-        </span>
-        
-        <span className={builder.solveSpan.IF(open).open()}>
-            <span className={styles.solves}>
+        <span className="max-h-min my-auto flex justify-end items-center">
+            <span
+                aria-label="category"
+                className="w-20 text-right px-2 py-2 pl-4 border-l border-spacer-dropdown">
+                {categories[0]}
+            </span>
+            <span className="w-28 text-right px-2 py-2">
+                {points.toLocaleString('en-US', {maximumFractionDigits: 0})} points
+            </span>
+            <span className="w-32 text-right px-2 py-2 pr-4">
                 {solveCount.toLocaleString('en-US', {maximumFractionDigits: 0})} solves
             </span>
-            <span className={styles.solveState}>
-                {solved.byTeam || solved.byUser ? "Solved" : "Unsolved"}
-            </span>
+        </span>
+        <span className="bg-green-700 border-black border flex justify-center items-center p-5">
+            {solved.byTeam || solved.byUser ? "Solved" : "Unsolved"}
         </span>
     </div>
 );

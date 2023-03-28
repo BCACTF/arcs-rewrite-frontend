@@ -12,7 +12,7 @@ $transition-scale: ease-in-out;
     min-height: 4rem;
     width: inherit;
     
-    align-items: center;
+    align-items: stretch;
     list-style: none;
     
     color: white;
@@ -31,12 +31,10 @@ $transition-scale: ease-in-out;
 
 .chevron {
     svg {
-        height: 16px;
+        // height: 16px;
         fill: gray;
         // scale
     }
-    margin-left: calc($base-size * 1);
-    margin-top: calc($base-size * 0.1);
     
     transition: rotate $transition-time $transition-scale;
 

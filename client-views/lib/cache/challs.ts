@@ -1,4 +1,4 @@
-import { ChallId, challIdToStr, challIdFromStr, DeploymentId, deployIdFromStr, uuidToStr, newRandomUuid } from "cache/ids";
+import { ChallId, challIdToStr, challIdFromStr, DeploymentId, deployIdFromStr } from "cache/ids";
 import cache from "cache/index";
 
 export interface ClientSideMeta {
@@ -21,7 +21,7 @@ export interface CachedChall {
     clientSideMetadata: ClientSideMeta;
 
     visible: boolean;
-};
+}
 
 export const CHALLENGE_HASH_KEY = "chall";
 
@@ -90,7 +90,7 @@ const parseChallenge = (challJson: string): CachedChall | null => {
     const visible = visRaw;
 
     const name = nameRaw;
-    const points = pointsRaw;;
+    const points = pointsRaw;
     const desc = descRaw;
     const solveCount = solveRaw;
     const categories = catRaw;

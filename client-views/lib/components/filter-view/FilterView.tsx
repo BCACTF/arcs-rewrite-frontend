@@ -1,46 +1,22 @@
 // Components
+import ChallCheckFilter from "./parts/ChallCheckFilter";
+import PointsRangeFilter from "./parts/PointsRangeFilter";
 
 
 // Hooks
 
 
 // Types
-
+import React, { FC, useEffect, useMemo } from "react"
 import { ClientSideMeta } from "cache/challs";
 import { FilterStateHook } from "hooks/useFilter";
-import React, { FC, useMemo } from "react"
-
 
 // Styles
-import rawStyles from './FilterView.module.scss';
-import { wrapCamelCase } from "utils/styles/camelcase";
-const [styles, builder] = wrapCamelCase(rawStyles);
 
 // Utils
 
 
-interface CheckBoxProps {
-    checked: boolean;
-    set: (state: boolean) => void;
-    label: React.ReactNode;
-}
 
-const CheckBox: FC<CheckBoxProps> = ({ checked, set, label: inner }) => (
-    <span className="flex items-center mb-3">
-        <input
-            type="checkbox"
-            onChange={() => set(!checked)}
-            className="
-                bg-transparent checked:bg-indigo-500
-                appearance-none cursor-pointer peer
-
-                w-8 h-8 mr-3
-                
-                border-4 rounded-sm
-                border-gray-400 checked:border-indigo-100"/>
-        <label className="text-xl text-gray-400 peer-checked:text-indigo-100">{inner}</label>
-    </span>
-);
 
 
 interface FilterViewProps {
@@ -50,31 +26,47 @@ interface FilterViewProps {
 
 const FilterView: FC<FilterViewProps> = ({ filterState, challs }) => {
     const categories = useMemo(
-        () => [...new Set(challs.flatMap(c => c.categories).map(s => s.toLowerCase())).values()].sort(),
+        () => [...new Set(challs.flatMap(c => c.categories).map(s => s.toUpperCase())).values()].sort(),
         [challs],
     );
     const tags = useMemo(
-        () => [...new Set(challs.flatMap(c => c.tags).map(s => s.toLowerCase())).values()].sort(),
+        () => [...new Set(challs.flatMap(c => c.tags).map(s => s.toUpperCase())).values()].sort(),
         [challs],
     );
-    const pointsMax = useMemo(() => Math.max(...challs.map(c => c.points)), [challs]);
+    const points = useMemo(() => challs.map(c => c.points), [challs]);
+    const pointsMax = useMemo(() => Math.max(...points), [points]);
 
-    console.log({ categories, tags, pointsMax });
+    useEffect(() => {
+        const pointsNeedSet = !filterState.currState.points;
+        if (pointsNeedSet) {
+            filterState.clearPoints([0, pointsMax]);
+        }
+    }, [pointsMax, filterState]);
 
-    const categorySelectors = <div className="flex flex-col justify-start items-start w-60 border-2 border-gray-600 p-4">
-        <h4 className="border-b-2 border-b-gray-400 w-full mb-4 text-2xl pb-1">Categories:</h4>
-        {categories.map(
-            (cat, idx) => <CheckBox
-                key={idx}
-                checked={filterState.currState.categories?.has(cat) ?? false}
-                set={v => filterState.setCategory(cat, v)}
-                label={<span className={styles.checkBoxLabel}>{cat.toUpperCase()}</span>}/>
-        )}
+    const categorySelectors = <ChallCheckFilter
+        list={categories}
+        heading="Categories:"
+        has={cat => filterState.currState.categories?.has(cat) ?? false}
+        set={(cat, val) => filterState.setCategory(cat, val)}/>;
+    const tagSelectors = <ChallCheckFilter
+        list={tags}
+        heading="Tags:"
+        has={tag => filterState.currState.tags?.has(tag) ?? false}
+        set={(tag, val) => filterState.setTag(tag, val)}/>;
+    const pointSelectors = <PointsRangeFilter
+        max={pointsMax}
+        range={filterState.currState.points ?? [0, pointsMax]}
+        set={{ low: filterState.setPointsLow, high: filterState.setPointsHigh, unknown: filterState.setUnknownBound }}
+        stops={points}/>
+
+
+    return <div className="flex flex-col justify-start items-start w-60 border-2 border-gray-600 p-4">
+        {categorySelectors}
+
+        {pointSelectors}
+
+        {tagSelectors}
     </div>;
-
-    // const     
-
-    return categorySelectors;
 };
 
 export default FilterView;

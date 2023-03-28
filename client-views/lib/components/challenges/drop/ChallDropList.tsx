@@ -1,4 +1,5 @@
 // Components
+import ChallDrop, { ChallDropProps } from "./parts/ChallDrop";
 
 
 // Hooks
@@ -6,15 +7,10 @@
 
 // Types
 
-import { FC } from "react"
+import React, { FC } from "react"
 
 
 // Styles
-import rawStyles from './ChallDropList.module.scss';
-import { wrapCamelCase } from "utils/styles/camelcase";
-import ChallDrop, { ChallDropProps } from "./parts/ChallDrop";
-import { ReactSVG } from "react-svg";
-const [styles, builder] = wrapCamelCase(rawStyles);
 
 
 // Utils
@@ -25,7 +21,13 @@ export interface ChallDropListProps {
 }
 
 const ChallDropList: FC<ChallDropListProps> = ({ cards }) => (
-    <ul aria-label="challenge list" className={styles.list}>
+    <ul
+        aria-label="challenge list"
+        className="
+            flex flex-col
+            items-center justify-start
+            w-screen/2 min-w-60 max-w-100
+            gap-y-4">
         {cards.map((card, idx) => <ChallDrop {...card} key={idx}/>)}
     </ul>
 );

@@ -1,21 +1,19 @@
 // Components
 import Collapsible from "react-collapsible";
+import ChallDropHeader from "./ChallDropHeader";
+import ChallDropBody from "./ChallDropBody";
 
 // Hooks
-
+import { useCallback, useState } from "react";
 
 // Types
-
-import { FC, useCallback, useState } from "react"
+import React, { FC } from "react";
+import { ClientSideMeta } from "cache/challs";
 
 
 // Styles
 import rawStyles from './ChallDrop.module.scss';
 import { wrapCamelCase } from "utils/styles/camelcase";
-import { ClientSideMeta } from "cache/challs";
-import { ReactSVG } from "react-svg";
-import ChallDropHeader from "./ChallDropHeader";
-import ChallDropBody from "./ChallDropBody";
 const [styles, builder] = wrapCamelCase(rawStyles);
 
 
