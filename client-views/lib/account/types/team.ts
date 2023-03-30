@@ -13,7 +13,9 @@ export enum Eligibility {
 }
 
 export default interface Team {
-    id: string;
+    id: TeamId;
     name: string;
+    score: number;
+
     eligibility: Eligibility;
 }

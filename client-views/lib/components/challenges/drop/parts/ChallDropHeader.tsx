@@ -8,12 +8,10 @@ import { ReactSVG } from "react-svg";
 import React, { FC } from "react";
 import { ChallDropProps } from "./ChallDrop";
 
-
 // Styles
 import rawStyles from './ChallDropHeader.module.scss';
 import { wrapCamelCase } from "utils/styles/camelcase";
 const [styles, builder] = wrapCamelCase(rawStyles);
-
 
 // Utils
 
@@ -42,7 +40,7 @@ const ChallDropHeader: FC<ChallDropProps & { open: boolean }> = ({ metadata: { n
                 {solveCount.toLocaleString('en-US', {maximumFractionDigits: 0})} solves
             </span>
         </span>
-        <span className="bg-green-700 border-black border flex justify-center items-center p-5">
+        <span className="bg-slate-800 border-l-2 border-spacer-dropdown flex justify-center items-center p-5">
             {solved.byTeam || solved.byUser ? "Solved" : "Unsolved"}
         </span>
     </div>
