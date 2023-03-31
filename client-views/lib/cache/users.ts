@@ -1,15 +1,17 @@
-import { TeamId, teamIdToStr, teamIdFromStr, UserId } from "cache/ids";
+import { TeamId, teamIdFromStr, UserId, userIdFromStr, userIdToStr } from "cache/ids";
 import cache from "cache/index";
 
 export type UserType = "normal" | "writer" | "admin";
 
 export interface ClientSideMeta {
     name: string;
+    userId: UserId;
+    teamId: TeamId | null;
 
     score: number;
-    lastSolve?: Date;
+    lastSolve: number | null;
 
-    teamId?: TeamId;
+    type: UserType;
 }
 
 export interface CachedUser {
@@ -20,9 +22,7 @@ export interface CachedUser {
 
     type: UserType;
     
-    teamId?: TeamId;
-
-    visible: boolean;
+    teamId: TeamId | null;
 }
 
 
@@ -33,121 +33,105 @@ const parseUser = (userJson: string): CachedUser | null => {
 
     if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return null;
 
-    // FIXME: THIS FILE IS NOT DONE.
     const {
-        visible: visRaw,
-        challId: challRaw,
-        deploymentUuid: depRaw,
+        userId: idRaw,
+        email: emailRaw,
+        
+        type: uTypeRaw,
+        teamId: teamIdRaw,
+
         clientSideMetadata: csmRaw,
     } = parsed as Record<string, unknown>;
 
     {
-        const vis = typeof visRaw === 'boolean';
-        const chall = typeof challRaw === 'string';
-        const dep = typeof depRaw === 'string';
-        if (!vis || !chall || !dep) return null;
+        const uId = typeof idRaw === 'string';
+        const tId = typeof teamIdRaw === 'string' || teamIdRaw === undefined || teamIdRaw === null;
+
+        const email = typeof emailRaw === 'string';
+        const type = typeof uTypeRaw === 'string';
+        if (!uId || !tId || !email || !type) return null;
     }
 
-    const challId = challIdFromStr(challRaw);
-    const deploymentUuid = deployIdFromStr(depRaw);
-    if (!challId || !deploymentUuid) return null;
+    const userId = userIdFromStr(idRaw);
+    const teamId = teamIdRaw ? teamIdFromStr(teamIdRaw) : null;
+    const typeValid = uTypeRaw === "normal" || uTypeRaw === "writer" || uTypeRaw === "admin";
+    if (!userId || (teamId === undefined) || !typeValid) return null;
 
     if (typeof csmRaw !== 'object' || csmRaw === null) return null;
 
     const {
         name: nameRaw,
-        points: pointsRaw,
-        desc: descRaw,
-        solveCount: solveRaw,
-        categories: catRaw,
-        authors: authRaw,
-        hints: hintsRaw,
-        tags: tagsRaw,
-        links,
+        score: scoreRaw,
+        lastSolve: lastSolveRaw,
     } = csmRaw as Record<string, unknown>;
+
 
     {
         const name = typeof nameRaw === 'string';
-        const points = typeof pointsRaw === 'number' && pointsRaw >= 0;
-        const desc = typeof descRaw === 'string';
-        const sol = typeof solveRaw === 'number' && solveRaw >= 0;
-        const cat = Array.isArray(catRaw);
-        const auth = Array.isArray(authRaw);
-        const hint = Array.isArray(hintsRaw);
-        const tag = Array.isArray(tagsRaw);
-        
-        if (
-            !name    || !points || !desc   ||
-            !sol     || !cat    || !auth   ||
-            !hint    || !tag
-        ) return null;
-    }
-    {
-        const cats = catRaw.every((s) => typeof s === 'string');
-        const auths = authRaw.every((s) => typeof s === 'string');
-        const hints = hintsRaw.every((s) => typeof s === 'string');
-        const tags = tagsRaw.every((s) => typeof s === 'string');
+        const score = typeof scoreRaw === 'number' && Number.isInteger(scoreRaw) && scoreRaw >= 0;
+        const lastSolve = typeof lastSolveRaw === 'number' || typeof lastSolveRaw === 'string' || typeof lastSolveRaw === 'undefined';
 
-        if (!cats || !auths || !hints || !tags) return null;
+        if (!name || !score || !lastSolve) return null;
     }
-
-    const visible = visRaw;
 
     const name = nameRaw;
-    const points = pointsRaw;
-    const desc = descRaw;
-    const solveCount = solveRaw;
-    const categories = catRaw;
-    const authors = authRaw;
-    const hints = hintsRaw;
-    const tags = tagsRaw;
+    const score = scoreRaw;
+    const lastSolve = lastSolveRaw ? new Date(lastSolveRaw).getTime() / 1000 : null;
+
+    const type = uTypeRaw;
+    const email = emailRaw;
 
     const clientSideMetadata: ClientSideMeta = {
-        name, points, desc, solveCount, categories, authors, hints, tags, links
+        name, score, lastSolve, type, teamId, userId,
     };
 
-    return { visible, challId, deploymentUuid, clientSideMetadata };
+    return { userId, teamId, type, email, clientSideMetadata };
 }
 
-export const getTeams = async (ids: TeamId[]): Promise<CachedTeamMeta[]> => {
-    const rawCachedTeams = await cache.hmget(TEAM_HASH_KEY, ...ids.map(teamIdToStr));
-    const optCachedTeams = rawCachedTeams.flatMap(raw => raw ? [raw] : []).map(parseTeam);
+export const getUsers = async (ids: UserId[]): Promise<CachedUser[]> => {
+    const rawCachedUsers = await cache.hmget(USER_HASH_KEY, ...ids.map(userIdToStr));
+    const optCachedUsers = rawCachedUsers.flatMap(raw => raw ? [raw] : []).map(parseUser);
 
-    return optCachedTeams.flatMap(team => team ? [team] : []);
+    return optCachedUsers.flatMap(user => user ? [user] : []);
 };
-export const getAllTeamenges = async (): Promise<CachedTeamMeta[]> => {
-    const rawCachedTeams = await cache.hvals(TEAM_HASH_KEY);
-    const optCachedTeams = rawCachedTeams.flatMap(raw => raw ? [raw] : []).map(parseTeam);
+export const getUsersByTeam = async (teamId: TeamId): Promise<CachedUser[]> => {
+    const allUsers = await getAllUsers();
 
-    return optCachedTeams.flatMap(team => team ? [team] : []);
+    return allUsers.filter(user => user.teamId === teamId);
 };
-const getAllTeamKeys = async (): Promise<string[]> => await cache.hkeys(TEAM_HASH_KEY);
+export const getAllUsers = async (): Promise<CachedUser[]> => {
+    const rawCachedUsers = await cache.hvals(USER_HASH_KEY);
+    const optCachedUsers = rawCachedUsers.flatMap(raw => raw ? [raw] : []).map(parseUser);
 
-export const getAllTeamIds = async (): Promise<TeamId[]> => (await cache.hkeys(TEAM_HASH_KEY))
-    .map(teamIdFromStr)
+    return optCachedUsers.flatMap(user => user ? [user] : []);
+};
+const getAllUserKeys = async (): Promise<string[]> => await cache.hkeys(USER_HASH_KEY);
+
+export const getAllUserIds = async (): Promise<UserId[]> => (await cache.hkeys(USER_HASH_KEY))
+    .map(userIdFromStr)
     .flatMap(id => id ? [id] : []);
 
-export const update = async (teamData: CachedTeamMeta): Promise<CachedTeamMeta | null> => {
-    const teamIdStr = teamIdToStr(teamData.id);
+export const update = async (userData: CachedUser): Promise<CachedUser | null> => {
+    const userIdStr = userIdToStr(userData.userId);
 
     const setResult = await cache
         .pipeline()
-        .hget(TEAM_HASH_KEY, teamIdToStr(teamData.id))
-        .hset(TEAM_HASH_KEY, { [teamIdStr]: JSON.stringify(teamData) })
+        .hget(USER_HASH_KEY, userIdToStr(userData.userId))
+        .hset(USER_HASH_KEY, { [userIdStr]: JSON.stringify(userData) })
         .exec();
     
     const retRes = setResult?.[0]?.[1];
     if (typeof retRes !== "string" || !retRes) return null;
-    return parseTeam(retRes);
+    return parseUser(retRes);
 };
-export const removeStale = async (notStale: TeamId[]): Promise<TeamId[]> => {
-    const currSet = new Set(notStale.map(teamIdToStr));
-    const cachedIds = await getAllTeamKeys();
+export const removeStale = async (notStale: UserId[]): Promise<UserId[]> => {
+    const currSet = new Set(notStale.map(userIdToStr));
+    const cachedIds = await getAllUserKeys();
     const removeIds = cachedIds.filter(id => !currSet.has(id));
-    await cache.hdel(TEAM_HASH_KEY, ...removeIds);
+    if (removeIds.length) await cache.hdel(USER_HASH_KEY, ...removeIds);
 
-    return removeIds.map(teamIdFromStr).flatMap(id => id ? [id] : []);
+    return removeIds.map(userIdFromStr).flatMap(id => id ? [id] : []);
 };
 
-export const sortBy = (teams: CachedTeamMeta[]) => [...teams].sort((a, b) => a.score - b.score);
+export const sortBy = (teams: CachedUser[]) => [...teams].sort((a, b) => a.clientSideMetadata.score - b.clientSideMetadata.score);
 

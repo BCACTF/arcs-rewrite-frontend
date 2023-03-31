@@ -140,7 +140,7 @@ export const removeStale = async (notStale: ChallId[]): Promise<ChallId[]> => {
     const currSet = new Set(notStale.map(challIdToStr));
     const cachedIds = await getAllChallKeys();
     const removeIds = cachedIds.filter(id => !currSet.has(id));
-    await cache.hdel(CHALLENGE_HASH_KEY, ...removeIds);
+    if (removeIds.length) await cache.hdel(CHALLENGE_HASH_KEY, ...removeIds);
 
     return removeIds.map(challIdFromStr).flatMap(id => id ? [id] : []);
 };

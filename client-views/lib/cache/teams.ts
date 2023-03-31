@@ -6,10 +6,10 @@ export interface CachedTeamMeta {
     name: string;
 
     score: number;
-    lastSolve?: Date,
+    lastSolve: number | null,
 
     eligible: boolean;
-    affiliation?: string;
+    affiliation: string | null;
 }
 
 export const TEAM_HASH_KEY = "team";
@@ -20,7 +20,7 @@ const parseTeam = (teamJson: string): CachedTeamMeta | null => {
     if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return null;
 
     const {
-        teamId: idRaw,
+        id: idRaw,
         name: nameRaw,
         score: scoreRaw,
         eligible: eligRaw,
@@ -41,8 +41,8 @@ const parseTeam = (teamJson: string): CachedTeamMeta | null => {
     if (!teamId) return null;
 
     {
-        const lastSolve = typeof lastSolveRaw === 'number' || typeof lastSolveRaw === 'string' || typeof lastSolveRaw === 'undefined';
-        const affiliation = typeof affiliationRaw === 'string' || typeof affiliationRaw === 'undefined';
+        const lastSolve = typeof lastSolveRaw === 'number' || typeof lastSolveRaw === 'string' || lastSolveRaw === undefined || lastSolveRaw === null;
+        const affiliation = typeof affiliationRaw === 'string' || affiliationRaw === undefined || affiliationRaw === null;
         if (!lastSolve || !affiliation) return null;
     }
 
@@ -51,19 +51,20 @@ const parseTeam = (teamJson: string): CachedTeamMeta | null => {
     const score = scoreRaw;
     const eligible = eligRaw;
 
-    const lastSolve = lastSolveRaw ? new Date(lastSolveRaw) : undefined;
-    const affiliation = affiliationRaw;
+    const lastSolve = lastSolveRaw ? new Date(lastSolveRaw).getTime() / 1000 : null;
+    const affiliation = affiliationRaw ?? null;
 
     return { id, name, score, eligible, lastSolve, affiliation };
 }
 
 export const getTeams = async (ids: TeamId[]): Promise<CachedTeamMeta[]> => {
     const rawCachedTeams = await cache.hmget(TEAM_HASH_KEY, ...ids.map(teamIdToStr));
+    console.log(rawCachedTeams);
     const optCachedTeams = rawCachedTeams.flatMap(raw => raw ? [raw] : []).map(parseTeam);
 
     return optCachedTeams.flatMap(team => team ? [team] : []);
 };
-export const getAllTeamenges = async (): Promise<CachedTeamMeta[]> => {
+export const getAllTeams = async (): Promise<CachedTeamMeta[]> => {
     const rawCachedTeams = await cache.hvals(TEAM_HASH_KEY);
     const optCachedTeams = rawCachedTeams.flatMap(raw => raw ? [raw] : []).map(parseTeam);
 
@@ -92,7 +93,7 @@ export const removeStale = async (notStale: TeamId[]): Promise<TeamId[]> => {
     const currSet = new Set(notStale.map(teamIdToStr));
     const cachedIds = await getAllTeamKeys();
     const removeIds = cachedIds.filter(id => !currSet.has(id));
-    await cache.hdel(TEAM_HASH_KEY, ...removeIds);
+    if (removeIds.length) await cache.hdel(TEAM_HASH_KEY, ...removeIds);
 
     return removeIds.map(teamIdFromStr).flatMap(id => id ? [id] : []);
 };
