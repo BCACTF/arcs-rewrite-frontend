@@ -16,9 +16,9 @@ export const getCompetitionMetadata = (): CompetitionMetadata => ({
     end: parseInt(env.COMPETITION_END ?? "0"),
 });
 
-export interface Metadata {
-    competition: CompetitionMetadata;
-}
+// export interface Metadata {
+//     competition: CompetitionMetadata;
+// }
 
 
 

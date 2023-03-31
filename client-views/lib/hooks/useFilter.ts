@@ -40,8 +40,6 @@ const useFilter = (): FilterStateHook => {
     const setCategory = useCallback((categoryUnformatted: string, selected: boolean) => {
         const category = categoryUnformatted.toUpperCase();
 
-        console.log({ category, selected });
-
         const newSet = new Set(currState.categories);
         if (selected) newSet.add(category);
         else newSet.delete(category);
@@ -114,8 +112,6 @@ const useFilter = (): FilterStateHook => {
 
         return true;
     }, [currState]);
-
-    console.log(currState);
 
     return useMemo(() => ({
         currState,

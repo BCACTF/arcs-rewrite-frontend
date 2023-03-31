@@ -6,11 +6,10 @@ import OAuthLoginBlock from 'components/OAuthLoginBlock';
 
 
 // Types
-import { FC, useEffect } from 'react';
+import React, { FC, useEffect } from 'react';
 import { GetServerSideProps } from 'next';
 import { CompetitionMetadata } from 'metadata/general';
 import { Environment } from 'metadata/env';
-import { MyUser } from "account/types";
 
 // Styles
 import rawStyles from 'SignIn.module.scss';
@@ -20,7 +19,7 @@ const [styles] = wrapCamelCase(rawStyles);
 // Utils
 import { getCompetitionMetadata } from "metadata/general";
 import { getEnvironment } from "metadata/env";
-import getAccount from "account/validation";
+import getAccount, { Account } from "account/validation";
 import Router from 'next/router';
 import { getProviders } from 'next-auth/react';
 
@@ -29,7 +28,7 @@ import { getProviders } from 'next-auth/react';
 interface SignInProps {
     compMeta: CompetitionMetadata;
     envData: Environment;
-    account: MyUser | null;
+    account: Account | null;
     providers: Exclude<Awaited<ReturnType<typeof getProviders>>, null>;
 }
 

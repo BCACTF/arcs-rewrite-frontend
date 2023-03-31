@@ -59,7 +59,6 @@ const parseTeam = (teamJson: string): CachedTeamMeta | null => {
 
 export const getTeams = async (ids: TeamId[]): Promise<CachedTeamMeta[]> => {
     const rawCachedTeams = await cache.hmget(TEAM_HASH_KEY, ...ids.map(teamIdToStr));
-    console.log(rawCachedTeams);
     const optCachedTeams = rawCachedTeams.flatMap(raw => raw ? [raw] : []).map(parseTeam);
 
     return optCachedTeams.flatMap(team => team ? [team] : []);
@@ -72,9 +71,9 @@ export const getAllTeams = async (): Promise<CachedTeamMeta[]> => {
 };
 const getAllTeamKeys = async (): Promise<string[]> => await cache.hkeys(TEAM_HASH_KEY);
 
-export const getAllTeamIds = async (): Promise<TeamId[]> => (await cache.hkeys(TEAM_HASH_KEY))
-    .map(teamIdFromStr)
-    .flatMap(id => id ? [id] : []);
+// export const getAllTeamIds = async (): Promise<TeamId[]> => (await cache.hkeys(TEAM_HASH_KEY))
+//     .map(teamIdFromStr)
+//     .flatMap(id => id ? [id] : []);
 
 export const update = async (teamData: CachedTeamMeta): Promise<CachedTeamMeta | null> => {
     const teamIdStr = teamIdToStr(teamData.id);

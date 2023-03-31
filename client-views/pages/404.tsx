@@ -8,7 +8,7 @@ import useStorage from "hooks/useStorage";
 
 // Types
 import { GetStaticProps } from "next";
-import { FC } from "react";
+import React, { FC } from "react";
 import { CompetitionMetadata } from "metadata/general";
 import { Environment } from "metadata/env";
 

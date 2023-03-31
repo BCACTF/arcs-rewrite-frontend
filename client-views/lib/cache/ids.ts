@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-empty-interface */
+
 import { randomUUID } from 'crypto';
 import { Iso } from 'monocle-ts';
 import { Newtype, iso } from 'newtype-ts';
@@ -10,7 +12,7 @@ interface ChallId extends Newtype<{ readonly Chall: unique symbol }, string> {}
 interface UserId extends Newtype<{ readonly User: unique symbol }, string> {}
 interface TeamId extends Newtype<{ readonly Team: unique symbol }, string> {}
 
-export const projectUuidVersion: 4 = 4; // Currently locked to 4 because randomUUID version is locked to 4;
+export const projectUuidVersion = 4; // Currently locked to 4 because randomUUID version is locked to 4;
 
 const uuidManager = iso<Uuid>();
 const deployIdManager = iso<DeploymentId>();

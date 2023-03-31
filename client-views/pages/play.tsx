@@ -1,38 +1,43 @@
 // Components
 import WebsiteMeta from "components/WebsiteMeta";
+import ChallDropList from "components/challenges/drop/ChallDropList";
+import FilterView from "components/filter-view/FilterView";
+import HeaderBanner, { HeaderBannerPage } from "components/HeaderBanner";
 
 // Hooks
+import useFilter from "hooks/useFilter";
 
 // Types
-import { GetStaticProps } from "next";
+import { GetServerSideProps } from "next";
 import React, { FC } from "react";
-import { CompetitionMetadata } from "metadata/general";
+import { CompetitionMetadata, getCompetitionMetadata } from "metadata/general";
 import { Environment } from "metadata/env";
+import { ClientSideMeta as ClientSideMetaChalls } from "cache/challs";
+import { Account } from "account/validation";
 
 // Styles
-import rawStyles from 'Play.module.scss';
-import { wrapCamelCase } from "utils/styles/camelcase";
-const [styles, builder] = wrapCamelCase(rawStyles);
+
 
 // Utilities
 import { getEnvironment } from "metadata/env";
-import { ClientSideMeta, getAllChallenges, sortBy } from "cache/challs";
-import ChallDropList from "components/challenges/drop/ChallDropList";
-import FilterView from "components/filter-view/FilterView";
-import useFilter from "hooks/useFilter";
+import { getAllChallenges, sortBy } from "cache/challs";
+import getAccount from "account/validation";
 
 
 interface PlayProps {
     compMeta: CompetitionMetadata;
     envData: Environment;
-    challenges: ClientSideMeta[];
+    challenges: ClientSideMetaChalls[];
+    account: Account | null;
 }
 
-const Play: FC<PlayProps> = ({ compMeta, envData, challenges }) => {
+const Play: FC<PlayProps> = ({ compMeta, envData, challenges, account }) => {
     const filterState = useFilter();
 
-    return <div className={styles.container}>
+    return <div className="flex flex-col items-center justify-start w-screen h-screen min-h-60 pt-20">
         <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Play"/>
+
+        <HeaderBanner account={account} meta={compMeta} currPage={HeaderBannerPage.PLAY} />
 
         <div className="flex flex-row h-min gap-x-4">
             <FilterView filterState={filterState} challs={challenges}/>
@@ -42,16 +47,25 @@ const Play: FC<PlayProps> = ({ compMeta, envData, challenges }) => {
     </div>
 }
 
-export const getServerSideProps: GetStaticProps<PlayProps> = async () => {
-    require("utils/setup-test-challs");
+export const getServerSideProps: GetServerSideProps<PlayProps> = async context => {
+    const [
+        account,
+        challengesRaw,
+    ] = await Promise.all([
+        getAccount(context),
+        getAllChallenges()
+    ]);
+
+    const challenges = sortBy(challengesRaw.filter(chall => chall.visible))
+        .map(chall => chall.clientSideMetadata);
+
     
-    const challenges = sortBy((await getAllChallenges()).filter(chall => chall.visible));
     const props = {
         envData: getEnvironment(),
-        compMeta: {name: "BCACTF 4.0", start: 0, end: 1670533082},
-        challenges: challenges.map(chall => chall.clientSideMetadata),
+        compMeta: getCompetitionMetadata(),
+        challenges,
+        account,
     };
-    // console.log(challenges);
     return { props };
 };
 

@@ -1,4 +1,4 @@
-import { CSSProperties, FC, ReactNode } from "react";
+import React, { CSSProperties, FC, ReactNode } from "react";
 import { Environment } from "metadata/env";
 import { CompetitionMetadata, JsonDate } from "metadata/general"
 import useInterval from "hooks/useInterval";
@@ -55,11 +55,11 @@ const getDuration = (start: JsonDate, end: JsonDate, state: CompetitionState): J
 const stateText = (state: CompetitionState) => {
     switch (state) {
         case CompetitionState.Before:
-            return "BCACTF starts in";
+            return " starts in";
         case CompetitionState.During:
-            return "BCACTF ends in";
+            return " ends in";
         case CompetitionState.After:
-            return "BCACTF has ended";
+            return " has ended";
     }
 };
 
@@ -104,7 +104,7 @@ const WebsiteCountdown: FC<WebsiteCountdownProps> = ({
 
     return (
         <div style={style} className={className?.container}><>
-            {stateText(state)}
+            {compMeta.name + stateText(state)}
             <br/>
             {formatter(componentElements)}
         </></div>

@@ -1,3 +1,3 @@
-let webhookToken = process.env.WEBHOOK_TOKEN;
+const webhookToken = process.env.WEBHOOK_TOKEN;
 
 export default webhookToken;

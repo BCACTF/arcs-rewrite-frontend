@@ -10,7 +10,7 @@ import { CompetitionMetadata } from 'metadata/general';
 import { Environment } from 'metadata/env';
 import { CachedTeamMeta } from "cache/teams";
 import { ClientSideMeta as ClientSideMetaUser } from "cache/users";
-import { CachedSolveMeta } from "cache/solves";
+import { CachedSolveMeta, sortBy as sortSolvesBy } from "cache/solves";
 
 // Styles
 // import rawStyles from 'Home.module.scss';
@@ -20,11 +20,16 @@ import { CachedSolveMeta } from "cache/solves";
 // Utils
 import { getCompetitionMetadata } from "metadata/general";
 import { getEnvironment } from "metadata/env";
-import getAccount from "account/validation";
+import getAccount, { Account } from "account/validation";
 import { getTeams } from "cache/teams";
 import { getUsersByTeam, sortBy as sortUsersBy } from "cache/users";
 import { teamIdFromStr } from "cache/ids";
 import { getSolves } from "cache/solves";
+import TeamInfo from "components/teams/TeamInfo";
+import UserList from "components/teams/UserList";
+import SolveList from "components/teams/SolveList";
+import { ClientSideMeta as ClientSideMetaChall, getAllChallenges } from "cache/challs";
+import HeaderBanner from "components/HeaderBanner";
 
 interface TeamPageProps {
     compMeta: CompetitionMetadata;
@@ -32,14 +37,22 @@ interface TeamPageProps {
     team: CachedTeamMeta;
     users: ClientSideMetaUser[];
     solves: CachedSolveMeta[];
+    challs: ClientSideMetaChall[];
+    account: Account | null;
 }
 
-const Home: FC<TeamPageProps> = ({ compMeta, envData, team, users }) => {
+const Home: FC<TeamPageProps> = ({ compMeta, envData, team, users, solves, challs, account }) => {
     return (
-        <div className={"boop"}>
+        <div className="flex flex-row border-4 border-slate-700 mt-16">
             <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Home"/>
-            {JSON.stringify(team)}
-            {JSON.stringify(users)}
+            <HeaderBanner account={account} meta={compMeta} currPage={null} />
+
+            <div className="flex flex-col border-r-2 border-slate-700">
+                <TeamInfo team={team}/>
+                <UserList users={users}/>
+            </div>
+
+            <SolveList {...{ users, team, solves, challs }} />
         </div>
     )
 }
@@ -56,8 +69,9 @@ export const getServerSideProps: GetServerSideProps<TeamPageProps> = async conte
 
     const users = sortUsersBy(await getUsersByTeam(teamId));
 
-    const solves = await getSolves(teamId);
-    
+    const solves = sortSolvesBy(await getSolves(teamId)).reverse();
+
+    const challs = await getAllChallenges();
 
     const props: TeamPageProps = {
         envData: getEnvironment(),
@@ -65,6 +79,8 @@ export const getServerSideProps: GetServerSideProps<TeamPageProps> = async conte
         team,
         users: users.map(user => user.clientSideMetadata),
         solves,
+        challs: challs.map(c => c.clientSideMetadata),
+        account,
     };
     return { props };
 };

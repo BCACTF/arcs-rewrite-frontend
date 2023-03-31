@@ -45,10 +45,7 @@ export const authOptions: AuthOptions = {
         newUser: '/account/new-user',
     },
     callbacks: {
-        jwt(params) {
-            console.log(params);
-            return params.token;
-        },
+        jwt: params => params.token,
     },
     secret: process.env.NEXTAUTH_SECRET,
 };

@@ -1,10 +1,10 @@
 import { JsonDate } from "../metadata/general";
 
-export const jsonToDate = (json: JsonDate) => new Date(json);
-export const dateToJson = (date: Date) => date.getTime() / 1000;
+// export const jsonToDate = (json: JsonDate) => new Date(json);
+// export const dateToJson = (date: Date) => date.getTime() / 1000;
 
 export type DurationComponents<T> = { days: T, hours: T, minutes: T, seconds: T };
-export const durationToComponents = (duration: JsonDate, multiple: number = 1): DurationComponents<number> => {
+export const durationToComponents = (duration: JsonDate, multiple = 1): DurationComponents<number> => {
     const secsPerMin = 60;
     const secsPerHr = 60 * secsPerMin;
     const secsPerDay = 24 * secsPerHr;

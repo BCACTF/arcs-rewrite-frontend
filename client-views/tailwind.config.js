@@ -20,6 +20,12 @@ module.exports = {
         'screen/2': "50vw",
         'screen/5': "20vw",
       },
+      height: {
+        '39': "9.75rem",
+      },
+      minHeight: {
+        '60': "15rem",
+      },
       borderColor: {
         'spacer-dropdown': "#525c69",
       },
@@ -28,6 +34,14 @@ module.exports = {
       },
       translate: {
         '1.25': '0.375rem'
+      },
+      rotate: {
+        '135': '135deg'
+      },
+      backgroundColor: {
+        'signin-light': "#4444aa",
+        'dropdown-main': "#382894",
+        'dropdown-secondary': "#291f66",
       }
     },
   },

@@ -11,6 +11,8 @@ export interface ClientSideMeta {
     hints: string[];
     tags: string[];
 
+    id: ChallId;
+
     links: any;
 }
 
@@ -25,7 +27,7 @@ export interface CachedChall {
 
 export const CHALLENGE_HASH_KEY = "chall";
 
-const parseChallenge = (challJson: string): CachedChall | null => {
+export const parseChallenge = (challJson: string): CachedChall | null => {
     const parsed: unknown = JSON.parse(challJson);
 
     if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return null;
@@ -99,18 +101,18 @@ const parseChallenge = (challJson: string): CachedChall | null => {
     const tags = tagsRaw;
 
     const clientSideMetadata: ClientSideMeta = {
-        name, points, desc, solveCount, categories, authors, hints, tags, links
+        name, points, desc, solveCount, categories, authors, hints, tags, links, id: challId
     };
 
     return { visible, challId, deploymentUuid, clientSideMetadata };
 }
 
-export const getChallenges = async (ids: ChallId[]): Promise<CachedChall[]> => {
-    const rawCachedChalls = await cache.hmget(CHALLENGE_HASH_KEY, ...ids.map(challIdToStr));
-    const optCachedChalls = rawCachedChalls.flatMap(raw => raw ? [raw] : []).map(parseChallenge);
+// export const getChallenges = async (ids: ChallId[]): Promise<CachedChall[]> => {
+//     const rawCachedChalls = await cache.hmget(CHALLENGE_HASH_KEY, ...ids.map(challIdToStr));
+//     const optCachedChalls = rawCachedChalls.flatMap(raw => raw ? [raw] : []).map(parseChallenge);
 
-    return optCachedChalls.flatMap(chall => chall ? [chall] : []);
-};
+//     return optCachedChalls.flatMap(chall => chall ? [chall] : []);
+// };
 export const getAllChallenges = async (): Promise<CachedChall[]> => {
     const rawCachedChalls = await cache.hvals(CHALLENGE_HASH_KEY);
     const optCachedChalls = rawCachedChalls.flatMap(raw => raw ? [raw] : []).map(parseChallenge);
@@ -119,9 +121,9 @@ export const getAllChallenges = async (): Promise<CachedChall[]> => {
 };
 const getAllChallKeys = async (): Promise<string[]> => await cache.hkeys(CHALLENGE_HASH_KEY);
 
-export const getAllChallIds = async (): Promise<ChallId[]> => (await cache.hkeys(CHALLENGE_HASH_KEY))
-    .map(challIdFromStr)
-    .flatMap(id => id ? [id] : []);
+// export const getAllChallIds = async (): Promise<ChallId[]> => (await cache.hkeys(CHALLENGE_HASH_KEY))
+//     .map(challIdFromStr)
+//     .flatMap(id => id ? [id] : []);
 
 export const update = async (challData: CachedChall): Promise<CachedChall | null> => {
     const challIdStr = challIdToStr(challData.challId);

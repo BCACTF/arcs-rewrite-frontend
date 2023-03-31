@@ -16,28 +16,23 @@ import cache from "cache";
     const challs = JSON.parse(challContents);
     for (const chall of challs) {
         await updateChall(chall);
-        console.log(chall);
     }
 
     const teamContents = await readFile('test-teams.json', 'utf-8');
     const teams = JSON.parse(teamContents);
     for (const team of teams) {
         await updateTeam(team);
-        console.log(team);
     }
 
     const userContents = await readFile('test-users.json', 'utf-8');
     const users = JSON.parse(userContents);
     for (const user of users) {
         await updateUser(user);
-        console.log(user);
     }
 
     const solveContents = await readFile('test-solves.json', 'utf-8');
     const solves = JSON.parse(solveContents);
     for (const solve of solves) {
         await addSolve(solve);
-        console.log(solve);
     }
 })();
-console.log("started");

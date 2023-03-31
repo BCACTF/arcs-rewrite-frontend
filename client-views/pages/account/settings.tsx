@@ -22,51 +22,39 @@ import { Environment } from 'metadata/env';
 import { getCompetitionMetadata } from "metadata/general";
 import { getEnvironment } from "metadata/env";
 import getAccount, { Account } from "account/validation";
-import { ClientSideMeta as ClientSideMetaUsers, getUsers } from "cache/users";
-import { UserId, userIdFromStr } from "cache/ids";
-import UserCard from "components/users/UserCard";
 import { CachedTeamMeta, getTeams } from "cache/teams";
 
-interface UserPageProps {
+interface SettingsPageProps {
     compMeta: CompetitionMetadata;
     envData: Environment;
-    user: ClientSideMetaUsers;
-    userId: UserId;
-    account: Account | null;
-    userImgHref: string | null;
+    account: Account;
     team: CachedTeamMeta | null;
 }
 
-const UserPage: FC<UserPageProps> = ({ compMeta, envData, user, team, userImgHref, account }) => {
+const UserPage: FC<SettingsPageProps> = ({ compMeta, envData, account, team }) => {
     return (
-        <div className="flex flex-col items-center justify-center pt-16 h-screen">
+        <div className="flex flex-col items-center pt-16">
             <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Home"/>
-            <HeaderBanner account={account} meta={compMeta} currPage={null}/>
-            <UserCard {...{user, team, userImgHref}}/>
+            <HeaderBanner account={account} meta={compMeta} currPage={null} />
+
         </div>
     )
 }
 
-export const getServerSideProps: GetServerSideProps<UserPageProps> = async context => {
+export const getServerSideProps: GetServerSideProps<SettingsPageProps> = async context => {
     const account = await getAccount(context);
 
-    const userIdRaw = context.query.userid?.toString() ?? "";
-    const userId = userIdFromStr(userIdRaw);
-    if (!userId) throw new Error("Bad UserID!");
 
-    const user = await getUsers([userId]).then(arr => arr[0]);
-    if (!user) throw new Error("Uh this person doesn't exist sorry");
+    if (!account) return { notFound: true, redirect: { destination: "/account/signin" } };
 
-    const team = user.teamId ? await getTeams([user.teamId]).then(teams => teams[0] ?? null) : null;
+    const team = account.teamId ? await getTeams([account.teamId]).then(teams => teams[0] ?? null) : null;
 
-    const props: UserPageProps = {
+
+    const props: SettingsPageProps = {
         envData: getEnvironment(),
         compMeta: getCompetitionMetadata(),
-        userId,
-        user: user.clientSideMetadata,
-        team,
-        userImgHref: account?.img ?? null,
         account,
+        team,
     };
     return { props };
 };

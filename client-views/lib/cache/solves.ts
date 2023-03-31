@@ -63,8 +63,10 @@ export const addSolve = async (solve: CachedSolveMeta): Promise<CachedSolveMeta 
     if (typeof retRes !== "string" || !retRes) return null;
     return parseSolve(retRes);
 };
-export const removeOne = async (target: TeamId, chall: ChallId): Promise<boolean> => {
-    const redisKey = getRedisKey(target);
+// export const removeOne = async (target: TeamId, chall: ChallId): Promise<boolean> => {
+//     const redisKey = getRedisKey(target);
 
-    return !!await cache.hdel(redisKey, challIdToStr(chall));
-};
+//     return !!await cache.hdel(redisKey, challIdToStr(chall));
+// };
+
+export const sortBy = (solves: CachedSolveMeta[]) => [...solves].sort((a, b) => a.time - b.time);

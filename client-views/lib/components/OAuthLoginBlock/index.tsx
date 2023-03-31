@@ -5,7 +5,7 @@ import Image from "next/image";
 
 
 // Types
-import { CSSProperties, FC } from "react";
+import React, { CSSProperties, FC } from "react";
 
 
 // Styles

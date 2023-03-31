@@ -107,9 +107,9 @@ export const getAllUsers = async (): Promise<CachedUser[]> => {
 };
 const getAllUserKeys = async (): Promise<string[]> => await cache.hkeys(USER_HASH_KEY);
 
-export const getAllUserIds = async (): Promise<UserId[]> => (await cache.hkeys(USER_HASH_KEY))
-    .map(userIdFromStr)
-    .flatMap(id => id ? [id] : []);
+// export const getAllUserIds = async (): Promise<UserId[]> => (await cache.hkeys(USER_HASH_KEY))
+//     .map(userIdFromStr)
+//     .flatMap(id => id ? [id] : []);
 
 export const update = async (userData: CachedUser): Promise<CachedUser | null> => {
     const userIdStr = userIdToStr(userData.userId);
