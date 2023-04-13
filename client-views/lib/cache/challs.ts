@@ -52,6 +52,7 @@ export const parseChallenge = (challJson: string): CachedChall | null => {
 
     if (typeof csmRaw !== 'object' || csmRaw === null) return null;
 
+
     const {
         name: nameRaw,
         points: pointsRaw,
@@ -63,6 +64,7 @@ export const parseChallenge = (challJson: string): CachedChall | null => {
         tags: tagsRaw,
         links,
     } = csmRaw as Record<string, unknown>;
+
 
     {
         const name = typeof nameRaw === 'string';

@@ -1,7 +1,6 @@
 import { TeamId, teamIdFromStr, UserId, userIdFromStr, userIdToStr } from "cache/ids";
 import cache from "cache/index";
 
-export type UserType = "normal" | "writer" | "admin";
 
 export interface ClientSideMeta {
     name: string;
@@ -11,7 +10,8 @@ export interface ClientSideMeta {
     score: number;
     lastSolve: number | null;
 
-    type: UserType;
+    eligible: boolean;
+    admin: boolean;
 }
 
 export interface CachedUser {
@@ -20,7 +20,8 @@ export interface CachedUser {
     
     clientSideMetadata: ClientSideMeta;
 
-    type: UserType;
+    eligible: boolean;
+    admin: boolean;
     
     teamId: TeamId | null;
 }
@@ -28,7 +29,7 @@ export interface CachedUser {
 
 export const USER_HASH_KEY = "user";
 
-const parseUser = (userJson: string): CachedUser | null => {
+export const parseUser = (userJson: string): CachedUser | null => {
     const parsed: unknown = JSON.parse(userJson);
 
     if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return null;
@@ -37,7 +38,8 @@ const parseUser = (userJson: string): CachedUser | null => {
         userId: idRaw,
         email: emailRaw,
         
-        type: uTypeRaw,
+        admin: adminRaw,
+        eligible: eligibleRaw,
         teamId: teamIdRaw,
 
         clientSideMetadata: csmRaw,
@@ -48,14 +50,15 @@ const parseUser = (userJson: string): CachedUser | null => {
         const tId = typeof teamIdRaw === 'string' || teamIdRaw === undefined || teamIdRaw === null;
 
         const email = typeof emailRaw === 'string';
-        const type = typeof uTypeRaw === 'string';
-        if (!uId || !tId || !email || !type) return null;
+        const admin = typeof adminRaw === 'boolean';
+        const eligible = typeof eligibleRaw === 'boolean';
+        if (!uId || !tId || !email || !admin || !eligible) return null;
     }
+
 
     const userId = userIdFromStr(idRaw);
     const teamId = teamIdRaw ? teamIdFromStr(teamIdRaw) : null;
-    const typeValid = uTypeRaw === "normal" || uTypeRaw === "writer" || uTypeRaw === "admin";
-    if (!userId || (teamId === undefined) || !typeValid) return null;
+    if (!userId || (teamId === undefined)) return null;
 
     if (typeof csmRaw !== 'object' || csmRaw === null) return null;
 
@@ -69,7 +72,7 @@ const parseUser = (userJson: string): CachedUser | null => {
     {
         const name = typeof nameRaw === 'string';
         const score = typeof scoreRaw === 'number' && Number.isInteger(scoreRaw) && scoreRaw >= 0;
-        const lastSolve = typeof lastSolveRaw === 'number' || typeof lastSolveRaw === 'string' || typeof lastSolveRaw === 'undefined';
+        const lastSolve = typeof lastSolveRaw === 'number' || typeof lastSolveRaw === 'string' || lastSolveRaw === undefined || lastSolveRaw === null;
 
         if (!name || !score || !lastSolve) return null;
     }
@@ -78,14 +81,15 @@ const parseUser = (userJson: string): CachedUser | null => {
     const score = scoreRaw;
     const lastSolve = lastSolveRaw ? new Date(lastSolveRaw).getTime() / 1000 : null;
 
-    const type = uTypeRaw;
+    const admin = adminRaw;
+    const eligible = eligibleRaw;
     const email = emailRaw;
 
     const clientSideMetadata: ClientSideMeta = {
-        name, score, lastSolve, type, teamId, userId,
+        name, score, lastSolve, admin, eligible, teamId, userId,
     };
 
-    return { userId, teamId, type, email, clientSideMetadata };
+    return { userId, teamId, admin, eligible, email, clientSideMetadata };
 }
 
 export const getUsers = async (ids: UserId[]): Promise<CachedUser[]> => {

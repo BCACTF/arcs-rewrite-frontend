@@ -1,9 +1,9 @@
-const makeWebhookRequest = async (query: string) => {
+import WebhookDbQuery from "./queries";
+
+const makeWebhookDbRequest = async (query: WebhookDbQuery) => {
     const webhookAddress = process.env.WEBHOOK_SERVER_ADDRESS;
     const frontendAuth = process.env.FRONTEND_SERVER_AUTH_TOKEN;
     if (!webhookAddress) throw new Error("Webhook address not specified");
-
-    console.log({ webhookAddress, frontendAuth });
 
     const init: RequestInit = {
         method: "POST",
@@ -13,13 +13,13 @@ const makeWebhookRequest = async (query: string) => {
         },
         body: JSON.stringify({
             _type: "sqlquery",
-            targets: {
-                sql: { query },
-            },
+            targets: { sql: query },
         }),
     };
-
-    return await fetch(webhookAddress, init);
+    const fetchReturn = await fetch(webhookAddress, init);
+    const text = await fetchReturn.text();
+    console.log("text:", text);
+    return JSON.parse(text).sql.output;
 };
 
-export default makeWebhookRequest;
+export default makeWebhookDbRequest;

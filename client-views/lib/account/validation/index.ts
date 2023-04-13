@@ -6,7 +6,7 @@
 
 // Types
 import { GetServerSidePropsContext } from "next";
-import { getToken } from "next-auth/jwt";
+import { GetTokenParams, getToken } from "next-auth/jwt";
 import { CachedUser, getAllUsers } from "cache/users";
 
 
@@ -17,7 +17,7 @@ import { CachedUser, getAllUsers } from "cache/users";
 
 export type Account = CachedUser & { img: string | null };
 
-const getAccount = async ({ req }: GetServerSidePropsContext): Promise<Account | null> => {
+const getAccount = async ({ req }: GetTokenParams): Promise<Account | null> => {
     const token = await getToken({ req });
 
     if (!token || !token.email) return null;

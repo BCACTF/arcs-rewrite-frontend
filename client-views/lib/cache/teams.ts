@@ -14,7 +14,7 @@ export interface CachedTeamMeta {
 
 export const TEAM_HASH_KEY = "team";
 
-const parseTeam = (teamJson: string): CachedTeamMeta | null => {
+export const parseTeam = (teamJson: string): CachedTeamMeta | null => {
     const parsed: unknown = JSON.parse(teamJson);
 
     if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return null;

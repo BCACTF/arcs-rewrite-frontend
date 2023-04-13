@@ -22,6 +22,7 @@ import { getEnvironment } from "metadata/env";
 import getAccount, { Account } from "account/validation";
 import Router from 'next/router';
 import { getProviders } from 'next-auth/react';
+import { JWT, getToken } from 'next-auth/jwt';
 
 
 
@@ -29,14 +30,18 @@ interface SignInProps {
     compMeta: CompetitionMetadata;
     envData: Environment;
     account: Account | null;
+    token: JWT | null;
     providers: Exclude<Awaited<ReturnType<typeof getProviders>>, null>;
 }
 
 
-const SignIn: FC<SignInProps> = ({ providers, account, envData, compMeta }) => {
+const SignIn: FC<SignInProps> = ({ providers, account, token, envData, compMeta }) => {
 
     useEffect(
-        () => { if (account) Router.replace("/"); },
+        () => {
+            if (account) Router.replace("/");
+            else if (token) Router.replace("/account/new-user");
+        },
         [account],
     );
 
@@ -75,12 +80,18 @@ const SignIn: FC<SignInProps> = ({ providers, account, envData, compMeta }) => {
 
 export const getServerSideProps: GetServerSideProps<SignInProps> = async context => {
     const providers = await getProviders();
+    
     if (!providers) return { notFound: true };
+    const account = await getAccount(context);
+    const token = await getToken(context);
+
+
 
     const props: SignInProps = {
         envData: getEnvironment(),
         compMeta: getCompetitionMetadata(),
-        account: await getAccount(context),
+        account,
+        token,
         providers,
     };
 

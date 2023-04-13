@@ -11,7 +11,7 @@ export interface CachedSolveMeta {
 export const SOLVE_HASH_KEY_PREFIX = "solve:";
 const getRedisKey = (teamId: TeamId) => `${SOLVE_HASH_KEY_PREFIX}${teamIdToStr(teamId)}`;
 
-const parseSolve = (solveVal: string): CachedSolveMeta | null => {
+export const parseSolve = (solveVal: string): CachedSolveMeta | null => {
     const parsed: unknown = JSON.parse(solveVal);
 
     if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return null;

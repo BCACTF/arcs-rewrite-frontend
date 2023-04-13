@@ -14,6 +14,7 @@ import { ClientSideMeta } from "cache/challs";
 // Styles
 import rawStyles from './ChallDrop.module.scss';
 import { wrapCamelCase } from "utils/styles/camelcase";
+import { ChallId, TeamId, UserId } from "cache/ids";
 const [styles, builder] = wrapCamelCase(rawStyles);
 
 
@@ -27,6 +28,7 @@ export interface SolvedState {
 export interface ChallDropProps {
     metadata: ClientSideMeta;
     solved: SolvedState;
+    submission: { challId: ChallId, teamId: TeamId | null, userId: UserId | null };
 }
 
 

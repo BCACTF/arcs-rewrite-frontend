@@ -42,7 +42,14 @@ const Play: FC<PlayProps> = ({ compMeta, envData, challenges, account }) => {
         <div className="flex flex-row h-min gap-x-4">
             <FilterView filterState={filterState} challs={challenges}/>
 
-            <ChallDropList cards={challenges.filter(chall => filterState.matches(chall)).map(chall => ({metadata: chall, solved: { byTeam: false, byUser: false }}))}/>
+            <ChallDropList
+                cards={challenges
+                    .filter(chall => filterState.matches(chall))
+                    .map(chall => ({
+                        metadata: chall,
+                        solved: { byTeam: false, byUser: false },
+                        submission: { challId: chall.id, teamId: account?.teamId ?? null, userId: account?.userId ?? null }
+                    }))}/>
         </div>
     </div>
 }

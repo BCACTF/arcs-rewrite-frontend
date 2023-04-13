@@ -3,8 +3,7 @@
 import { randomUUID } from 'crypto';
 import { Iso } from 'monocle-ts';
 import { Newtype, iso } from 'newtype-ts';
-
-import uuidIsValid from 'uuid-validate';
+import { validate } from 'uuid';
 
 interface Uuid extends Newtype<{ readonly Uuid: unique symbol }, string> {}
 interface DeploymentId extends Newtype<{ readonly Deployment: unique symbol }, string> {}
@@ -20,7 +19,11 @@ const challIdManager = iso<ChallId>();
 const userIdManager = iso<UserId>();
 const teamIdManager = iso<TeamId>();
 
-const idValid = (id: string) => uuidIsValid(id, projectUuidVersion);
+const idValid = (id: string) => {
+    const split = id.split("-");
+    if (split.length !== 5) return false;
+    return split.every(n => !isNaN(parseInt(n, 16)));
+}
 const newRandom = () => randomUUID();
 
 const wrapRandom = <NT>(manager: Iso<NT, string>) => () => manager.wrap(newRandom());
@@ -42,6 +45,6 @@ const userIdToStr = wrapToStr(userIdManager);
 const teamIdToStr = wrapToStr(teamIdManager);
 
 export type { Uuid, DeploymentId, ChallId, UserId, TeamId };
-export { newRandomUuid };
+export { newRandomUuid, idValid };
 export { uuidFromStr, deployIdFromStr, challIdFromStr, userIdFromStr, teamIdFromStr };
 export { uuidToStr, deployIdToStr, challIdToStr, userIdToStr, teamIdToStr };

@@ -42,7 +42,7 @@ const UserPage: FC<UserPageProps> = ({ compMeta, envData, user, team, userImgHre
         <div className="flex flex-col items-center justify-center pt-16 h-screen">
             <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Home"/>
             <HeaderBanner account={account} meta={compMeta} currPage={null}/>
-            <UserCard {...{user, team, userImgHref}}/>
+            <UserCard {...{user, team, userImgHref, isMe: account?.userId === user.userId}}/>
         </div>
     )
 }

@@ -14,9 +14,10 @@
     "@fortawesome/free-solid-svg-icons": "^6.3.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@types/node": "18.11.11",
+    "@types/pg-escape": "^0.2.1",
     "@types/react": "18.0.26",
     "@types/react-dom": "18.0.9",
-    "@types/uuid-validate": "^0.0.1",
+    "@types/uuid": "^9.0.1",
     "@typescript-eslint/parser": "^5.56.0",
     "eslint-config-next": "13.0.6",
     "fp-ts": "^2.13.1",
@@ -26,6 +27,7 @@
     "next": "13.0.6",
     "next-auth": "^4.20.1",
     "pg": "^8.10.0",
+    "pg-escape": "^0.2.0",
     "postcss-preset-env": "^8.1.0",
     "react": "18.2.0",
     "react-collapsible": "^2.10.0",
@@ -38,7 +40,7 @@
     "sqlite3": "^5.1.6",
     "ts-prune": "^0.10.3",
     "typescript": "4.9.4",
-    "uuid-validate": "^0.0.3",
+    "uuid": "^9.0.0",
     "webfontloader": "^1.6.28"
   },
   "devDependencies": {

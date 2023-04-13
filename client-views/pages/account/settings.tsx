@@ -1,11 +1,9 @@
 // Components
 import WebsiteMeta from "components/WebsiteMeta";
-import WebsiteCountdown from "components/WebsiteCountdown";
-import NoSsr from "components/NoSsr/NoSsr";
 import HeaderBanner from "components/HeaderBanner";
 
 // Hooks
-import useAccount from "hooks/useAccount";
+
 
 // Types
 import React, { FC } from 'react';
@@ -14,9 +12,7 @@ import { CompetitionMetadata } from 'metadata/general';
 import { Environment } from 'metadata/env';
 
 // Styles
-// import rawStyles from 'Home.module.scss';
-// import { wrapCamelCase } from "utils/styles/camelcase";
-// const [styles, builder] = wrapCamelCase(rawStyles);
+
 
 // Utils
 import { getCompetitionMetadata } from "metadata/general";
@@ -36,7 +32,7 @@ const UserPage: FC<SettingsPageProps> = ({ compMeta, envData, account, team }) =
         <div className="flex flex-col items-center pt-16">
             <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Home"/>
             <HeaderBanner account={account} meta={compMeta} currPage={null} />
-
+            
         </div>
     )
 }
