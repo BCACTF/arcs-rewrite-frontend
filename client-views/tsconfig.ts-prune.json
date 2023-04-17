@@ -1,6 +1,0 @@
-{
-    "files": [
-        "public/**/*.ts",
-        "pages/**/*.ts"
-    ]
-}
