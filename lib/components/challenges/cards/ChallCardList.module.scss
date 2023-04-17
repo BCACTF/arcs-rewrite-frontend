@@ -1,0 +1,8 @@
+.list {
+    width: max(40rem, min(40vw, 100rem));
+    display: grid;
+    list-style: none;
+    grid-template-columns: 1fr 1fr 1fr;
+    row-gap: 1rem;
+    column-gap: 1rem;
+}

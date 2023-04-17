@@ -1,0 +1,46 @@
+@use "../HeaderBanner.module.scss" as header-main;
+
+$border-radius-size: 1rem;
+$font: normal 1rem 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+$main-button-height: 2.25rem;
+$main-button-width: 15rem;
+
+$icon-margin: 1.5rem;
+$text-margin: 1rem;
+
+$dropdown-item-height: 2.5rem;
+$dropdown-items: 5;
+$dropdown-size: calc($main-button-height + $dropdown-item-height * $dropdown-items);
+
+$main-color: hsl(header-main.$base-hue, header-main.$base-saturation, 50%);
+
+$state-params: 0.25s ease-in-out;
+
+.flex-container {
+    
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    // Make it look rounded.
+    height: $main-button-height;
+    width: $main-button-width;
+
+
+    border-radius: $border-radius-size;
+
+    // Give it a background color.
+    background-color: $main-color;
+
+
+    font: $font;
+
+    user-select: none;
+    cursor: default;
+
+    position: relative;
+
+}
+// rgb(85, 85, 170);

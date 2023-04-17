@@ -1,0 +1,16 @@
+<svg viewBox="0 0 22 32" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<path d="
+    M 22,16
+    l -14,14
+        q -2,2 -4,2
+        q -4,0 -4,-4
+        q 0,-3 3,-6
+    l 6,-6
+    
+    l -6,-6
+        q -3,-3 -3,-6
+        q 0,-4 4,-4
+        q 2,0 4,2
+    l 14,14
+    " />
+</svg>
