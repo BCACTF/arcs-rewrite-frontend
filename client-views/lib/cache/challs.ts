@@ -1,4 +1,4 @@
-import { ChallId, challIdToStr, challIdFromStr, DeploymentId, deployIdFromStr } from "cache/ids";
+import { ChallId, challIdToStr, challIdFromStr } from "cache/ids";
 import cache from "cache/index";
 
 export interface ClientSideMeta {
@@ -13,12 +13,16 @@ export interface ClientSideMeta {
 
     id: ChallId;
 
-    links: any;
+    links: {
+        nc: string[];
+        web: string[];
+        admin: string[];
+        static: string[];
+    };
 }
 
 export interface CachedChall {
-    deploymentUuid: DeploymentId;
-    challId: ChallId;
+    id: ChallId;
 
     clientSideMetadata: ClientSideMeta;
 
@@ -35,20 +39,17 @@ export const parseChallenge = (challJson: string): CachedChall | null => {
     const {
         visible: visRaw,
         challId: challRaw,
-        deploymentUuid: depRaw,
         clientSideMetadata: csmRaw,
     } = parsed as Record<string, unknown>;
 
     {
         const vis = typeof visRaw === 'boolean';
         const chall = typeof challRaw === 'string';
-        const dep = typeof depRaw === 'string';
-        if (!vis || !chall || !dep) return null;
+        if (!vis || !chall) return null;
     }
 
     const challId = challIdFromStr(challRaw);
-    const deploymentUuid = deployIdFromStr(depRaw);
-    if (!challId || !deploymentUuid) return null;
+    if (!challId) return null;
 
     if (typeof csmRaw !== 'object' || csmRaw === null) return null;
 
@@ -62,7 +63,7 @@ export const parseChallenge = (challJson: string): CachedChall | null => {
         authors: authRaw,
         hints: hintsRaw,
         tags: tagsRaw,
-        links,
+        links: linksRaw,
     } = csmRaw as Record<string, unknown>;
 
 
@@ -89,7 +90,25 @@ export const parseChallenge = (challJson: string): CachedChall | null => {
         const tags = tagsRaw.every((s) => typeof s === 'string');
 
         if (!cats || !auths || !hints || !tags) return null;
+        if (typeof linksRaw !== 'object' || linksRaw === null) return null;
     }
+    const { web, nc, admin, static: staticLinks } = linksRaw as Record<string, unknown>;
+    {
+        const webArr = Array.isArray(web);
+        const ncArr = Array.isArray(nc);
+        const adminArr = Array.isArray(admin);
+        const staticArr = Array.isArray(staticLinks);
+
+        if (!webArr || !ncArr || !adminArr || !staticArr) return null;
+
+        const webValid = web.every((s) => typeof s === 'string');
+        const ncValid = nc.every((s) => typeof s === 'string');
+        const adminValid = admin.every((s) => typeof s === 'string');
+        const staticValid = staticLinks.every((s) => typeof s === 'string');
+
+        if (!webValid || !ncValid || !adminValid || !staticValid) return null;
+    }
+    const links = { nc, web, admin, static: staticLinks };
 
     const visible = visRaw;
 
@@ -106,7 +125,7 @@ export const parseChallenge = (challJson: string): CachedChall | null => {
         name, points, desc, solveCount, categories, authors, hints, tags, links, id: challId
     };
 
-    return { visible, challId, deploymentUuid, clientSideMetadata };
+    return { visible, id: challId, clientSideMetadata };
 }
 
 // export const getChallenges = async (ids: ChallId[]): Promise<CachedChall[]> => {
@@ -128,11 +147,11 @@ const getAllChallKeys = async (): Promise<string[]> => await cache.hkeys(CHALLEN
 //     .flatMap(id => id ? [id] : []);
 
 export const update = async (challData: CachedChall): Promise<CachedChall | null> => {
-    const challIdStr = challIdToStr(challData.challId);
+    const challIdStr = challIdToStr(challData.id);
 
     const setResult = await cache
         .pipeline()
-        .hget(CHALLENGE_HASH_KEY, challIdToStr(challData.challId))
+        .hget(CHALLENGE_HASH_KEY, challIdToStr(challData.id))
         .hset(CHALLENGE_HASH_KEY, { [challIdStr]: JSON.stringify(challData) })
         .exec();
     

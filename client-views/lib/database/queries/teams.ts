@@ -21,7 +21,7 @@ export type UpdateTeam = {
     name: string;
     description: string;
 
-    newPassword: string;
+    newPassword: string | null;
 };
 
 export type GetTeam = {
@@ -33,7 +33,7 @@ export type GetAllTeams = {
     __tag: "get_all";
 };
 
-export type InnerTeamQuery = CreateNewTeam | UpdateTeam | GetTeam | GetAllTeams;
+type InnerTeamQuery = CreateNewTeam | UpdateTeam | GetTeam | GetAllTeams;
 
 type TeamQuery = {
     section: "team";

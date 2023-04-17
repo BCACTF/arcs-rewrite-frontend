@@ -1,139 +1,61 @@
 import makeWebhookRequest from "./makeWebhookReq";
-import { update as updateUser, parseUser, removeStale as removeStaleUsers } from "cache/users";
 import { ChallId, TeamId, UserId, challIdToStr, teamIdToStr, userIdToStr } from "cache/ids";
-import escape, { literal } from "pg-escape";
-import { addSolve, parseSolve } from "cache/solves";
-import { updateUserFromDb } from "./users";
-import { updateTeamFromDb } from "./teams";
-import { updateChallFromDb } from "./challs";
+import { addSolve } from "cache/solves";
+import { DbSolveMeta, dbToCacheSolve } from "./db-types";
 
-const jsonToObj = (json: any) => {
-    const {
-        user_id: userId,
-        challenge_id: challId,
-        team_id: teamId,
-        inserted_at: time,
-    } = json;
-    const solveFmt = {
-        userId, challId, teamId, time,
-    };
-    return parseSolve(JSON.stringify(solveFmt));
-};
-
-const syncSolves = async () => {
-    const query = `
-    SELECT
-        user_id, challenge_id, team_id, inserted_at
-        FROM solve_attempts WHERE correct = true`.split("\n").join(" ");
-    
+const syncSolves = async (): Promise<void> => {
     try {
-        const json = await makeWebhookRequest(query);
-        console.log(json);
-        if (Array.isArray(json)) {
-            const allUsers = json.map(jsonToObj).flatMap(c => c ? [c] : []);
-            const usedIds = allUsers.map(u => u.userId);
-            await removeStaleUsers(usedIds);
+        const allSolves = await makeWebhookRequest<DbSolveMeta[]>({
+            section: "solve",
+            query: { __tag: "get_all" },
+        });
+        if (!allSolves.sql.success) throw allSolves.sql.error;
 
-            return await Promise.all(allUsers.map(addSolve));
-        } else {
-            console.error("Bad format:", json);
-        }
+        const solves = allSolves.sql.output.map(dbToCacheSolve).flatMap(c => c ? [c] : []);
+        await Promise.all(solves.map(addSolve));
+
+        // return await getSolves();
     } catch (err) {
         console.error("failed to rerequest challenges", err);
     }
-
-    return null;
 };
+
+
+type SolvedReturn = "failed" | "success" | "correct_no_points";
 
 type AddNewUserReq = (params: {
     challId: ChallId;
     teamId: TeamId;
     userId: UserId;
     flag: string;
-}) => Promise<boolean>;
+}) => Promise<SolvedReturn>;
 
-const attemptSolve: AddNewUserReq = async ({ challId, teamId, userId, flag }) => {
+const attemptSolve: AddNewUserReq = async ({ challId, teamId, userId, flag }): Promise<SolvedReturn> => {
+    try {
+        const solveRes = await makeWebhookRequest<DbSolveMeta>({
+            section: "solve",
+            query: {
+                __tag: "submit",
+                user_id: userIdToStr(userId),
+                challenge_id: challIdToStr(challId),
+                team_id: teamIdToStr(teamId),
+                flag,
+            },
+        });
+        if (!solveRes.sql.success) throw solveRes.sql.error;
+        if (!solveRes.sql.output.correct) return "failed";
+        if (!solveRes.sql.output.counted) return "correct_no_points";
 
-    const correct = await (async () => {
-        const checkFlag = `
-        SELECT
-            COUNT(*) as matches FROM challenges
-            WHERE
-                id = ${literal(challIdToStr(challId))} AND
-                flag = ${literal(flag)}`.split("\n").join(" ");
+        const solve = dbToCacheSolve(solveRes.sql.output)
 
-        const sql = await makeWebhookRequest(checkFlag);
-        return parseInt(sql[0]?.matches) >= 1;
-    })();
-
-    const alreadySolved = await (async () => {
-        const checkAlreadySolved = `
-        SELECT
-            COUNT(*) as matches FROM solve_attempts
-            WHERE
-                challenge_id = ${literal(challIdToStr(challId))} AND
-                team_id = ${literal(teamIdToStr(teamId))} AND
-                correct = true`.split("\n").join(" ");
-
-        const sql = await makeWebhookRequest(checkAlreadySolved);
-        return parseInt(sql.matches[0]) >= 1;
-    })();
-
-    console.log({ correct, alreadySolved });
-
-    if (!correct || alreadySolved) {
-        const query = `
-        START TRANSACTION;
-            INSERT INTO solve_attempts (
-                flag_guess, user_id, challenge_id, team_id,
-                correct
-            ) VALUES (
-                ${literal(flag)},
-                ${literal(userIdToStr(userId))},
-                ${literal(challIdToStr(challId))},
-                ${literal(teamIdToStr(teamId))},
-                ${correct}
-            );
-        COMMIT;`.split("\n").join(" ");
-
-        await makeWebhookRequest(query);
-    } else {
-        const query = `
-        START TRANSACTION;
-            INSERT INTO solve_attempts (
-                flag_guess, user_id, challenge_id, team_id,
-                correct
-            ) VALUES (
-                ${literal(flag)},
-                ${literal(userIdToStr(userId))},
-                ${literal(challIdToStr(challId))},
-                ${literal(teamIdToStr(teamId))},
-                ${true}
-            );
-            UPDATE users 
-            SET last_solve = CURRENT_TIMESTAMP,
-                score = score + MAX(SELECT points FROM challenges WHERE id = ${literal(challIdToStr(challId))});
-            
-            UPDATE teams 
-            SET last_solve = CURRENT_TIMESTAMP,
-                score = score + MAX(SELECT points FROM challenges WHERE id = ${literal(challIdToStr(challId))});
-            
-            UPDATE challs 
-            SET solve_count = solve_count + 1;
-        COMMIT;`.split("\n").join(" ");
-
-        await makeWebhookRequest(query);
+        if (solve) {
+            addSolve(solve);
+            return "success";
+        } else console.error("Bad SQL return:", solveRes);
+    } catch (err) {
+        console.error("failed to submit solve", err);
     }
-    
-
-    await Promise.all([
-        updateTeamFromDb({ id: teamId }),
-        updateUserFromDb({ id: userId }),
-        updateChallFromDb({ id: challId }),
-        syncSolves(),
-    ]);
-    console.log({ correct, flag, alreadySolved });
-    return correct;
+    return "failed";
 };
 
 

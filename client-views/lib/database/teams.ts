@@ -1,187 +1,124 @@
 import makeWebhookRequest from "./makeWebhookReq";
-import { parseTeam, removeStale as removeStaleTeams, update } from "cache/teams";
-import { TeamId, UserId, idValid, newRandomUuid, teamIdFromStr, teamIdToStr, userIdToStr, uuidToStr } from "cache/ids";
-import { literal } from "pg-escape";
-import { createHash } from "crypto";
-import { updateUserFromDb, updateUserFromDbByName } from "./users";
+import { CachedTeamMeta, getAllTeams, getTeams, removeStale as removeStaleTeams, update as updateTeamCache } from "cache/teams";
+import { TeamId, UserId, teamIdToStr, userIdToStr } from "cache/ids";
+import { DbTeamMeta, dbToCacheTeam } from "./db-types";
 
-const jsonToObj = (json: any) => {
-    const {
-        id,
-        name,
-        score,
-        last_solve: lastSolve,
-        eligible,
-        affiliation,
-    } = json;
-
-    const teamFmt = { id, name, score, lastSolve, eligible, affiliation };
-    return parseTeam(JSON.stringify(teamFmt));
-};
-
-
-const requestAllTeams = async () => {
-    const query = `
-    SELECT
-        id, name, description, score,
-        last_solve, eligible, affiliation
-        FROM teams`.split("\n").join(" ");
-    
+const syncAllTeams = async (): Promise<CachedTeamMeta[] | null> => {
     try {
-        const sql = await makeWebhookRequest(query);
-        if (Array.isArray(sql)) {
-            const newTeams = sql.map(jsonToObj).flatMap(t => t ? [t] : []);
-            const usedIds = newTeams.map(t => t.id);
-            await removeStaleTeams(usedIds);
+        const allTeams = await makeWebhookRequest<DbTeamMeta[]>({
+            section: "team",
+            query: { __tag: "get_all" },
+        });
+        if (!allTeams.sql.success) throw allTeams.sql.error;
 
-            return await Promise.all(newTeams.map(c => update(c)));
-        } else {
-            console.error("Bad format:", sql);
-        }
+        const teams = allTeams.sql.output.map(dbToCacheTeam).flatMap(c => c ? [c] : []);
+        const usedIds = teams.map(t => t.id);
+        removeStaleTeams(usedIds);
+
+        await Promise.all(teams.map(updateTeamCache));
+
+        return await getAllTeams();
     } catch (err) {
-        console.error("failed to rerequest challenges", err);
+        console.error("failed to rerequest teams", err);
     }
-
     return null;
 };
 
-type AddNewTeamReq = (params: {
+const syncTeam = async ({ id }: { id: TeamId }): Promise<CachedTeamMeta | null> => {
+    try {
+        const teamRes = await makeWebhookRequest<DbTeamMeta>({
+            section: "team",
+            query: { __tag: "get", id: teamIdToStr(id) },
+        });
+        if (!teamRes.sql.success) throw teamRes.sql.error;
+        const team = dbToCacheTeam(teamRes.sql.output);
+
+        if (team) {
+            updateTeamCache(team);
+            const teams = await getTeams([team.id]);
+            return teams[0] ?? null;
+        } else console.error("Bad SQL return:", teamRes);
+    } catch (err) {
+        console.error("failed to rerequest teams", err);
+    }
+    return null;
+};
+
+
+type AddNewTeamParams = {
     name: string;
-    description: string;
     eligible: boolean;
     affiliation: string | null;
     password: string;
     initialUser: UserId;
-}) => Promise<boolean>;
+};
 
-const addNewTeam: AddNewTeamReq = async ({ name, description, eligible, affiliation, password, initialUser }) => {
-    const newTeamId = uuidToStr(newRandomUuid());
-    const teamIdNewtype = teamIdFromStr(newTeamId);
-    if (!teamIdNewtype) return false;
-
-    const query = `
-    START TRANSACTION;
-        INSERT INTO teams (
-            id,
-            name, description, eligible, affiliation,
-            hashed_password
-        ) VALUES (
-            ${literal(newTeamId)},
-            ${literal(name)},
-            ${literal(description)},
-            ${eligible},
-            ${affiliation ? literal(affiliation) : null},
-            ${literal(hashPassword({ password, teamId: teamIdNewtype }))}
-        );
-        UPDATE users 
-        SET team_id = ${literal(newTeamId)}
-        WHERE id = ${literal(userIdToStr(initialUser))};
-    COMMIT;`.split("\n").join(" ");
-
-    console.log(query.replaceAll(/ +/g, " "));
-
+const addNewTeam = async ({ name, eligible, affiliation, password, initialUser }: AddNewTeamParams): Promise<CachedTeamMeta | null> => {
     try {
-        const sql = await makeWebhookRequest(query);
-        await updateTeamFromDb({ id: teamIdNewtype });
-        await updateUserFromDb({ id: initialUser });
-        console.log(sql);
-        if (Array.isArray(sql)) {
-            const team = jsonToObj(sql[0]);
-            if (team) {
-                await update(team);
-                return true;
-            } else {
-                console.error("Invalid team:", team);
-            }
-        } else {
-            console.error("Bad format:", sql);
-        }
-    } catch (err) {
-        console.error("failed to rerequest challenges", err);
-    }
+        const newTeam = await makeWebhookRequest<DbTeamMeta>({
+            section: "team",
+            query: {
+                __tag: "create",
+                name, eligible, affiliation, password,
+                initialUser: userIdToStr(initialUser),
+            },
+        });
+        if (!newTeam.sql.success) throw newTeam.sql.error;
+        const team = dbToCacheTeam(newTeam.sql.output);
 
-    return false;
+        if (team) {
+            updateTeamCache(team);
+            const teams = await getTeams([team.id]);
+            return teams[0] ?? null;
+        } else console.error("Bad SQL return:", newTeam);
+    } catch (err) {
+        console.error("failed to rerequest teams", err);
+    }
+    return null;
 };
 
-type UpdateTeamFromDbReq = (params: {
-    id: TeamId,
-}) => Promise<boolean>;
+type UpdateTeamParams = {
+    id: TeamId;
+    password: string;
 
-const updateTeamFromDb: UpdateTeamFromDbReq = async ({ id }) => {
-    const query = `
-    SELECT
-        id, name, description, score,
-        last_solve, eligible, affiliation
-        FROM teams
-        WHERE id = ${literal(teamIdToStr(id))}`.split("\n").join(" ");
+    eligible: boolean;
+    affiliation: string | null;
 
-    console.log(query.replaceAll(/ +/g, " "));
-
+    name: string;
+    description: string;
+    newPassword: string | null;
+};
+const updateTeam = async ({
+    id, newPassword,
+    eligible, affiliation,
+    name, description, password,
+}: UpdateTeamParams): Promise<CachedTeamMeta | null> => {
     try {
-        const sql = await makeWebhookRequest(query);
-        console.log(sql);
-        if (typeof sql.statusCode !== 'number' || sql.statusCode === 200) {
-            // await updateUserFromDbByName({ name });
-            return true;
-        }
-        else console.error("Bad format:", sql);
+        const updatedTeam = await makeWebhookRequest<DbTeamMeta>({
+            section: "team",
+            query: {
+                __tag: "update",
+                id: teamIdToStr(id), password,
+                name, eligible, affiliation, description,
+                newPassword,
+            },
+        });
+        if (!updatedTeam.sql.success) throw updatedTeam.sql.error;
+        const team = dbToCacheTeam(updatedTeam.sql.output);
+
+        if (team) {
+            updateTeamCache(team);
+            const teams = await getTeams([team.id]);
+            return teams[0] ?? null;
+        } else console.error("Bad SQL return:", updatedTeam);
     } catch (err) {
-        console.error("failed to rerequest challenges", err);
+        console.error("failed to rerequest teams", err);
     }
-
-    return false;
+    return null;
 };
 
-
-type JoinTeamReq = (params: {
-    teamId: TeamId;
-    userId: UserId;
-    password: string;
-}) => Promise<boolean>;
-
-const joinTeam: JoinTeamReq = async ({ teamId, userId, password }) => {
-    const hash = hashPassword({ password, teamId });
-
-    {
-        const verifyPasswordHash = `
-        SELECT
-            COUNT(*) as matches FROM teams
-            WHERE teamId = ${literal(teamIdToStr(teamId))} AND hashed_password = ${literal(hash)}`.split("\n").join(" ");
-
-        const sql = await makeWebhookRequest(verifyPasswordHash);
-        if (sql.matches !== 1) return false;
-    }
-    {
-        const query = `
-        UPDATE users 
-            SET team_id = ${literal(teamIdToStr(teamId))}
-            WHERE id = ${literal(userIdToStr(userId))};`.split("\n").join(" ");
-        
-        await makeWebhookRequest(query);
-
-        await Promise.all([
-            updateTeamFromDb({ id: teamId }),
-            updateUserFromDb({ id: userId })
-        ]);
-        return true;
-    }
-};
-
-
-type HashTeamPassw = (params: {
-    password: string;
-    teamId: TeamId;
-}) => string;
-
-const hashPassword: HashTeamPassw = ({ password, teamId }) => createHash('sha256')
-    .update(teamIdToStr(teamId))
-    .update(password)
-    .digest('hex');
 
 export {
-    addNewTeam,
-    updateTeamFromDb,
-    requestAllTeams,
-    hashPassword,
-    joinTeam,
+    syncAllTeams, syncTeam,
+    addNewTeam, updateTeam,
 }

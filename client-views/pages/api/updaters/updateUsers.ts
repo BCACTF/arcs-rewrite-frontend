@@ -1,9 +1,9 @@
-import { requestAllUsers } from "database/users";
+import { syncAllUsers } from "database/users";
 import { NextApiHandler } from "next";
 
 
 const handler: NextApiHandler = async (req, res) =>  {
-    console.log(await requestAllUsers());
+    console.log(await syncAllUsers());
     res.send("bloop");
 };
 
