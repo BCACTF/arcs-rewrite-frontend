@@ -9,4 +9,5 @@ import { syncAllUsers } from "database/users";
         syncAllUsers(),
     ]);
     console.log("Cache synced!");
+    process.exit(0);
 })();
