@@ -1,7 +1,7 @@
 import getAccount from "account/validation";
 import { challIdFromStr } from "cache/ids";
 import { getTeams } from "cache/teams";
-import { updateUserFromDb } from "database/users";
+import { syncUser } from "database/users";
 import { attemptSolve } from "database/solves";
 import { NextApiHandler } from "next";
 
@@ -13,7 +13,7 @@ const handler: NextApiHandler = async (req, res) =>  {
             res.status(401).send("Not signed in");
             return;
         }
-        await updateUserFromDb({ id: staleAccount.userId });
+        await syncUser({ id: staleAccount.userId });
     }
     const account = await getAccount({ req });
     if (!account) {

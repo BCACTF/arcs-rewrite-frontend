@@ -1,7 +1,7 @@
 import getAccount from "account/validation";
 import { getAllTeams } from "cache/teams";
-import { addNewUser, updateUserFromDb } from "database/users";
-import { addNewTeam, hashPassword, joinTeam, requestAllTeams } from "database/teams";
+import { syncUser, joinTeam } from "database/users";
+import { syncAllTeams } from "database/teams";
 import { NextApiHandler } from "next";
 
 
@@ -12,8 +12,8 @@ const handler: NextApiHandler = async (req, res) =>  {
             res.status(401).send("Not signed in");
             return;
         }
-        await updateUserFromDb({ id: staleAccount.userId });
-        await requestAllTeams();
+        await syncUser({ id: staleAccount.userId });
+        await syncAllTeams();
     }
     const account = await getAccount({ req });
     if (!account) {
@@ -48,7 +48,7 @@ const handler: NextApiHandler = async (req, res) =>  {
     const userId = account.userId;
     
     try {
-        const success = await joinTeam({ teamId, userId, password });
+        const success = await joinTeam({ id: userId, password, teamId, teamPassword: password });
         if (success) {
             res.status(200).send("Team successfully joined!");
             return

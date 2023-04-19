@@ -38,7 +38,7 @@ export const parseChallenge = (challJson: string): CachedChall | null => {
 
     const {
         visible: visRaw,
-        challId: challRaw,
+        id: challRaw,
         clientSideMetadata: csmRaw,
     } = parsed as Record<string, unknown>;
 

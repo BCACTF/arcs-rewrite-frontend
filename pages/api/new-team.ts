@@ -1,17 +1,17 @@
 import getAccount from "account/validation";
-import { addNewUser, updateUserFromDb } from "database/users";
-import { addNewTeam, hashPassword } from "database/teams";
+import { updateUserDb, syncUser } from "database/users";
+import { addNewTeam } from "database/teams";
 import { NextApiHandler } from "next";
 
 
 const handler: NextApiHandler = async (req, res) =>  {
+    const staleAccount = await getAccount({ req });
     {
-        const staleAccount = await getAccount({ req });
         if (!staleAccount) {
             res.status(401).send("Not signed in");
             return;
         }
-        await updateUserFromDb({ id: staleAccount.userId });
+        await syncUser({ id: staleAccount.userId });
     }
     const account = await getAccount({ req });
     if (!account) {
@@ -23,22 +23,23 @@ const handler: NextApiHandler = async (req, res) =>  {
         return;
     }
 
+
     const json = JSON.parse(req.body);
     if (typeof json !== 'object' || json === null) {
         res.status(400).send("Invalid request body");
         return;
     }
-    
+
     const { name, password, affiliation } = json;
     if (!name || !password) {
         res.status(400).send("name and/or password left undefined");
         return;
     }
 
-    const eligible = account.type === "eligible";
+    const eligible = account.eligible;
     const initialUser = account.userId;
     
-    await addNewTeam({ name, description: "", eligible, affiliation, initialUser, password });
+    await addNewTeam({ name, eligible, affiliation, initialUser, password });
 
     res.status(200).send("Success!");
 };
