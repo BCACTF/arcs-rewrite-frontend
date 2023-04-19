@@ -12,8 +12,6 @@ import React, { FC } from "react"
 // Styles
 import rawStyles from './ChallDropBody.module.scss';
 import { wrapCamelCase } from "utils/styles/camelcase";
-import { ClientSideMeta } from "cache/challs";
-import { ReactSVG } from "react-svg";
 import { ChallDropProps } from "./ChallDrop";
 import NoSsr from "components/NoSsr/NoSsr";
 const [styles, builder] = wrapCamelCase(rawStyles);
@@ -49,6 +47,22 @@ const BodyMeta: FC<Pick<
     </div>
 );
 
+type LinkType = "nc" | "web" | "admin" | "static";
+const Links: FC<{ urls: string[], type: LinkType }> = ({ urls, type }) => {
+    switch (type) {
+        case "web":
+        case "admin":
+            return <>{
+                urls.map((url, idx) => <>
+                    <a className="text-blue-300 underline" href={url} key={idx}>{url.split("/").slice(-1)[0]}</a><br/>
+                </>)
+            }</>
+        case "static":
+
+    }
+    return <></>;
+};
+
 const ChallDropBody: FC<ChallDropProps & { open: boolean }> = ({
     metadata: { name, solveCount, categories, points, tags, desc, links, authors },
     solved,
@@ -62,7 +76,10 @@ const ChallDropBody: FC<ChallDropProps & { open: boolean }> = ({
                 <p dangerouslySetInnerHTML={{ __html: desc }} />
                 <br/>
                 <h4 className="text-lg font-bold">Links:</h4>
-                {Object.entries(links).map(([name, href], idx) => <><a className="text-blue-300 underline" href={(href as string).startsWith("http") ? href as string : `http://${href}`} key={idx}>{name}</a><br/></>)}
+                <Links urls={links.nc} type={"nc"} />
+                <Links urls={links.web} type={"web"} />
+                <Links urls={links.admin} type={"admin"} />
+                <Links urls={links.static} type={"static"} />
             </p>
         </NoSsr>
 
