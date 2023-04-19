@@ -15,6 +15,7 @@ module.exports = {
         '100': "100rem",
         '50': "50rem",
         '25': "25rem",
+        'full': "100%",
       },
       width: {
         'screen/2': "50vw",
@@ -42,6 +43,14 @@ module.exports = {
         'signin-light': "#4444aa",
         'dropdown-main': "#382894",
         'dropdown-secondary': "#291f66",
+      },
+      flexGrow: {
+        '2': 2,
+        '4': 4,
+        '6': 6,
+        '8': 8,
+        '10': 10,
+        '12': 12,
       }
     },
   },

@@ -1,104 +1,144 @@
 // Components
-import Collapsible from "react-collapsible";
+import ReactMarkdown from "react-markdown";
 
 // Hooks
 
 
 // Types
 
-import React, { FC } from "react"
+import React, { CSSProperties, FC } from "react"
 
 
 // Styles
-import rawStyles from './ChallDropBody.module.scss';
-import { wrapCamelCase } from "utils/styles/camelcase";
 import { ChallDropProps } from "./ChallDrop";
-import NoSsr from "components/NoSsr/NoSsr";
-const [styles, builder] = wrapCamelCase(rawStyles);
 
 
 // Utils
+import remarkGfm from "remark-gfm";
+import ChallDropFlagInput from "./ChallDropFlagInput";
 
 
-const Tag = ({ name }: { name: string }) => (<span className={styles.tag}>{name}</span>);
+const ListItem = ({ item, className, style }: { item: string, style?: CSSProperties, className?: string }) => (
+    <span className={className} style={style}>{item}</span>
+)
+const EnglishList = ({ items: list, style, className }: { items: string[], style?: CSSProperties, className?: string }) => {
+    if (list.length === 0) return <></>;
+    else if (list.length === 1) return <code className={className}>list[0]</code>;
+    else if (list.length === 2) return <><ListItem {...{style, className, item: list[0]}}/> and <ListItem {...{style, className, item: list[1]}}/></>;
+    else return <>
+        {list.slice(0, -1).map(
+            (val, idx) => <>
+                <ListItem {...{style, className, item: val}} key={idx}/>
+                {", "}
+            </>
+        )}
+        {"and "}
+        <ListItem {...{style, className, item: list[list.length - 1]}} key={list.length - 1}/>
+    </>;
+}
 
 const BodyMeta: FC<Pick<
     ChallDropProps["metadata"],
-    "solveCount" | "categories" | "points" | "tags" | "authors" | "links"
->> = ({ solveCount, categories, points, tags, authors, links }) => (
-    <div className={styles.meta}>
-        <div className={styles.categories}>
-            <h4>Categories:</h4>
+    "solveCount" | "categories" | "points" | "tags" | "authors"
+>> = ({ solveCount, categories, points, authors }) => (
+    <div className="w-full p-5 pt-2 pl-0 ml-auto flex flex-col"
+        style={{ gridArea: "meta" }}>
+        <div className="py-3">
+            <h4 className="font-medium text-base">Categories:</h4>
             {categories.join(", ")}
         </div>
-        <div className={styles.points}>
-            <h4>Points:</h4>
-            {points} points
-        </div>
-        <div className={styles.solves}>
-            <h4>Solves:</h4>
-            {solveCount.toLocaleString('en-US', {maximumFractionDigits: 0})} solves
-
-            <br/>
-            <br/>
-            
-            Your team has not solved this challenge.
+        <span className="py-1.5">{points} points</span>
+        <span className="py-1.5">
+            {solveCount.toLocaleString('en-US', {maximumFractionDigits: 0})} {solveCount === 1 ? "solve" : "solves"}
+        </span>
+        <div className="mt-auto">
+            By <EnglishList className="font-mono text-yellow-100" items={[...authors, "sky", "yusuf", "anli"]}/>
         </div>
     </div>
 );
 
+
 type LinkType = "nc" | "web" | "admin" | "static";
+
+const getFileName = (url: string): string => url.split("/").slice(-1)[0];
+const getText = (type: LinkType): string => {
+    switch (type) {
+        case "nc": return "Netcat servers"
+        case "web": return "Web servers"
+        case "admin": return "Admin bots"
+        case "static": return "Static resources"
+    }
+};
 const Links: FC<{ urls: string[], type: LinkType }> = ({ urls, type }) => {
+    if (urls.length === 0) return <></>;
     switch (type) {
         case "web":
         case "admin":
-            return <>{
-                urls.map((url, idx) => <>
-                    <a className="text-blue-300 underline" href={url} key={idx}>{url.split("/").slice(-1)[0]}</a><br/>
-                </>)
-            }</>
         case "static":
+            return <div>
+                <span className="text-lg block">{getText(type)}:</span>
+                <div
+                    className="w-max flex flex-col">
+                    {urls.map(url => <a
+                        target="_blank" rel="noreferrer"
+                        className="text-blue-300 underline"
+                        href={url} key={url}>
+                        {getFileName(url)}
+                    </a>)}
+                </div>
+            </div>;
+        case "nc":
+            return <div>
+                <span className="text-lg mb-1.5 block">Netcat servers:</span>
+                <code
+                    className="
+                        border-slate-600 border-2 bg-slate-800 rounded-lg
+                        text-pink-400
+                        w-max py-2 px-6
+                        flex flex-col">{
+                    urls.map(url => <span key={url} className="my-1">nc {getFileName(url)}</span>)
+                }</code>
+            </div>;
 
     }
-    return <></>;
 };
 
 const ChallDropBody: FC<ChallDropProps & { open: boolean }> = ({
-    metadata: { name, solveCount, categories, points, tags, desc, links, authors },
+    metadata: { solveCount, categories, points, tags, desc, links, authors },
     solved,
-    open,
     submission: { challId, userId, teamId }
 }) => (
-    <div className={builder.dropBody.IF(open).open()}>
-        {(() => { console.log(name, links); return void 0 })()}
-        <NoSsr>
-            <p className={styles.desc}>
-                <p dangerouslySetInnerHTML={{ __html: desc }} />
-                <br/>
-                <h4 className="text-lg font-bold">Links:</h4>
-                <Links urls={links.nc} type={"nc"} />
-                <Links urls={links.web} type={"web"} />
-                <Links urls={links.admin} type={"admin"} />
-                <Links urls={links.static} type={"static"} />
-            </p>
-        </NoSsr>
+    <div
+        className="
+            border-slate-600 border border-t-0
+            bg-white bg-opacity-10 text-white
+            min-h-max max-w-full
+            grid"
+        style={{
+            gridTemplateAreas: "'cntn meta' 'flag flag'",
+            gridTemplateColumns: "3fr 1fr",
+        }}>
+        <div className="m-5 mt-10" style={{ gridArea: "cntn" }}>
+            <ReactMarkdown
+                remarkPlugins={[remarkGfm]}>
+                {desc}
+            </ReactMarkdown>
+            <div className="
+                border-t-1 border-white border-opacity-20 border-t
+                pt-3 mt-3 w-full
+                flex flex-col gap-4">
+                <h4 className="text-xl font-bold">Resources:</h4>
+
+                <Links urls={links.nc} type={"nc"} key={"nc"}/>
+                <Links urls={links.web} type={"web"} key={"web"}/>
+                <Links urls={links.admin} type={"admin"} key={"admin"}/>
+                <Links urls={links.web} type={"static"} key={"static"}/>
+            </div>
+        </div>
 
         <BodyMeta {...{ solveCount, solved, points, tags, categories, links, authors }}/>
 
-        <div className={styles.flagInput}>
-            <input disabled={!userId || !teamId} id={`flaginput-${challId}`} type="text" placeholder="bcactf{...}"/>
-            <input type="submit" disabled={!userId || !teamId} onClick={async () => {
-                const value = document.querySelector<HTMLInputElement>(`#flaginput-${challId}`)?.value;
-                console.log(value);
-                if (!value) return;
-                else fetch("/api/attempt-solve", {
-                    method: "POST",
-                    body: JSON.stringify({ challId, userId, teamId, flag: value }),
-                })
-                    .then(response => response.text())
-                    .then(text => text === "false" ? alert("no") : alert("yessssss"))
-            }}/>
-        </div>
+        <ChallDropFlagInput {...{ challId, teamId, userId }} />
 
     </div>
 );
