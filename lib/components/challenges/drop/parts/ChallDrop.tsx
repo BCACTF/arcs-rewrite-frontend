@@ -9,14 +9,9 @@ import { useCallback, useState } from "react";
 // Types
 import React, { FC } from "react";
 import { ClientSideMeta } from "cache/challs";
-
+import { ChallId, TeamId, UserId } from "cache/ids";
 
 // Styles
-import rawStyles from './ChallDrop.module.scss';
-import { wrapCamelCase } from "utils/styles/camelcase";
-import { ChallId, TeamId, UserId } from "cache/ids";
-const [styles, builder] = wrapCamelCase(rawStyles);
-
 
 // Utils
 
@@ -37,13 +32,19 @@ const ChallDrop: FC<ChallDropProps> = (props) => {
     const [open, setOpenState] = useState(false);
     const setOpen = useCallback(() => setOpenState(true), []);
     const setClosed = useCallback(() => setOpenState(false), []);
+
+    const tailwindClasses = `
+        w-full
+        transition-shadow ease-linear
+        shadow-[0_0_0px_0px_rgba(113,165,217,0.0)] hover:shadow-[0_0_8px_8px_rgba(113,165,217,0.2)]`;
+
     return (
         <Collapsible
             trigger={<ChallDropHeader {...props} open={open}/>}
             onOpening={setOpen} onClosing={setClosed}
             transitionTime={200}
-            openedClassName={styles.collapsible}
-            className={styles.collapsible}>
+            openedClassName={tailwindClasses}
+            className={tailwindClasses}>
             <ChallDropBody {...props} open={open} />
         </Collapsible>
     )
