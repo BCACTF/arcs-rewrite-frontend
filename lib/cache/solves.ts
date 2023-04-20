@@ -34,7 +34,7 @@ export const parseSolve = (solveVal: string): CachedSolveMeta | null => {
     const userId = userIdFromStr(uidRaw);
     const teamId = teamIdFromStr(tidRaw);
     const challId = challIdFromStr(cidRaw);
-    const time = new Date(timeRaw).getTime() / 1000;
+    const time = typeof timeRaw === "number" ? new Date(timeRaw * 1000).getTime() / 1000 : new Date(timeRaw).getTime() / 1000;
     if (!userId || !teamId || !challId || !time) return null;
 
     return { userId, teamId, challId, time };

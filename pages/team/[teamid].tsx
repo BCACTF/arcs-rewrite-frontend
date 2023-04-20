@@ -73,6 +73,8 @@ export const getServerSideProps: GetServerSideProps<TeamPageProps> = async conte
 
     const challs = await getAllChallenges();
 
+    console.log(team);
+
     const props: TeamPageProps = {
         envData: getEnvironment(),
         compMeta: getCompetitionMetadata(),

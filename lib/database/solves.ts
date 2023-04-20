@@ -2,6 +2,9 @@ import makeWebhookRequest from "./makeWebhookReq";
 import { ChallId, TeamId, UserId, challIdToStr, teamIdToStr, userIdToStr } from "cache/ids";
 import { addSolve } from "cache/solves";
 import { DbSolveMeta, dbToCacheSolve } from "./db-types";
+import { syncUser } from "./users";
+import { syncTeam } from "./teams";
+import { syncChall } from "./challs";
 
 const syncSolves = async (): Promise<void> => {
     try {
@@ -49,7 +52,12 @@ const attemptSolve: AddNewUserReq = async ({ challId, teamId, userId, flag }): P
         const solve = dbToCacheSolve(solveRes.sql.output)
 
         if (solve) {
-            addSolve(solve);
+            await addSolve(solve);
+            await Promise.all([
+                syncUser({ id: userId }),
+                syncTeam({ id: teamId }),
+                syncChall({ id: challId }),
+            ])
             return "success";
         } else console.error("Bad SQL return:", solveRes);
     } catch (err) {

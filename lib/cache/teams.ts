@@ -51,7 +51,11 @@ export const parseTeam = (teamJson: string): CachedTeamMeta | null => {
     const score = scoreRaw;
     const eligible = eligRaw;
 
-    const lastSolve = lastSolveRaw ? new Date(lastSolveRaw).getTime() / 1000 : null;
+    const lastSolve = lastSolveRaw
+        ? typeof lastSolveRaw === "number"
+            ? new Date(lastSolveRaw * 1000).getTime() / 1000
+            : new Date(lastSolveRaw).getTime() / 1000
+        : null;
     const affiliation = affiliationRaw ?? null;
 
     return { id, name, score, eligible, lastSolve, affiliation };
@@ -97,5 +101,36 @@ export const removeStale = async (notStale: TeamId[]): Promise<TeamId[]> => {
     return removeIds.map(teamIdFromStr).flatMap(id => id ? [id] : []);
 };
 
-export const sortBy = (teams: CachedTeamMeta[]) => [...teams].sort((a, b) => a.score - b.score);
+// export const sortBy = (teams: CachedTeamMeta[]) => [...teams].sort((a, b) => a.score - b.score);
+
+export enum SortingCriteria {
+    POINTS,
+    LASTSOLVE_REV,
+    NAME,
+    ELIG,
+}
+
+const { POINTS, LASTSOLVE_REV, NAME, ELIG } = SortingCriteria;
+
+
+const compareCriteria = (a: CachedTeamMeta, b: CachedTeamMeta, criteria: SortingCriteria) => {
+    switch (criteria) {
+        case POINTS:
+            return a.score - b.score;
+        case LASTSOLVE_REV:
+            return (b.lastSolve ?? -1) - (a.lastSolve ?? -1);
+        case NAME:
+            return a.name.localeCompare(b.name);
+        case ELIG:
+            return Number(a.eligible) - Number(b.eligible);
+    }
+}
+
+
+export const sortBy = (challs: CachedTeamMeta[], criteria: SortingCriteria[] = [POINTS, LASTSOLVE_REV, NAME, ELIG]) => {
+    const compareFn = (a: CachedTeamMeta, b: CachedTeamMeta) => criteria
+        .map(c => compareCriteria(a, b, c))
+        .find(v => v !== 0) ?? 0;
+    return [...challs].sort(compareFn);
+};
 

@@ -2,6 +2,7 @@ import makeWebhookRequest from "./makeWebhookReq";
 import { CachedTeamMeta, getAllTeams, getTeams, removeStale as removeStaleTeams, update as updateTeamCache } from "cache/teams";
 import { TeamId, UserId, teamIdToStr, userIdToStr } from "cache/ids";
 import { DbTeamMeta, dbToCacheTeam } from "./db-types";
+import { syncUser } from "./users";
 
 const syncAllTeams = async (): Promise<CachedTeamMeta[] | null> => {
     try {
@@ -68,6 +69,7 @@ const addNewTeam = async ({ name, eligible, affiliation, password, initialUser }
 
         if (team) {
             updateTeamCache(team);
+            await syncUser({ id: initialUser });
             const teams = await getTeams([team.id]);
             return teams[0] ?? null;
         } else console.error("Bad SQL return:", newTeam);

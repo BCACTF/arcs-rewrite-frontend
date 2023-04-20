@@ -79,7 +79,11 @@ export const parseUser = (userJson: string): CachedUser | null => {
 
     const name = nameRaw;
     const score = scoreRaw;
-    const lastSolve = lastSolveRaw ? new Date(lastSolveRaw).getTime() / 1000 : null;
+    const lastSolve = lastSolveRaw
+        ? typeof lastSolveRaw === "number"
+            ? new Date(lastSolveRaw * 1000).getTime() / 1000
+            : new Date(lastSolveRaw).getTime() / 1000
+        : null;
 
     const admin = adminRaw;
     const eligible = eligibleRaw;

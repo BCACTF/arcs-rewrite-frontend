@@ -21,6 +21,7 @@ interface ChallDropFlagInputProps {
 const ChallDropFlagInput: FC<ChallDropFlagInputProps> = ({challId, userId, teamId }) => {
     const [inputValue, setInputValue] = useState("");
 
+    console.log({ challId, userId, teamId });
     const inputDisabled = !userId || !teamId;
 
     return <div
@@ -52,13 +53,14 @@ const ChallDropFlagInput: FC<ChallDropFlagInputProps> = ({challId, userId, teamI
                         method: "POST",
                         body: JSON.stringify({ challId, userId, teamId, flag: inputValue }),
                     });
-                    const text = await res.text();
-                    if (text === "false") alert("no");
-                    else alert("yessssss");
+                    if (res.ok && await res.text() === "true") alert("yes");
+                    else alert("no");
                 }
             }}/>
         <div
             aria-disabled={!inputDisabled}
+            aria-hidden={!inputDisabled}
+            hidden={!inputDisabled}
             className="
                 absolute -top-2 -translate-y-full
                 text-center content-center
