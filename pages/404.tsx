@@ -19,7 +19,7 @@ const [styles, builder] = wrapCamelCase(rawStyles);
 
 // Utilities
 import { getEnvironment } from "metadata/env";
-import { safeRandomChars, safeRandomFlagChars } from "utils/random";
+import { safeRandomFlagChars } from "utils/random";
 
 
 interface Err404Props {
