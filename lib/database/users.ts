@@ -9,8 +9,7 @@ const syncAllUsers = async (): Promise<CachedUser[] | null> => {
             section: "user",
             query: { __tag: "get_all" },
         });
-        if (!allUsers.sql.success) throw allUsers.sql.error;
-        const users = allUsers.sql.output.map(dbToCacheUser).flatMap(c => c ? [c] : []);
+        const users = allUsers.map(dbToCacheUser).flatMap(c => c ? [c] : []);
         const usedIds = users.map(u => u.userId);
         await removeStaleUsers(usedIds);
 
@@ -26,15 +25,13 @@ const syncAllUsers = async (): Promise<CachedUser[] | null> => {
 
 const syncUser = async ({ id }: { id: UserId }): Promise<CachedUser | null> => {
     try {
-        const userRes = await makeWebhookRequest<DbUserMeta>({ section: "user", query: { __tag: "get", id: userIdToStr(id) } });
-        if (!userRes.sql.success) throw userRes.sql.error;
-
-        const user = dbToCacheUser(userRes.sql.output);
+        const userData = await makeWebhookRequest<DbUserMeta>({ section: "user", query: { __tag: "get", id: userIdToStr(id) } });
+        const user = dbToCacheUser(userData);
         if (user) {
             await updateUser(user);
             const users = await getUsers([user.userId]);
             return users[0] ?? null;
-        } else console.error("Bad SQL return:", userRes);
+        } else console.error("Bad SQL return:", userData);
     } catch (err) {
         console.error("failed to rerequest users", err);
     }
@@ -58,9 +55,7 @@ const addUser = async ({ email, name, password, eligible }: AddNewUserParams) =>
                 email, name, password, eligible,
             },
         });
-        if (!newUserRes.sql.success) throw newUserRes.sql.error;
-
-        const newUser = dbToCacheUser(newUserRes.sql.output);
+        const newUser = dbToCacheUser(newUserRes);
 
         if (newUser) {
             await updateUser(newUser);
@@ -84,7 +79,7 @@ type UpdateUserParams = {
 };
 const updateUserDb = async ({ id, name, password, newPassword, eligible }: UpdateUserParams): Promise<CachedUser | null> => {
     try {
-        const result = await makeWebhookRequest<DbUserMeta>({
+        const updatedData = await makeWebhookRequest<DbUserMeta>({
             section: "user",
             query: {
                 __tag: "update",
@@ -94,15 +89,13 @@ const updateUserDb = async ({ id, name, password, newPassword, eligible }: Updat
                 newPassword,
                 eligible,
             }
-        });
-        if (!result.sql.success) throw result;
-        
-        const user = dbToCacheUser(result.sql.output);
+        });        
+        const user = dbToCacheUser(updatedData);
         if (user) {
             await updateUser(user);
             const users = await getUsers([user.userId]);
             return users[0] ?? null;
-        } else console.error("Bad SQL return:", result);
+        } else console.error("Bad SQL return:", updatedData);
     } catch (err) {
         console.error("failed to rerequest challenges", err);
     }
@@ -124,8 +117,7 @@ const joinTeam = async ({ id, password, teamId, teamPassword }: JoinTeamParams):
                 id: userIdToStr(id), password, teamId: teamIdToStr(teamId), teamPassword,
             },
         });
-        if (!joinedUser.sql.success) throw joinedUser.sql.error;
-        const user = dbToCacheUser(joinedUser.sql.output);
+        const user = dbToCacheUser(joinedUser);
 
         if (user) {
             updateUser(user);
