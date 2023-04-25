@@ -14,11 +14,20 @@ module.exports = {
         'landing-text-color': "#ecebe3", 
 
         'navbar-text-color-normal': "#efefef",
-        'navbar-text-color-dark': "#b5b4b4",
+        'navbar-text-color-dark': "#e1d169",
         'navbar-background-color': "#3d29c2",
         'navbar-dropdown-background-color': "#134c89",
 
         'signin-light': "#4444aa",
+        'signin-text': "#ecebe3",
+        'signin-background-color': "#303030",
+        'signin-provider-outline': "#4444aa",
+        'signin-provider-hover-color': "#6565db",
+
+        '404-text-color': "#ecebe3",
+        '404-text-color-header': "#6666d8",
+        '404-text-color-alternate': "#e9d23b",
+
       },
       minWidth: {
         '30': "30rem",
