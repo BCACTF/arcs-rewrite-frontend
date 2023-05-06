@@ -37,8 +37,6 @@
     "react-svg": "^16.1.6",
     "remark-gfm": "^3.0.1",
     "sass": "^1.60.0",
-    "sequelize": "^6.30.0",
-    "sequelize-auto": "^0.8.8",
     "sharp": "^0.32.0",
     "sqlite3": "^5.1.6",
     "ts-prune": "^0.10.3",
