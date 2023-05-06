@@ -4,13 +4,10 @@ import WebsiteMeta from "components/WebsiteMeta";
 // Hooks
 
 // Types
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import { GetServerSideProps } from 'next';
 import { CompetitionMetadata } from 'metadata/general';
 import { Environment } from 'metadata/env';
-import { CachedTeamMeta } from "cache/teams";
-import { ClientSideMeta as ClientSideMetaUser } from "cache/users";
-import { CachedSolveMeta, sortBy as sortSolvesBy } from "cache/solves";
 
 // Styles
 // import rawStyles from 'Home.module.scss';

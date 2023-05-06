@@ -13,7 +13,7 @@ import React, { FC } from "react"
 import rawStyles from './ChallCardList.module.scss';
 import { wrapCamelCase } from "utils/styles/camelcase";
 import ChallengeCard, { ChallengeCardProps } from "./ChallengeCard";
-const [styles, builder] = wrapCamelCase(rawStyles);
+const [styles] = wrapCamelCase(rawStyles);
 
 
 // Utils

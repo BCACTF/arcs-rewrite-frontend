@@ -15,11 +15,11 @@ import { Environment } from "metadata/env";
 // Styles
 import rawStyles from '404.module.scss';
 import { wrapCamelCase } from "utils/styles/camelcase";
-const [styles, builder] = wrapCamelCase(rawStyles);
+const [styles] = wrapCamelCase(rawStyles);
 
 // Utilities
 import { getEnvironment } from "metadata/env";
-import { safeRandomChars, safeRandomFlagChars } from "utils/random";
+import { safeRandomFlagChars } from "utils/random";
 
 
 interface Err404Props {

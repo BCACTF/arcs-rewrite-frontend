@@ -11,7 +11,7 @@ import React, { CSSProperties, FC } from "react";
 // Styles
 import rawStyles from './OAuthLoginBlock.module.scss';
 import { wrapCamelCase } from "utils/styles/camelcase";
-const [styles, builder] = wrapCamelCase(rawStyles);
+const [styles] = wrapCamelCase(rawStyles);
 
 // Utils
 import { ClientSafeProvider, signIn } from "next-auth/react";

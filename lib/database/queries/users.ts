@@ -1,16 +1,31 @@
+export type Auth = {
+    __type: "pass";
+    password: string;
+} | {
+    __type: "oauth";
+    sub: string;
+    provider: string;
+    trustedClientAuth: string;
+};
+
 export type CreateNewUser = {
     __tag: "create";
 
     email: string;
     name: string;
-    password: string;
+    auth: Auth;
     eligible: boolean;
 };
 
+export type CheckUserAuth = {
+    __tag: "auth";
+    id: string;
+    auth: Auth;
+};
 export type UpdateUserNamePass = {
     __tag: "update";
     id: string;
-    password: string;
+    auth: Auth;
 
     name: string;
     newPassword: string | null;
@@ -21,7 +36,7 @@ export type UpdateUserNamePass = {
 export type UserJoinTeam = {
     __tag: "join";
     id: string;
-    password: string;
+    auth: Auth;
 
     teamId: string;
     teamPassword: string;
@@ -35,7 +50,7 @@ export type GetAllUsers = {
     __tag: "get_all";
 };
 
-type InnerUserQuery = CreateNewUser | UpdateUserNamePass | UserJoinTeam | GetUser | GetAllUsers;
+type InnerUserQuery = CreateNewUser | CheckUserAuth | UpdateUserNamePass | UserJoinTeam | GetUser | GetAllUsers;
 
 type UserQuery = {
     section: "user";

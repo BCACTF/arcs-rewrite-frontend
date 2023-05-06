@@ -10,7 +10,6 @@ import { ClientSideMeta as ClientSideMetaChall } from "cache/challs";
 import { CachedSolveMeta } from "cache/solves";
 import { ClientSideMeta as ClientSideMetaUser } from "cache/users";
 import NoSsr from "components/NoSsr/NoSsr";
-import Link from "next/link";
 import React, { FC } from "react"
 
 

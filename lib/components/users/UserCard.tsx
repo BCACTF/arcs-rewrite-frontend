@@ -65,7 +65,7 @@ const formatDate = (dateNum: number) => {
     else return `${ending}, ${date.toLocaleDateString()}`;
 };
 
-const UserCard: FC<UserCardProps> = ({ user: { name, lastSolve, score, type }, team, isMe }) => (
+const UserCard: FC<UserCardProps> = ({ user: { name, lastSolve, score, admin }, team, isMe }) => (
     <div
         className="
             border-2 border-slate-700 bg-slate-900 min-w-15 max-w-50 w-screen/3
@@ -73,7 +73,7 @@ const UserCard: FC<UserCardProps> = ({ user: { name, lastSolve, score, type }, t
         <h2 className="text-5xl mb-6">{name}</h2>
         <span className="text-xl mb-0.5">{score} points</span>
         <NoSsr>{lastSolve ? <span className="text-xl mb-0.5">Last solve at: {formatDate(lastSolve)}</span> : <></>}</NoSsr>
-        <span className="text-xl mt-6 mb-8">{type !== "admin" ? "Participant" : "Non-Participant"}</span>
+        <span className="text-xl mt-6 mb-8">{!admin ? "Participant" : "Non-Participant"}</span>
         <TeamLink team={team} isMe={isMe} />       
     </div>
 );

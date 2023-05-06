@@ -42,7 +42,7 @@ const SignIn: FC<SignInProps> = ({ providers, account, token, envData, compMeta 
             if (account) Router.replace("/");
             else if (token) Router.replace("/account/new-user");
         },
-        [account],
+        [account, token],
     );
 
     const [google, github] = [providers.google, providers.github];

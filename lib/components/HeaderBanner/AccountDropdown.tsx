@@ -21,7 +21,7 @@ interface DropdownEntryProps {
     entryText: string;
     open: boolean;
 }
-export const DropdownEntry: FC<DropdownEntryProps> = ({ href, entryText, open }) => (
+export const DropdownEntry: FC<DropdownEntryProps> = ({ href, entryText }) => (
     <Link href={href} className="flex items-center justify-center w-full h-10 hover:bg-opacity-10 hover:bg-white group">
         <span className="ml-4">{entryText}</span>
         <span className="ml-auto mr-6 group-hover:translate-x-1 transition-transform">→</span>

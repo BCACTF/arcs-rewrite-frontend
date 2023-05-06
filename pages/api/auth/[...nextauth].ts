@@ -1,10 +1,9 @@
-import NextAuth, { AuthOptions } from 'next-auth'
-import AppleProvider from 'next-auth/providers/apple'
-import GoogleProvider from 'next-auth/providers/google'
-import GithubProvider from 'next-auth/providers/github'
-import { Provider } from 'next-auth/providers'
-import { OAuthProvider } from 'hooks/useAccount'
-
+import NextAuth, { AuthOptions } from 'next-auth';
+import AppleProvider from 'next-auth/providers/apple';
+import GoogleProvider from 'next-auth/providers/google';
+import GithubProvider from 'next-auth/providers/github';
+import { Provider } from 'next-auth/providers';
+// import { checkUserOauth } from 'database/users';
 
 const getProvider = <T>(prefix: string, providerFn: (options: { clientId: string, clientSecret: string }) => T): T | undefined => {
     const { id, secret } = { id: process.env[`${prefix}_ID`], secret: process.env[`${prefix}_SECRET`] };
@@ -46,6 +45,11 @@ export const authOptions: AuthOptions = {
     },
     callbacks: {
         jwt: params => params.token,
+        // signIn: async ({ account, email, profile, user }) => {
+        //     if (!account) return false;
+        //     if (!checkUserOauth({ id: ,  }))
+        //     return true;
+        // },
     },
     secret: process.env.NEXTAUTH_SECRET,
 };

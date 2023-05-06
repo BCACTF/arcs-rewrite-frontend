@@ -1,11 +1,9 @@
 // Components
 import WebsiteMeta from "components/WebsiteMeta";
-import WebsiteCountdown from "components/WebsiteCountdown";
-import NoSsr from "components/NoSsr/NoSsr";
 import HeaderBanner from "components/HeaderBanner";
 
 // Hooks
-import useAccount from "hooks/useAccount";
+
 
 // Types
 import React, { FC } from 'react';

@@ -1,7 +1,7 @@
 // Components
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
-
+import React from 'react';
 
 // Hooks
 
@@ -14,7 +14,6 @@ import { MyUser } from "account/types";
 // Styles
 import rawStyles from './AccountDropdown.module.scss';
 import { wrapCamelCase } from "utils/styles/camelcase";
-import { TeamAffiliationState } from "account/types/team";
 import Link from 'next/link';
 const [styles, builder] = wrapCamelCase(rawStyles);
 
@@ -38,11 +37,11 @@ interface AccountDropdownProps {
     info: MyUser;
 }
 
-const teamItemText: Record<TeamAffiliationState, string> = {
-    [TeamAffiliationState.NONE]: "Join a team",
-    [TeamAffiliationState.REQUESTED]: "Team Status",
-    [TeamAffiliationState.ACCEPTED]: "View Team",
-};
+// const teamItemText: Record<TeamAffiliationState, string> = {
+//     [TeamAffiliationState.NONE]: "Join a team",
+//     [TeamAffiliationState.REQUESTED]: "Team Status",
+//     [TeamAffiliationState.ACCEPTED]: "View Team",
+// };
 
 
 const AccountDropdown: FC<AccountDropdownProps> = (
@@ -50,7 +49,6 @@ const AccountDropdown: FC<AccountDropdownProps> = (
         info: {
             holderName,
             id: userId,
-            isAdminClientSide
         },
     },
 ) => {
