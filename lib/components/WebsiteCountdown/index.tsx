@@ -5,6 +5,13 @@ import useInterval from "hooks/useInterval";
 import useRerender from "hooks/useRerender";
 import now, { DurationComponents, durationToComponents } from "utils/dates";
 import { wrapInSpan } from "utils/html";
+import Image from "next/image";
+
+const event_logo_url = process.env.NEXT_PUBLIC_EVENT_LOGO_URL;
+
+if(typeof event_logo_url === "undefined") {
+    throw new Error("EVENT_LOGO_URL not defined. Check your .env file.");
+}
 
 export interface WebsiteCountdownProps {
     compMeta: CompetitionMetadata;
@@ -85,7 +92,6 @@ const defaultFormatter = ({days, hours, minutes, seconds}: DurationComponents<JS
 
 const WebsiteCountdown: FC<WebsiteCountdownProps> = ({
     compMeta,
-    style,
     className,
     state: optState,
     formatter: optFormatter,
@@ -103,11 +109,23 @@ const WebsiteCountdown: FC<WebsiteCountdownProps> = ({
     useInterval(renderCallback, 1000);
 
     return (
-        <div style={style} className={className?.container}><>
-            {compMeta.name + stateText(state)}
-            <br/>
-            {formatter(componentElements)}
-        </></div>
+        <div className="text-center text-4xl">
+            <div>
+                {/* <div className="bg-event-logo h-[50vh] w-screen bg-cover bg-no-repeat m-auto"> </div> */}
+                <Image 
+                    src={event_logo_url}
+                    alt={"Event Logo"}
+                    height={400}
+                    width={400}
+                />
+                <div className="text-landing-text-color">
+                    {compMeta.name + stateText(state)}
+                </div>
+                <div className="text-landing-timer-color">
+                    {formatter(componentElements)}
+                </div>
+            </div>
+        </div>
     );
 };
 

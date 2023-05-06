@@ -32,7 +32,7 @@ interface BannerLinkProps {
 }
 
 const BannerLink: FC<BannerLinkProps> = ({ href, text, curr }) => (
-    <Link href={curr ? "#" : href} className={`py-4 px-8 ${curr ? "cursor-default" : ""}`}>{text}</Link>
+    <Link href={curr ? "#" : href} className={`py-4 px-4 mx-4 ${curr ? "cursor-default" : ""}`}>{text}</Link>
 );
 
 export enum HeaderBannerPage {
@@ -52,16 +52,20 @@ const HeaderBanner: FC<HeaderBannerProps> = ({ account, meta, currPage }) => {
         <nav className="
             fixed top-0 left-0 w-screen h-16
             flex flex-row items-center px-4
-            bg-dropdown-main backdrop:backdrop-blur-md
+            bg-navbar-background-color backdrop:backdrop-blur-md
             bg-opacity-40">
-            <h1 className="text-2xl font-mono px-8 text-indigo-100">{meta.name}</h1>
+            <h1 className="text-2xl font-mono pl-4 pr-8 text-navbar-text-color-normal border-r-2">{meta.name}</h1>
+            {/* <h1 className="text-3xl font-mono pl-2 bg-text-banner-text-color-normal"></h1> */}
             {[ HeaderBannerPage.HOME, HeaderBannerPage.PLAY, HeaderBannerPage.LEAD ]
-                .map(page => <BannerLink
-                    href={linkMapping[page]}
-                    text={page}
-                    curr={page === currPage}
-                    key={page} />
-                )
+                .map(page => 
+                    <div className="hover:drop-shadow-md transition text-navbar-text-color-normal hover:text-navbar-text-color-dark p-auto">
+                        <BannerLink
+                            href={linkMapping[page]}
+                            text={page}
+                            curr={page === currPage}
+                            key={page} />
+                    </div>
+                    )
             }
             <div className="flex-grow"/>
             {account

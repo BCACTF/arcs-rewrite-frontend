@@ -44,7 +44,7 @@ const AccountDropdown: FC<Account> = (
             flex flex-row justify-end items-center
             w-60 h-9 py-2 relative
             rounded-t-2xl  transition-all duration-200
-            bg-dropdown-main
+            bg-navbar-dropdown-background-color
             select-none cursor-pointer
             ${open ? "rounded-b-none" : "rounded-b-2xl"}`}
             onClick={() => setDropdownOpen(b => !b)}>
@@ -61,7 +61,7 @@ const AccountDropdown: FC<Account> = (
                 flex flex-col justify-center pt-9
                 absolute top-0 left-0 w-full -z-10
                 border-r-2xl overflow-clip rounded-2xl
-                bg-dropdown-secondary
+                bg-navbar-dropdown-background-color
                 transition-all duration-200
                 ${open ? "h-39" : "h-0"}`}>
                 <DropdownEntry href={`/account/${userId}`} entryText={"User Stats"} open={open}/>

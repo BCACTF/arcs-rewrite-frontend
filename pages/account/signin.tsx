@@ -11,11 +11,6 @@ import { GetServerSideProps } from 'next';
 import { CompetitionMetadata } from 'metadata/general';
 import { Environment } from 'metadata/env';
 
-// Styles
-import rawStyles from 'SignIn.module.scss';
-import { wrapCamelCase } from "utils/styles/camelcase";
-const [styles] = wrapCamelCase(rawStyles);
-
 // Utils
 import { getCompetitionMetadata } from "metadata/general";
 import { getEnvironment } from "metadata/env";
@@ -48,31 +43,35 @@ const SignIn: FC<SignInProps> = ({ providers, account, token, envData, compMeta 
     const [google, github] = [providers.google, providers.github];
 
     return (
-        <div className={styles.outerContainer}>
-            <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Sign In"/>
+        <div className="h-screen w-screen flex place-content-center px-3 align-middle justify-center">
+            <div className="w-80 xl:w-[30rem] bg-signin-background-color border border-signin-text border-opacity-20 bg-opacity-50 px-1 py-12 align-center justify-center my-auto rounded-lg mx-auto"> 
+                <h3 className="text-3xl text-signin-text text-center mx-auto pb-10">
+                        Sign In
+                </h3>
+                <div className="flex flex-col space-y-8 place-content-center">
+                    <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Sign In"/>
+                    {
+                        github && <OAuthLoginBlock
+                            color={"#f5f5f5"}
+                            background={"#000000"}
+                            iconLink={"/icons/github.png"}
 
-            <div className={styles.innerContainer}>
-                {
-                    github && <OAuthLoginBlock
-                        color={"#f5f5f5"}
-                        background={"#000000"}
-                        iconLink={"/icons/github.png"}
+                            providerName='Github'
+                            provider={github} />
+                    }
+                    {
+                        google && <OAuthLoginBlock
+                            color={"#f5f5f5"}
+                            background={"#1562e6"}
+                            iconLink={"/icons/google.png"}
 
-                        providerName='Github'
-                        provider={github} />
-                }
-                {
-                    google && <OAuthLoginBlock
-                        color={"#f5f5f5"}
-                        background={"#1562e6"}
-                        iconLink={"/icons/google.png"}
-
-                        providerName='Google'
-                        provider={google} />
-                }
-                {/* <EmailPasswordSignIn>
-                    
-                </EmailPasswordSignIn> */}
+                            providerName='Google'
+                            provider={google} />
+                    }
+                    {/* <EmailPasswordSignIn>
+                        
+                    </EmailPasswordSignIn> */}
+                </div>
             </div>
         </div>
     );

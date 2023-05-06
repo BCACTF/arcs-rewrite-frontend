@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+
 module.exports = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx}",
@@ -6,6 +7,28 @@ module.exports = {
   ],
   theme: {
     extend: {
+      colors: {
+        'page-background-color': "#2e2c2c",
+        
+        'landing-timer-color': "#ebe712",
+        'landing-text-color': "#ecebe3", 
+
+        'navbar-text-color-normal': "#efefef",
+        'navbar-text-color-dark': "#e1d169",
+        'navbar-background-color': "#3d29c2",
+        'navbar-dropdown-background-color': "#134c89",
+
+        'signin-light': "#4444aa",
+        'signin-text': "#ecebe3",
+        'signin-background-color': "#303030",
+        'signin-provider-outline': "#4444aa",
+        'signin-provider-hover-color': "#6565db",
+
+        '404-text-color': "#ecebe3",
+        '404-text-color-header': "#6666d8",
+        '404-text-color-alternate': "#e9d23b",
+
+      },
       minWidth: {
         '30': "30rem",
         '60': "60rem",
@@ -39,11 +62,6 @@ module.exports = {
       rotate: {
         '135': '135deg'
       },
-      backgroundColor: {
-        'signin-light': "#4444aa",
-        'dropdown-main': "#382894",
-        'dropdown-secondary': "#291f66",
-      },
       flexGrow: {
         '2': 2,
         '4': 4,
@@ -51,7 +69,7 @@ module.exports = {
         '8': 8,
         '10': 10,
         '12': 12,
-      }
+      },
     },
   },
   plugins: [],
