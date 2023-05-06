@@ -57,8 +57,12 @@ const HeaderBanner: FC<HeaderBannerProps> = ({ account, meta, currPage }) => {
             <h1 className="text-2xl font-mono pl-4 pr-8 text-navbar-text-color-normal border-r-2">{meta.name}</h1>
             {/* <h1 className="text-3xl font-mono pl-2 bg-text-banner-text-color-normal"></h1> */}
             {[ HeaderBannerPage.HOME, HeaderBannerPage.PLAY, HeaderBannerPage.LEAD ]
-                .map(page => 
-                    <div className="hover:drop-shadow-md transition text-navbar-text-color-normal hover:text-navbar-text-color-dark p-auto">
+                .map((page, idx) => 
+                    <div className="
+                        hover:drop-shadow-md transition
+                        text-navbar-text-color-normal
+                        hover:text-navbar-text-color-dark p-auto"
+                        key={idx}>
                         <BannerLink
                             href={linkMapping[page]}
                             text={page}

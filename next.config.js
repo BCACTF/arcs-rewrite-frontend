@@ -3,7 +3,7 @@ const path = require('path');
 
 let event_url_domain = process.env.NEXT_PUBLIC_EVENT_LOGO_URL;
 
-if (typeof event_url_domain === undefined) {
+if (!event_url_domain) {
     throw new Error("NEXT_PUBLIC_EVENT_LOGO_URL not defined");
 }
 
