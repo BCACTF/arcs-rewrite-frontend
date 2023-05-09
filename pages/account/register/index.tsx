@@ -4,6 +4,7 @@ import TextInput from "components/inputs/TextInput";
 import CheckboxInput from "components/inputs/CheckboxInput";
 import Divider from "components/inputs/Divider";
 import UsernameIssue from "components/inputs/UsernameIssue";
+import WebsiteMeta from "components/WebsiteMeta";
 
 // Hooks
 import useUsernameValidation from "hooks/useUsernameValidation";
@@ -15,7 +16,7 @@ import { Environment } from "metadata/env";
 import { CompetitionMetadata } from "metadata/general";
 
 // Utils
-import { JWT, getToken } from "next-auth/jwt";
+import { getToken } from "next-auth/jwt";
 import { getCompetitionMetadata } from "metadata/general";
 import { getEnvironment } from "metadata/env";
 
@@ -23,15 +24,21 @@ import { getEnvironment } from "metadata/env";
 interface RegisterPageProps {
     envData: Environment;
     compMeta: CompetitionMetadata;
-    token: JWT;
 }
 
 // Use/display the props, especially the competition metadata
-const RegisterPage: FC<RegisterPageProps> = (props) => {
+const RegisterPage: FC<RegisterPageProps> = ({ envData, compMeta }) => {
     const [issue, usernameStatus, updateUsername] = useUsernameValidation();
     
     return <div className="h-screen w-screen flex place-content-center px-3 align-middle justify-center">
-        <div className="w-80 xl:w-[30rem] bg-signin-background-color border border-signin-text border-opacity-20 bg-opacity-50 px-1 py-12 align-center justify-center my-auto rounded-lg mx-auto"> 
+        <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Play"/>
+
+        <div className="
+            w-80 xl:w-[30rem]
+            bg-signin-background-color bg-opacity-50
+            border border-signin-text border-opacity-20 rounded-lg
+            px-1 py-12 my-auto mx-auto
+            align-center justify-center"> 
             <h3 className="text-3xl text-signin-text text-center mx-auto pb-10 font-bold">
                     Finish Registration
             </h3>
@@ -44,6 +51,7 @@ const RegisterPage: FC<RegisterPageProps> = (props) => {
                 <TextInput
                     promptName="Username"
                     verificationState={usernameStatus}
+                    spellCheck="false"
                     onChangeCapture={ev => {
                         
                         updateUsername(ev.currentTarget.value);
@@ -58,7 +66,7 @@ const RegisterPage: FC<RegisterPageProps> = (props) => {
                         eligible
                     </Link> for prizes in this competition.
                 </CheckboxInput>
-                <TextInput promptName="Affiliation"/>
+                <TextInput promptName="Affiliation" spellCheck="false"/>
                 <Divider/>
                 <CheckboxInput id="rules-checkbox">
                     I have read and agree to the <Link href="/rules" className="font-bold underline text-main-color-300">
@@ -79,7 +87,6 @@ export const getServerSideProps: GetServerSideProps<RegisterPageProps> = async c
     const props: RegisterPageProps = {
         envData: getEnvironment(),
         compMeta: getCompetitionMetadata(),
-        token,
     };
     return { props };
 };

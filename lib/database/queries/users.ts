@@ -8,6 +8,11 @@ export type Auth = {
     trustedClientAuth: string;
 };
 
+export type CheckUsernameAvailability = {
+    __tag: "available";
+    name: string;
+};
+
 export type CreateNewUser = {
     __tag: "create";
 
@@ -50,7 +55,7 @@ export type GetAllUsers = {
     __tag: "get_all";
 };
 
-type InnerUserQuery = CreateNewUser | CheckUserAuth | UpdateUserNamePass | UserJoinTeam | GetUser | GetAllUsers;
+type InnerUserQuery = CreateNewUser | CheckUsernameAvailability | CheckUserAuth | UpdateUserNamePass | UserJoinTeam | GetUser | GetAllUsers;
 
 type UserQuery = {
     section: "user";

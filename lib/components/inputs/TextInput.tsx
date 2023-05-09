@@ -22,17 +22,42 @@ interface Props extends Omit<ComponentProps<"input">, "className"> {
     additionalClassName?: string;
 }
 
-const color = (state: VerificationState) => {
+const getText = (state: VerificationState) => {
     switch (state) {
-        case "pending": return `
-            bg-yellow-500
-            after:absolute after:top-0 after:left-0 after:min-w-full after:min-h-full
-            after:bg-yellow-500 after:rounded-full after:opacity-70 after:animate-ping 
-        `;
-        case "success": return "bg-green-500";
-        case "failure": return "bg-red-500";
+        case "pending": return "Checking username availability...";
+        case "success": return "Username is available.";
+        case "failure": return "Username is already in use or is invalid.";
     }
-} 
+};
+
+const ValidityDisplay: FC<{ state: VerificationState }> = ({ state }) => {
+    const base = "absolute top-1/3 right-3 h-1/3 aspect-square rounded-full peer";
+    const tooltip = <div className="
+        absolute bottom-3/4 right-3 translate-x-1/2
+        rounded-md text-sm px-1.5 py-0.5
+        bg-slate-800
+        opacity-0
+        peer-hover:opacity-100 transition-opacity
+    ">{getText(state)}</div>;
+    switch (state) {
+        case "pending": return <>
+            <div className={`
+                ${base} bg-yellow-500
+                after:absolute after:top-0 after:left-0 after:min-w-full after:min-h-full
+                after:bg-yellow-500 after:rounded-full after:opacity-70 after:animate-ping 
+            `}/>
+            {tooltip}
+        </>;
+        case "success": return <>
+            <div className={`${base} bg-green-500`}/>
+            {tooltip}
+        </>;
+        case "failure": return <>
+            <div className={`${base} bg-red-500`}/>
+            {tooltip}
+        </>;
+    }
+};
 
 const TextInput: FC<Props> = (props) => (
     <div className="flex flex-row items-center w-5/6">
@@ -45,7 +70,7 @@ const TextInput: FC<Props> = (props) => (
                 px-5
                 ${props.additionalClassName ?? ""}`}
                 {...omitted(props, ["promptName", "verificationState", "additionalClassName"])}/>
-            {props.verificationState && <div className={`absolute top-1/3 right-3 h-1/3 aspect-square rounded-full ${color(props.verificationState)}`}/>}
+            {props.verificationState && <ValidityDisplay state={props.verificationState}/>}
         </div>
     </div>
 );

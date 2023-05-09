@@ -35,8 +35,13 @@ const actionIds: Record<Action["__type"], number> = {
     recieve: -1,
 };
 
-// TODO: Make this actually work.
-const checkDuplicates = (value: string) => new Promise<boolean>((res) => setTimeout(() => res(true), 5000));
+const checkDuplicates = async (name: string) => {
+    try {
+        const response = await fetch("/api/checks/username-available", { body: JSON.stringify({ name }), method: "PUT" });
+        const json = await response.json();
+        return !!json.output;
+    } catch (_) { return false; }
+};
 
 function reducer(prevState: CheckState, action: Action): CheckState {
     switch (action.__type) {
@@ -63,7 +68,6 @@ function reducer(prevState: CheckState, action: Action): CheckState {
             }
 
             if (prevState.value === action.value) return prevState;
-            console.log("u");
             const id = getId();
             actionIds.update = id;
 
@@ -89,8 +93,6 @@ function reducer(prevState: CheckState, action: Action): CheckState {
 
             if (id === actionIds.update && id !== actionIds.clear) {
                 actionIds.clear = id;
-                console.log("c");
-
                 checkDuplicates(prevState.value).then(result => dispatch({
                     __type: "recieve",
                     success: result,
@@ -107,11 +109,10 @@ function reducer(prevState: CheckState, action: Action): CheckState {
         
         case "recieve": {
             const id = action.id;
+            console.log(action);
 
             if (id === actionIds.clear && id !== actionIds.recieve) {
                 actionIds.recieve = id;
-                console.log("r");
-
             }
             if (prevState.value === action.forValue) return {
                 ...prevState,
