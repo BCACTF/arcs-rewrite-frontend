@@ -3,9 +3,10 @@ import Link from "next/link";
 import TextInput from "components/inputs/TextInput";
 import CheckboxInput from "components/inputs/CheckboxInput";
 import Divider from "components/inputs/Divider";
+import UsernameIssue from "components/inputs/UsernameIssue";
 
 // Hooks
-import useDuplicateCheck from "hooks/useDuplicateCheck";
+import useUsernameValidation from "hooks/useUsernameValidation";
 
 // Types
 import { GetServerSideProps } from "next";
@@ -13,17 +14,10 @@ import { FC } from "react"
 import { Environment } from "metadata/env";
 import { CompetitionMetadata } from "metadata/general";
 
-
-// Styles
-
-
 // Utils
 import { JWT, getToken } from "next-auth/jwt";
 import { getCompetitionMetadata } from "metadata/general";
 import { getEnvironment } from "metadata/env";
-import "lib/utils/username";
-import useUsernameValidation from "hooks/useUsernameValidation";
-import UsernameIssue from "components/inputs/UsernameIssue";
 
 
 interface RegisterPageProps {
@@ -32,7 +26,7 @@ interface RegisterPageProps {
     token: JWT;
 }
 
-
+// Use/display the props, especially the competition metadata
 const RegisterPage: FC<RegisterPageProps> = (props) => {
     const [issue, usernameStatus, updateUsername] = useUsernameValidation();
     

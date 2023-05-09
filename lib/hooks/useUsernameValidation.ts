@@ -35,6 +35,7 @@ const actionIds: Record<Action["__type"], number> = {
     recieve: -1,
 };
 
+// TODO: Make this actually work.
 const checkDuplicates = (value: string) => new Promise<boolean>((res) => setTimeout(() => res(true), 5000));
 
 function reducer(prevState: CheckState, action: Action): CheckState {

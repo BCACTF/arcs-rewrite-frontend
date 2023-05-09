@@ -5,7 +5,7 @@
 
 
 // Types
-import { VerificationState } from "hooks/useDuplicateCheck";
+import { VerificationState } from "hooks/useUsernameValidation";
 import { ComponentProps, FC } from "react";
 
 
