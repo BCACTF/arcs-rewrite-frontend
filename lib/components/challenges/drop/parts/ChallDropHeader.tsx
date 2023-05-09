@@ -11,7 +11,7 @@ import { ChallDropProps } from "./ChallDrop";
 // Styles
 import rawStyles from './ChallDropHeader.module.scss';
 import { wrapCamelCase } from "utils/styles/camelcase";
-const [styles, builder] = wrapCamelCase(rawStyles);
+const [styles, builder] = wrapCamelCase(rawStyles); // FIXME: Tailwindify.
 
 // Utils
 

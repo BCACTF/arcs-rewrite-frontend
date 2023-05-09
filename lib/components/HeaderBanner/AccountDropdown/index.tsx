@@ -15,7 +15,7 @@ import { MyUser } from "account/types";
 import rawStyles from './AccountDropdown.module.scss';
 import { wrapCamelCase } from "utils/styles/camelcase";
 import Link from 'next/link';
-const [styles, builder] = wrapCamelCase(rawStyles);
+const [styles, builder] = wrapCamelCase(rawStyles); // FIXME: Tailwindify
 
 // Utils
 
