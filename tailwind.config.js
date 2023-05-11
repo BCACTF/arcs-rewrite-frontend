@@ -10,6 +10,12 @@ module.exports = {
       colors: {
         'page-background-color': "#1c1c1c",
         'page-default-text-color': "#ecebe3",
+        
+        "main-color": {
+          "300": "#7F7FDC",
+          "500": "#6565db",
+          "700": "#4444aa"
+        },
 
         'landing-timer-color': "#ebe712",
         'landing-text-color': "#ecebe3", 
@@ -28,6 +34,8 @@ module.exports = {
         'signin-background-color': "#303030",
         'signin-provider-outline': "#4444aa",
         'signin-provider-hover-color': "#6565db",
+
+        'signin-provider-hover-color-light': "#7F7FDC",
 
         '404-text-color': "#ecebe3",
         '404-text-color-header': "#6666d8",
@@ -77,6 +85,9 @@ module.exports = {
         '10': 10,
         '12': 12,
       },
+      borderRadius: {
+        'md/sm': '0.25rem'
+      }
     },
   },
   plugins: [],

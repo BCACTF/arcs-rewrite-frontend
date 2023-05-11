@@ -43,6 +43,24 @@ const syncUser = async ({ id }: { id: UserId }): Promise<CachedUser | null> => {
     return null;
 };
 
+type CheckUsernameAvailableParams = {
+    name: string;
+}
+const checkUsernameAvailable = async ({ name }: CheckUsernameAvailableParams): Promise<boolean> => {
+    try {
+        return makeWebhookRequest<boolean>({
+            section: "user",
+            query: {
+                __tag: "available",
+                name,
+            },
+        });
+    } catch (err) {
+        console.error("failed to check username availability", err);
+        return false;
+    }
+};
+
 type CheckUserOauthParams = {
     id: UserId;
     auth: InputAuth & { __type: "oauth" };
@@ -158,5 +176,7 @@ const joinTeam = async ({ id, auth, teamId, teamPassword }: JoinTeamParams): Pro
 
 export {
     syncAllUsers, syncUser,
-    addUser, checkUserOauth, updateUserDb, joinTeam,
+    addUser,
+    checkUsernameAvailable, checkUserOauth,
+    updateUserDb, joinTeam,
 };

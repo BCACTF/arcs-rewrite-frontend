@@ -45,6 +45,7 @@
     "webfontloader": "^1.6.28"
   },
   "devDependencies": {
+    "@next/eslint-plugin-next": "^13.4.1",
     "@types/webfontloader": "^1.6.35",
     "@typescript-eslint/eslint-plugin": "^5.56.0",
     "autoprefixer": "^10.4.14",
