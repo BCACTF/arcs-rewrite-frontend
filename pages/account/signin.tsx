@@ -1,6 +1,7 @@
 // Components
 import WebsiteMeta from 'components/WebsiteMeta';
 import OAuthLoginBlock from 'components/OAuthLoginBlock';
+import Link from "next/link";
 
 // Hooks
 
@@ -44,16 +45,14 @@ const SignIn: FC<SignInProps> = ({ providers, account, token, envData, compMeta 
 
     return (
         <div className="h-screen w-screen flex place-content-center px-3 align-middle justify-center">
-            <div className="w-80 xl:w-[30rem] bg-signin-background-color border border-signin-text border-opacity-20 bg-opacity-50 px-1 py-12 align-center justify-center my-auto rounded-lg mx-auto"> 
-                <h3 className="text-3xl text-signin-text text-center mx-auto pb-10">
+            <div className="w-80 xl:w-[30rem] bg-signin-background-color border border-signin-text border-opacity-20 bg-opacity-50 px-1 pt-8 pb-4 align-center justify-center my-auto rounded-lg mx-auto"> 
+                <h3 className="text-4xl text-signin-text-header text-center mx-auto pb-12">
                         Sign In
                 </h3>
                 <div className="flex flex-col space-y-8 place-content-center">
                     <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Sign In"/>
                     {
                         github && <OAuthLoginBlock
-                            color={"#f5f5f5"}
-                            background={"#000000"}
                             iconLink={"/icons/github.png"}
 
                             providerName='Github'
@@ -61,8 +60,6 @@ const SignIn: FC<SignInProps> = ({ providers, account, token, envData, compMeta 
                     }
                     {
                         google && <OAuthLoginBlock
-                            color={"#f5f5f5"}
-                            background={"#1562e6"}
                             iconLink={"/icons/google.png"}
 
                             providerName='Google'
@@ -71,6 +68,11 @@ const SignIn: FC<SignInProps> = ({ providers, account, token, envData, compMeta 
                     {/* <EmailPasswordSignIn>
                         
                     </EmailPasswordSignIn> */}
+                </div>
+                <div className="text-center m-auto pt-8 text-lg">
+                    <Link href={"/"} className="w-1/4 px-3 py-1 m-auto bg-signin-light bg-opacity-70 transition hover:text-signin-text-header cursor-pointer rounded-lg hover:bg-signin-provider-hover-color" >
+                        Go Home
+                    </Link>
                 </div>
             </div>
         </div>
