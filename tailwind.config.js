@@ -8,7 +8,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'page-background-color': "#2e2c2c",
+        'page-background-color': "#1c1c1c",
+        'page-default-text-color': "#ecebe3",
         
         "main-color": {
           "300": "#7F7FDC",
@@ -19,13 +20,17 @@ module.exports = {
         'landing-timer-color': "#ebe712",
         'landing-text-color': "#ecebe3", 
 
-        'navbar-text-color-normal': "#efefef",
+        'navbar-text-color-normal': "#f4f4f4",
         'navbar-text-color-dark': "#e1d169",
         'navbar-background-color': "#3d29c2",
-        'navbar-dropdown-background-color': "#134c89",
+        
+        'navbar-account-dropdown-background-color': "#ffffff",
+        'navbar-account-dropdown-hover-color': "#06030a",
+        'navbar-account-dropdown-text-color': "#000000",
 
         'signin-light': "#4444aa",
         'signin-text': "#ecebe3",
+        'signin-text-header': "#d6d6ff",
         'signin-background-color': "#303030",
         'signin-provider-outline': "#4444aa",
         'signin-provider-hover-color': "#6565db",
@@ -36,6 +41,8 @@ module.exports = {
         '404-text-color-header': "#6666d8",
         '404-text-color-alternate': "#e9d23b",
 
+        'user-profile-card-color': "#9999f6",
+        'user-profile-text-color': "#f2f2f2",
       },
       minWidth: {
         '30': "30rem",
