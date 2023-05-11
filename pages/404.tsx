@@ -13,9 +13,6 @@ import { CompetitionMetadata } from "metadata/general";
 import { Environment } from "metadata/env";
 
 // Styles
-// import rawStyles from '404.module.scss';
-// import { wrapCamelCase } from "utils/styles/camelcase";
-// const [styles, builder] = wrapCamelCase(rawStyles);
 
 // Utilities
 import { getEnvironment } from "metadata/env";

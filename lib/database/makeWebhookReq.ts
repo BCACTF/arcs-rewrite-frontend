@@ -1,22 +1,6 @@
 import WebhookDbQuery from "./queries";
 
-type SqlReturnType<T> = {
-    success: true,
-    output: T,
-} | {
-    success: false,
-    error: {
-        type: string,
-        code: number,
-        data: unknown,
-    }
-};
-
-type DbReqReturnType<T> = {
-    sql: SqlReturnType<T>,
-};
-
-const makeWebhookDbRequest = async <T>(query: WebhookDbQuery): Promise<DbReqReturnType<T>> => {
+const makeWebhookDbRequest = async <T>(query: WebhookDbQuery): Promise<T> => {
     const webhookAddress = process.env.WEBHOOK_SERVER_ADDRESS;
     const frontendAuth = process.env.FRONTEND_SERVER_AUTH_TOKEN;
     if (!webhookAddress) throw new Error("Webhook address not specified");
@@ -33,7 +17,9 @@ const makeWebhookDbRequest = async <T>(query: WebhookDbQuery): Promise<DbReqRetu
         }),
     };
     const fetchReturn = await fetch(webhookAddress, init);
-    return await fetchReturn.json();
+    const jsonVal = await fetchReturn.json();
+    if (fetchReturn.ok) return jsonVal.sql;
+    else throw jsonVal.sql
 };
 
 export default makeWebhookDbRequest;

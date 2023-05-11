@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "bun run ./lib/utils/sync-once.ts; next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "bun run ./lib/utils/sync-once.ts; next start",
     "lint": "next lint",
     "find-dead": "ts-prune -p tsconfig.ts-prune.json"
   },
@@ -26,6 +26,7 @@
     "newtype-ts": "^0.3.5",
     "next": "13.0.6",
     "next-auth": "^4.20.1",
+    "otpauth": "^9.1.1",
     "pg": "^8.10.0",
     "pg-escape": "^0.2.0",
     "postcss-preset-env": "^8.1.0",
@@ -36,8 +37,6 @@
     "react-svg": "^16.1.6",
     "remark-gfm": "^3.0.1",
     "sass": "^1.60.0",
-    "sequelize": "^6.30.0",
-    "sequelize-auto": "^0.8.8",
     "sharp": "^0.32.0",
     "sqlite3": "^5.1.6",
     "ts-prune": "^0.10.3",

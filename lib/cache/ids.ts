@@ -3,7 +3,6 @@
 import { randomUUID } from 'crypto';
 import { Iso } from 'monocle-ts';
 import { Newtype, iso } from 'newtype-ts';
-import { validate } from 'uuid';
 
 interface Uuid extends Newtype<{ readonly Uuid: unique symbol }, string> {}
 interface DeploymentId extends Newtype<{ readonly Deployment: unique symbol }, string> {}

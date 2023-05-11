@@ -11,8 +11,8 @@ const syncAllChalls = async () => {
             section: "challenge",
             query: { __tag: "get_all" },
         });
-        if (!allChalls.sql.success) throw allChalls.sql.error;
-        const challs = allChalls.sql.output.map(dbToCacheChall).flatMap(c => c ? [c] : []);
+        console.log(allChalls);
+        const challs = allChalls.map(dbToCacheChall).flatMap(c => c ? [c] : []);
         const usedIds = challs.map(c => c.id);
         await removeStaleChalls(usedIds);
         await Promise.all(challs.map(c => updateChall(c)));
@@ -27,14 +27,13 @@ const syncAllChalls = async () => {
 const syncChall = async ({ id }: { id: ChallId }) => {
     try {
         console.log("making webhook request woooo");
-        const allChalls = await makeWebhookRequest<DbChallengeMeta>({
+        const challData = await makeWebhookRequest<DbChallengeMeta>({
             section: "challenge",
             query: { __tag: "get", id: challIdToStr(id), },
         });
         console.log("it made the webhook request")
-        if (!allChalls.sql.success) throw allChalls.sql.error;
         console.log("it was successful")
-        const chall = dbToCacheChall(allChalls.sql.output);
+        const chall = dbToCacheChall(challData);
         console.log("to cache we went");
         if (!chall) {
             console.error("recieved bad challenge from webhook");

@@ -40,6 +40,9 @@ const ChallDrop: FC<ChallDropProps> = (props) => {
 
     return (
         <Collapsible
+            triggerElementProps={{id: `${props.metadata.id}-dropdown-trigger`}}
+            contentElementId={`${props.metadata.id}-dropdown-props`}
+
             trigger={<ChallDropHeader {...props} open={open}/>}
             onOpening={setOpen} onClosing={setClosed}
             transitionTime={200}

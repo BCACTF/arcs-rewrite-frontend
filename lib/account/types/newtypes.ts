@@ -14,7 +14,7 @@ export class ChallId implements Id<"chall"> {
     public get _type() { return "chall" as const; }
 
     public static parse(str: string): ChallId | null {
-        const parsed = str.match(/^chall\:([a-zA-Z0-9_]*)$/)?.[1];
+        const parsed = str.match(/^chall:([a-zA-Z0-9_]*)$/)?.[1];
         if (!parsed) return null;
         else return new ChallId(parsed);
     }
@@ -43,10 +43,10 @@ export class UserId implements Id<"user"> {
 
 
     public static parse(str: string) {
-        const parsedEmail = str.match(/^user:email\:([a-zA-Z0-9_]*)$/)?.[1];
+        const parsedEmail = str.match(/^user:email:([a-zA-Z0-9_]*)$/)?.[1];
         if (parsedEmail) return new UserId(parsedEmail, { prefix: "email", provider: null });
 
-        const parsedOauth = str.match(/^user:oauth\:([a-zA-Z0-9_]*)\:([a-zA-Z0-9_]*)$/)?.slice(1, 3);
+        const parsedOauth = str.match(/^user:oauth:([a-zA-Z0-9_]*):([a-zA-Z0-9_]*)$/)?.slice(1, 3);
         if (parsedOauth) return new UserId(parsedOauth[0], { prefix: "oauth", provider: parsedOauth[1] });
 
         return null;
@@ -61,7 +61,7 @@ export class TeamId implements Id<"team"> {
     public get _type() { return "team" as const; }
 
     public static parse(str: string): TeamId | null {
-        const parsed = str.match(/^team\:([a-zA-Z0-9_]*)$/)?.[1];
+        const parsed = str.match(/^team:([a-zA-Z0-9_]*)$/)?.[1];
         if (!parsed) return null;
         else return new TeamId(parsed);
     }

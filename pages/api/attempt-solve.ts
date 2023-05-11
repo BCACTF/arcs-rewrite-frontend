@@ -51,8 +51,8 @@ const handler: NextApiHandler = async (req, res) =>  {
     }
 
     try {
-        const success = await attemptSolve({ teamId, userId, challId, flag });
-        if (success) {
+        const returnVal = await attemptSolve({ teamId, userId, challId, flag });
+        if (returnVal === "success") {
             res.status(200).send(true);
             return
         } else {

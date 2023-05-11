@@ -8,9 +8,6 @@ import React, { FC, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { CompetitionMetadata } from 'metadata/general';
 import { Environment } from 'metadata/env';
-import { CachedTeamMeta } from "cache/teams";
-import { ClientSideMeta as ClientSideMetaUser } from "cache/users";
-import { CachedSolveMeta, sortBy as sortSolvesBy } from "cache/solves";
 
 // Styles
 // import rawStyles from 'Home.module.scss';
@@ -60,9 +57,9 @@ const NewTeam: FC<NewTeamPageProps> = ({ compMeta, envData, account }) => {
                 <input onChange={recalcError} id="teampassconfirm" type="password" className={`${baseInput} ${error && "border-red-900"}`}/>
             </span>
             <br/>
-            <span aria-disabled={account?.type !== "eligible"} className="group aria-disabled:cursor-not-allowed">
+            <span aria-disabled={!account?.eligible} className="group aria-disabled:cursor-not-allowed">
                 <label className="pr-4 inline-block w-48 text-right group-aria-disabled:text-gray-400 group-aria-disabled:cursor-not-allowed">Affiliation:</label>
-                <input disabled={account?.type !== "eligible"} id="teamaffiliation" type="text" className="w-40 h-12 bg-slate-800 border-2 border-slate-700 rounded-lg p-3 disabled:saturate-50 group-aria-disabled:cursor-not-allowed"/>
+                <input disabled={!account?.eligible} id="teamaffiliation" type="text" className="w-40 h-12 bg-slate-800 border-2 border-slate-700 rounded-lg p-3 disabled:saturate-50 group-aria-disabled:cursor-not-allowed"/>
             </span>
             <br/>
             <button onClick={() => {

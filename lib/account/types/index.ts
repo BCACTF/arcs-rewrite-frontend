@@ -1,6 +1,6 @@
 import { UserId } from "./newtypes";
 import { deserUserSolve, serUserSolve, UserSolve } from "./solves";
-import Team, { TeamAffiliationState } from "./team";
+import Team from "./team";
 
 
 export interface UserScore {

@@ -48,7 +48,7 @@ const handler: NextApiHandler = async (req, res) =>  {
     const userId = account.userId;
     
     try {
-        const success = await joinTeam({ id: userId, password, teamId, teamPassword: password });
+        const success = await joinTeam({ id: userId, auth: { __type: "pass", password }, teamId, teamPassword: password });
         if (success) {
             res.status(200).send("Team successfully joined!");
             return

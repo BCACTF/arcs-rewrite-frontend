@@ -3,7 +3,6 @@ import { removeStale as removeStaleTeams, update as updateTeam } from "cache/tea
 import { removeStale as removeStaleUsers, update as updateUser } from "cache/users";
 import { addSolve } from "cache/solves";
 import { readFile } from "fs/promises";
-import cache from "cache";
 
 (async () => {
     await Promise.all([

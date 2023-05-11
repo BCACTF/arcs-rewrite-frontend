@@ -1,3 +1,5 @@
+import { TeamId } from "cache/ids";
+
 export enum TeamAffiliationState {
     NONE,
     REQUESTED,

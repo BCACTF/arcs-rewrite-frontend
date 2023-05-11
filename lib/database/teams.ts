@@ -2,6 +2,7 @@ import makeWebhookRequest from "./makeWebhookReq";
 import { CachedTeamMeta, getAllTeams, getTeams, removeStale as removeStaleTeams, update as updateTeamCache } from "cache/teams";
 import { TeamId, UserId, teamIdToStr, userIdToStr } from "cache/ids";
 import { DbTeamMeta, dbToCacheTeam } from "./db-types";
+import { syncUser } from "./users";
 
 const syncAllTeams = async (): Promise<CachedTeamMeta[] | null> => {
     try {
@@ -9,9 +10,8 @@ const syncAllTeams = async (): Promise<CachedTeamMeta[] | null> => {
             section: "team",
             query: { __tag: "get_all" },
         });
-        if (!allTeams.sql.success) throw allTeams.sql.error;
 
-        const teams = allTeams.sql.output.map(dbToCacheTeam).flatMap(c => c ? [c] : []);
+        const teams = allTeams.map(dbToCacheTeam).flatMap(c => c ? [c] : []);
         const usedIds = teams.map(t => t.id);
         removeStaleTeams(usedIds);
 
@@ -26,18 +26,17 @@ const syncAllTeams = async (): Promise<CachedTeamMeta[] | null> => {
 
 const syncTeam = async ({ id }: { id: TeamId }): Promise<CachedTeamMeta | null> => {
     try {
-        const teamRes = await makeWebhookRequest<DbTeamMeta>({
+        const teamData = await makeWebhookRequest<DbTeamMeta>({
             section: "team",
             query: { __tag: "get", id: teamIdToStr(id) },
         });
-        if (!teamRes.sql.success) throw teamRes.sql.error;
-        const team = dbToCacheTeam(teamRes.sql.output);
+        const team = dbToCacheTeam(teamData);
 
         if (team) {
             updateTeamCache(team);
             const teams = await getTeams([team.id]);
             return teams[0] ?? null;
-        } else console.error("Bad SQL return:", teamRes);
+        } else console.error("Bad SQL return:", teamData);
     } catch (err) {
         console.error("failed to rerequest teams", err);
     }
@@ -63,11 +62,11 @@ const addNewTeam = async ({ name, eligible, affiliation, password, initialUser }
                 initialUser: userIdToStr(initialUser),
             },
         });
-        if (!newTeam.sql.success) throw newTeam.sql.error;
-        const team = dbToCacheTeam(newTeam.sql.output);
+        const team = dbToCacheTeam(newTeam);
 
         if (team) {
             updateTeamCache(team);
+            await syncUser({ id: initialUser });
             const teams = await getTeams([team.id]);
             return teams[0] ?? null;
         } else console.error("Bad SQL return:", newTeam);
@@ -103,8 +102,7 @@ const updateTeam = async ({
                 newPassword,
             },
         });
-        if (!updatedTeam.sql.success) throw updatedTeam.sql.error;
-        const team = dbToCacheTeam(updatedTeam.sql.output);
+        const team = dbToCacheTeam(updatedTeam);
 
         if (team) {
             updateTeamCache(team);

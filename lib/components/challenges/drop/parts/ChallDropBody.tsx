@@ -23,17 +23,19 @@ const ListItem = ({ item, className, style }: { item: string, style?: CSSPropert
 )
 const EnglishList = ({ items: list, style, className }: { items: string[], style?: CSSProperties, className?: string }) => {
     if (list.length === 0) return <></>;
-    else if (list.length === 1) return <code className={className}>list[0]</code>;
-    else if (list.length === 2) return <><ListItem {...{style, className, item: list[0]}}/> and <ListItem {...{style, className, item: list[1]}}/></>;
+    else if (list.length === 1) return <code className={className} key={0}>list[0]</code>;
+    else if (list.length === 2) return <><ListItem {...{style, className, item: list[0]}} key={0}/> and <ListItem {...{style, className, item: list[1]}} key={1}/></>;
     else return <>
         {list.slice(0, -1).map(
-            (val, idx) => <>
-                <ListItem {...{style, className, item: val}} key={idx}/>
+            (val, idx) => <React.Fragment key={idx}>
+                <ListItem {...{style, className, item: val}}/>
                 {", "}
-            </>
+            </React.Fragment>
         )}
-        {"and "}
-        <ListItem {...{style, className, item: list[list.length - 1]}} key={list.length - 1}/>
+        <React.Fragment key={list.length - 1}>
+            {"and "}
+            <ListItem {...{style, className, item: list[list.length - 1]}}/>
+        </React.Fragment>
     </>;
 }
 

@@ -2,6 +2,9 @@ import makeWebhookRequest from "./makeWebhookReq";
 import { ChallId, TeamId, UserId, challIdToStr, teamIdToStr, userIdToStr } from "cache/ids";
 import { addSolve } from "cache/solves";
 import { DbSolveMeta, dbToCacheSolve } from "./db-types";
+import { syncUser } from "./users";
+import { syncTeam } from "./teams";
+import { syncChall } from "./challs";
 
 const syncSolves = async (): Promise<void> => {
     try {
@@ -9,9 +12,8 @@ const syncSolves = async (): Promise<void> => {
             section: "solve",
             query: { __tag: "get_all" },
         });
-        if (!allSolves.sql.success) throw allSolves.sql.error;
 
-        const solves = allSolves.sql.output.map(dbToCacheSolve).flatMap(c => c ? [c] : []);
+        const solves = allSolves.map(dbToCacheSolve).flatMap(c => c ? [c] : []);
         await Promise.all(solves.map(addSolve));
 
         // return await getSolves();
@@ -42,14 +44,18 @@ const attemptSolve: AddNewUserReq = async ({ challId, teamId, userId, flag }): P
                 flag,
             },
         });
-        if (!solveRes.sql.success) throw solveRes.sql.error;
-        if (!solveRes.sql.output.correct) return "failed";
-        if (!solveRes.sql.output.counted) return "correct_no_points";
+        if (!solveRes.correct) return "failed";
+        if (!solveRes.counted) return "correct_no_points";
 
-        const solve = dbToCacheSolve(solveRes.sql.output)
+        const solve = dbToCacheSolve(solveRes);
 
         if (solve) {
-            addSolve(solve);
+            await addSolve(solve);
+            await Promise.all([
+                syncUser({ id: userId }),
+                syncTeam({ id: teamId }),
+                syncChall({ id: challId }),
+            ])
             return "success";
         } else console.error("Bad SQL return:", solveRes);
     } catch (err) {

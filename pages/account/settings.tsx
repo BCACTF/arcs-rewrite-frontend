@@ -27,7 +27,7 @@ interface SettingsPageProps {
     team: CachedTeamMeta | null;
 }
 
-const UserPage: FC<SettingsPageProps> = ({ compMeta, envData, account, team }) => {
+const UserPage: FC<SettingsPageProps> = ({ compMeta, envData, account }) => {
     return (
         <div className="flex flex-col items-center pt-16">
             <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Home"/>

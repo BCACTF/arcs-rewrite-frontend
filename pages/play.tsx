@@ -34,12 +34,12 @@ interface PlayProps {
 const Play: FC<PlayProps> = ({ compMeta, envData, challenges, account }) => {
     const filterState = useFilter();
 
-    return <div className="flex flex-col items-center justify-start w-screen h-screen min-h-60 pt-20">
+    return <div className="flex flex-col items-center justify-start w-screen h-screen min-h-60 pt-20 pb-4">
         <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Play"/>
 
         <HeaderBanner account={account} meta={compMeta} currPage={HeaderBannerPage.PLAY} />
 
-        <div className="flex flex-row h-min gap-x-4">
+        <div className="flex flex-row flex-grow h-min gap-x-4">
             <FilterView filterState={filterState} challs={challenges}/>
 
             <ChallDropList

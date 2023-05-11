@@ -2,6 +2,10 @@ import makeWebhookRequest from "./makeWebhookReq";
 import { update as updateUser, removeStale as removeStaleUsers, getAllUsers, getUsers, CachedUser } from "cache/users";
 import { TeamId, UserId, teamIdToStr, userIdToStr } from "cache/ids";
 import { DbUserMeta, dbToCacheUser } from "./db-types";
+import { Auth } from "./queries/users";
+import addClientPerms from "auth/webhookClientAuthPerms";
+
+export type InputAuth = (Auth & { __type: "pass" }) | Omit<Auth & { __type: "oauth" }, "trustedClientAuth">;
 
 const syncAllUsers = async (): Promise<CachedUser[] | null> => {
     try {
@@ -9,8 +13,7 @@ const syncAllUsers = async (): Promise<CachedUser[] | null> => {
             section: "user",
             query: { __tag: "get_all" },
         });
-        if (!allUsers.sql.success) throw allUsers.sql.error;
-        const users = allUsers.sql.output.map(dbToCacheUser).flatMap(c => c ? [c] : []);
+        const users = allUsers.map(dbToCacheUser).flatMap(c => c ? [c] : []);
         const usedIds = users.map(u => u.userId);
         await removeStaleUsers(usedIds);
 
@@ -26,15 +29,13 @@ const syncAllUsers = async (): Promise<CachedUser[] | null> => {
 
 const syncUser = async ({ id }: { id: UserId }): Promise<CachedUser | null> => {
     try {
-        const userRes = await makeWebhookRequest<DbUserMeta>({ section: "user", query: { __tag: "get", id: userIdToStr(id) } });
-        if (!userRes.sql.success) throw userRes.sql.error;
-
-        const user = dbToCacheUser(userRes.sql.output);
+        const userData = await makeWebhookRequest<DbUserMeta>({ section: "user", query: { __tag: "get", id: userIdToStr(id) } });
+        const user = dbToCacheUser(userData);
         if (user) {
             await updateUser(user);
             const users = await getUsers([user.userId]);
             return users[0] ?? null;
-        } else console.error("Bad SQL return:", userRes);
+        } else console.error("Bad SQL return:", userData);
     } catch (err) {
         console.error("failed to rerequest users", err);
     }
@@ -42,25 +43,45 @@ const syncUser = async ({ id }: { id: UserId }): Promise<CachedUser | null> => {
     return null;
 };
 
+type CheckUserOauthParams = {
+    id: UserId;
+    auth: InputAuth & { __type: "oauth" };
+}
+const checkUserOauth = async ({ id, auth }: CheckUserOauthParams): Promise<boolean> => {
+    try {
+        const userData = await makeWebhookRequest<boolean>({
+            section: "user",
+            query: {
+                __tag: "auth",
+                id: userIdToStr(id),
+                auth: addClientPerms(auth),
+            },
+        });
+        return userData;
+    } catch (err) {
+        console.error("failed to rerequest users", err);
+        return false;
+    }
+};
+
 
 type AddNewUserParams = {
     email: string;
     name: string;
-    password: string;
+    auth: InputAuth;
     eligible: boolean;
 };
-const addUser = async ({ email, name, password, eligible }: AddNewUserParams) => {
+const addUser = async ({ email, name, auth, eligible }: AddNewUserParams) => {
     try {
+        
         const newUserRes = await makeWebhookRequest<DbUserMeta>({
             section: "user",
             query: {
                 __tag: "create",
-                email, name, password, eligible,
+                email, name, auth: addClientPerms(auth), eligible,
             },
         });
-        if (!newUserRes.sql.success) throw newUserRes.sql.error;
-
-        const newUser = dbToCacheUser(newUserRes.sql.output);
+        const newUser = dbToCacheUser(newUserRes);
 
         if (newUser) {
             await updateUser(newUser);
@@ -78,31 +99,29 @@ type UpdateUserParams = {
     id: UserId;
     
     name: string;
-    password: string;
+    auth: Auth;
     newPassword: string | null;
     eligible: boolean;
 };
-const updateUserDb = async ({ id, name, password, newPassword, eligible }: UpdateUserParams): Promise<CachedUser | null> => {
+const updateUserDb = async ({ id, name, auth, newPassword, eligible }: UpdateUserParams): Promise<CachedUser | null> => {
     try {
-        const result = await makeWebhookRequest<DbUserMeta>({
+        const updatedData = await makeWebhookRequest<DbUserMeta>({
             section: "user",
             query: {
                 __tag: "update",
                 id: userIdToStr(id),
                 name,
-                password,
+                auth,
                 newPassword,
                 eligible,
             }
-        });
-        if (!result.sql.success) throw result;
-        
-        const user = dbToCacheUser(result.sql.output);
+        });        
+        const user = dbToCacheUser(updatedData);
         if (user) {
             await updateUser(user);
             const users = await getUsers([user.userId]);
             return users[0] ?? null;
-        } else console.error("Bad SQL return:", result);
+        } else console.error("Bad SQL return:", updatedData);
     } catch (err) {
         console.error("failed to rerequest challenges", err);
     }
@@ -111,21 +130,20 @@ const updateUserDb = async ({ id, name, password, newPassword, eligible }: Updat
 
 type JoinTeamParams = {
     id: UserId;
-    password: string;
+    auth: InputAuth;
     teamId: TeamId;
     teamPassword: string;
 };
-const joinTeam = async ({ id, password, teamId, teamPassword }: JoinTeamParams): Promise<CachedUser | null> => {
+const joinTeam = async ({ id, auth, teamId, teamPassword }: JoinTeamParams): Promise<CachedUser | null> => {
     try {
         const joinedUser = await makeWebhookRequest<DbUserMeta>({
             section: "user",
             query: {
                 __tag: "join",
-                id: userIdToStr(id), password, teamId: teamIdToStr(teamId), teamPassword,
+                id: userIdToStr(id), auth: addClientPerms(auth), teamId: teamIdToStr(teamId), teamPassword,
             },
         });
-        if (!joinedUser.sql.success) throw joinedUser.sql.error;
-        const user = dbToCacheUser(joinedUser.sql.output);
+        const user = dbToCacheUser(joinedUser);
 
         if (user) {
             updateUser(user);
@@ -140,5 +158,5 @@ const joinTeam = async ({ id, password, teamId, teamPassword }: JoinTeamParams):
 
 export {
     syncAllUsers, syncUser,
-    addUser, updateUserDb, joinTeam,
+    addUser, checkUserOauth, updateUserDb, joinTeam,
 };

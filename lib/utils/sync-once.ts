@@ -4,7 +4,7 @@ import { syncAllTeams } from "database/teams";
 import { syncAllUsers } from "database/users";
 
 (async () => {
-    Promise.all([
+    await Promise.all([
         syncAllChalls(),
         syncAllTeams(),
         syncAllUsers(),

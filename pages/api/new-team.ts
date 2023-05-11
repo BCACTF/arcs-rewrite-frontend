@@ -1,5 +1,5 @@
 import getAccount from "account/validation";
-import { updateUserDb, syncUser } from "database/users";
+import { syncUser } from "database/users";
 import { addNewTeam } from "database/teams";
 import { NextApiHandler } from "next";
 
