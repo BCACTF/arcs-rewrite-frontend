@@ -12,10 +12,6 @@ import { CachedTeamMeta } from "cache/teams";
 import { ClientSideMeta as ClientSideMetaUser } from "cache/users";
 import { CachedSolveMeta, sortBy as sortSolvesBy } from "cache/solves";
 
-// Styles
-// import rawStyles from 'Home.module.scss';
-// import { wrapCamelCase } from "utils/styles/camelcase";
-// const [styles, builder] = wrapCamelCase(rawStyles);
 
 // Utils
 import { getCompetitionMetadata } from "metadata/general";
