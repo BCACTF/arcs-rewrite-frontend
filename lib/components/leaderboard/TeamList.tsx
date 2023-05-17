@@ -22,6 +22,7 @@ import React, { FC } from "react"
 interface TeamListProps {
     teams: CachedTeamMeta[];
 }
+type TeamRowProps = (CachedTeamMeta & { isHeader: false }) | (Omit<CachedTeamMeta, "id"> & { isHeader: true, id?: unknown });
 
 const formatDate = (dateNum: number) => {
     const date = new Date(dateNum * 1000);
@@ -30,7 +31,7 @@ const formatDate = (dateNum: number) => {
     else return `${ending}, ${date.toLocaleDateString(undefined, { day: "numeric", month: "short" })}`;
 };
 
-const TeamRow: FC<CachedTeamMeta & { isHeader: boolean }> = ({ name, id, affiliation, eligible, lastSolve, score, isHeader }) => (
+const TeamRow: FC<TeamRowProps> = ({ name, id, affiliation, eligible, lastSolve, score, isHeader }) => (
     <Link href={isHeader ? "#" : `/team/${id}`}><div
         className={`
             flex flex-rowitems-center flex-wrap lg:flex-nowrap
@@ -58,7 +59,7 @@ const TeamRow: FC<CachedTeamMeta & { isHeader: boolean }> = ({ name, id, affilia
 
 const TeamList: FC<TeamListProps> = ({ teams }) => (
     <div className="flex flex-col">
-        <TeamRow name="Name" score={0} lastSolve={null} eligible={true}  affiliation="Affiliation" id={teams[0].id} isHeader={true}/>
+        <TeamRow name="Name" score={0} lastSolve={null} eligible={true}  affiliation="Affiliation" isHeader={true}/>
         {teams.map(team => <TeamRow {...team} key={teamIdToStr(team.id)} isHeader={false}/>)}
     </div>
 );
