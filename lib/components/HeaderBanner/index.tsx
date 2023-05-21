@@ -68,7 +68,7 @@ const HeaderBanner: FC<HeaderBannerProps> = ({ account, meta, currPage }) => {
     }
 
     return (
-        <div className="w-screen bg-navbar-background-color max-sm:bg-navbar-background-color-mobile-only sm:backdrop:backdrop-blur-md sm:backdrop-blur-xl sm:bg-opacity-30 mb-4 h-16 sticky top-0">
+        <div className="w-screen bg-navbar-background-color max-sm:bg-navbar-background-color-mobile-only sm:backdrop:backdrop-blur-md mb-4 h-16 sticky top-0">
             <div className="max-sm:hidden flex flex-row h-full">
                 <Link href="#" className="text-2xl my-auto font-semibold text-navbar-text-color ml-5 pr-7 border-r-2 border-navbar-text-color-dark text-center">
                     {meta.name} 
@@ -129,8 +129,8 @@ const HeaderBanner: FC<HeaderBannerProps> = ({ account, meta, currPage }) => {
                     flex-grow p-0 pt-0 h-0 flex \
                     flex-col text-right px-7 overflow-auto \
                     w-screen bg-navbar-background-color  \
-                    max-sm:bg-navbar-background-color-mobile-only sm:backdrop-blur-xl \
-                     bg-opacity-30 shadow-md rounded-b-md " + setTransition(menuOpen)}>
+                    max-sm:bg-navbar-background-color-mobile-only \
+                    shadow-md rounded-b-md " + setTransition(menuOpen)}>
                     {[ HeaderBannerPage.HOME, HeaderBannerPage.PLAY, HeaderBannerPage.LEAD ]
                         .map((page, idx) => 
                             <div className="

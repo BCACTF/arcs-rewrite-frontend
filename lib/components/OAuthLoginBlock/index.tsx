@@ -35,7 +35,7 @@ const OAuthLoginBlock: FC<OAuthLoginBlockProps> = ({
                 />
         </div>
         <div className="border border-r-[.5px] border-signin-provider-outline h-full"></div>
-        <div className="flex flex-row place-content-end m-auto text-lg text-right">
+        <div className="flex flex-row place-content-end m-auto text-lg text-right text-signin-text">
             <span className="my-auto">Sign in with {providerName}</span>
         </div>
     </button>

@@ -29,9 +29,9 @@ interface UserCardProps {
 const TeamLink: FC<{ team: CachedTeamMeta | null, isMe: boolean }> = ({ team, isMe }) => {
     const baseStyles = `
         min-w-15 h-20
-        border-2 border-slate-500 rounded-lg
+        border-2 border-user-profile-button-border-color rounded-lg
         flex flex-col items-center justify-center
-        text-lg text-slate-200
+        text-lg text-user-profile-button-text-color
     `;
     const baseActionStyles = `
         w-full px-4 flex-grow
@@ -39,26 +39,26 @@ const TeamLink: FC<{ team: CachedTeamMeta | null, isMe: boolean }> = ({ team, is
         bg-opacity-25 group`;
     if (team) return (
         <Link href={`/team/${team.id}`}>
-            <div className={baseStyles + "bg-indigo-700 font-bold"}>
+            <div className={baseStyles + "bg-user-profile-button-background-color font-bold"}>
                 Team
                 <span>{team.name} →</span>
             </div>
         </Link>
     )
     else if (isMe) return (
-        <div className={baseStyles + "bg-slate-700"}>
-            <Link href={"/team/new"} className={`${baseActionStyles} bg-blue-500`}>
+        <div className={baseStyles + "bg-user-profile-button-background-color"}>
+            <Link href={"/team/new"} className={`${baseActionStyles} bg-user-profile-create-team-background-color`}>
                 <span>Create Team</span>
                 <span className="ml-auto group-hover:scale-125 transition-transform duration-200">+</span>
             </Link>
-            <Link href={"/team/join"} className={`${baseActionStyles} bg-green-500`}>
+            <Link href={"/team/join"} className={`${baseActionStyles} bg-user-profile-join-team-background-color`}>
                 <span>Join Team</span>
                 <span className="ml-auto group-hover:translate-x-1 transition-transform duration-200">→</span>
             </Link>
         </div>
     )
     else return (
-        <div className={baseStyles + "bg-slate-700"}>
+        <div className={baseStyles + "bg-user-profile-no-team-background-color"}>
             No Team
         </div>
     )

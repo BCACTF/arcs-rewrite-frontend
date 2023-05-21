@@ -33,13 +33,13 @@ const Err404: FC<Err404Props> = ({ compMeta, envData }) => {
         <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="404"/>
 
         <h1 className="text-8xl font-extrabold m-2 pb-1 text-404-text-color-header">404</h1>
-        <h3 className="text-3xl border-b-2 border-white mb-2 pb-3 font-semibold">Page Not Found</h3>
+        <h3 className="text-3xl border-b-[1px] border-404-bar-colors mb-2 pb-3 font-semibold">Page Not Found</h3>
         <div className="text-xl">
         </div>
 
-        <h2 className="text-2xl font-light pb-3 mb-3 border-b-[1px] border-white">Suggested Redirects</h2>
+        <h2 className="text-2xl font-light pb-3 mb-3 border-b-[1px] border-404-bar-colors">Suggested Redirects</h2>
         
-        <div className="flex flex-row place-content-between text-center mb-2 divide-x ">
+        <div className="flex flex-row place-content-between text-center mb-2 divide-404-bar-colors divide-x ">
             <Link href={"/"} className="flex-grow hover:text-404-text-color-alternate transition delay-[15ms]">Home</Link>
             <Link href={"/play"} className="flex-grow hover:text-404-text-color-alternate">Play</Link>
         </div>
