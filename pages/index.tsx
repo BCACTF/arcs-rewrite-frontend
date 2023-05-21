@@ -29,15 +29,17 @@ interface HomeProps {
 
 const Home: FC<HomeProps> = ({ compMeta, envData, account }) => {
     return (
-        <div className="h-screen grid place-content-center pb-24">
-            <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Home"/>
+        <div className="flex flex-col place-content-evenly h-screen">
             <HeaderBanner account={account} meta={compMeta} currPage={HeaderBannerPage.HOME}/>
-            <NoSsr>
-                <WebsiteCountdown
-                    compMeta={compMeta}
-                    envConfig={envData}
-                    formatter={({days, hours, minutes, seconds}) => <div className={""}>{"T+"} {days}{"d"} {hours}{"h "}{minutes}{"m "}{seconds}{"s "}</div>} />
-            </NoSsr>
+            <div className="sm:pb-20 sm:my-auto max-sm:mb-auto grid place-content-center">
+                <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Home"/>
+                <NoSsr>
+                    <WebsiteCountdown
+                        compMeta={compMeta}
+                        envConfig={envData}
+                        formatter={({days, hours, minutes, seconds}) => <div className={""}>{"T+"} {days}{"d"} {hours}{"h "}{minutes}{"m "}{seconds}{"s "}</div>} />
+                </NoSsr>
+            </div>
         </div>
     )
 }

@@ -37,10 +37,12 @@ interface UserPageProps {
 
 const UserPage: FC<UserPageProps> = ({ compMeta, envData, user, team, userImgHref, account }) => {
     return (
-        <div className="flex flex-col items-center justify-center pt-16 h-screen">
-            <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Home"/>
+        <div className="flex flex-col place-content-evenly h-screen">
             <HeaderBanner account={account} meta={compMeta} currPage={null}/>
-            <UserCard {...{user, team, userImgHref, isMe: account?.userId === user.userId}}/>
+            <div className="m-auto pb-20">
+                <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Home"/>
+                <UserCard {...{user, team, userImgHref, isMe: account?.userId === user.userId}}/>
+            </div>
         </div>
     )
 }

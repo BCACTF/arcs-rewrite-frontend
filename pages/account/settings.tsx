@@ -29,10 +29,11 @@ interface SettingsPageProps {
 
 const UserPage: FC<SettingsPageProps> = ({ compMeta, envData, account }) => {
     return (
-        <div className="flex flex-col items-center pt-16">
-            <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Home"/>
+        <div className="flex flex-col place-content-evenly h-screen">
             <HeaderBanner account={account} meta={compMeta} currPage={null} />
-            
+            <div className="flex flex-col items-center my-auto">
+                <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Home"/>
+            </div>
         </div>
     )
 }

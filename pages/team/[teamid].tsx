@@ -43,16 +43,18 @@ interface TeamPageProps {
 
 const Home: FC<TeamPageProps> = ({ compMeta, envData, team, users, solves, challs, account }) => {
     return (
-        <div className="flex flex-row pt-16">
-            <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Home"/>
+        <div className="flex flex-col h-screen">
             <HeaderBanner account={account} meta={compMeta} currPage={null} />
+            <div className="flex flex-row ">
+                <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Home"/>
 
-            <div className="flex flex-col border-r-2 border-slate-700">
-                <TeamInfo team={team}/>
-                <UserList users={users}/>
+                <div className="flex flex-col border-r-2 border-slate-700">
+                    <TeamInfo team={team}/>
+                    <UserList users={users}/>
+                </div>
+
+                <SolveList {...{ users, team, solves, challs }} />
             </div>
-
-            <SolveList {...{ users, team, solves, challs }} />
         </div>
     )
 }

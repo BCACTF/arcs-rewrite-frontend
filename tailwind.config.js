@@ -23,9 +23,11 @@ module.exports = {
         'navbar-text-color-normal': "#f4f4f4",
         'navbar-text-color-dark': "#e1d169",
         'navbar-background-color': "#3d29c2",
-        
+        'navbar-background-color-mobile-only': "#6c55ff",
+
         'navbar-account-dropdown-background-color': "#ffffff",
-        'navbar-account-dropdown-hover-color': "#06030a",
+        'navbar-account-dropdown-background-color-hover': "#e1d169",
+        'navbar-account-dropdown-hover-color': "#c59cff",
         'navbar-account-dropdown-text-color': "#000000",
 
         'signin-light': "#4444aa",
