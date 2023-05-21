@@ -11,7 +11,6 @@ const syncAllChalls = async () => {
             section: "challenge",
             query: { __tag: "get_all" },
         });
-        console.log(allChalls);
         const challs = allChalls.map(dbToCacheChall).flatMap(c => c ? [c] : []);
         const usedIds = challs.map(c => c.id);
         await removeStaleChalls(usedIds);

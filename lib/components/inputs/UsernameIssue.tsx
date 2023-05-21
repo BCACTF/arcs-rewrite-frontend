@@ -26,8 +26,6 @@ const UsernameIssue: FC<Props> = (props) => {
     const rawParts = getIssueText(props.issue).split(MONO_SEPERATOR);
     const parts = rawParts.length % 2 === 1 ? rawParts : [getIssueText(props.issue)];
     
-    console.log(props.issue);
-
     return <div className="font-bold text-sm text-red-500 px-6 whitespace-break-spaces leading-6">
         {parts.map(
             (part, idx) => idx % 2 === 0

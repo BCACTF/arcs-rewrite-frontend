@@ -9,10 +9,6 @@ import { GetServerSideProps } from 'next';
 import { CompetitionMetadata } from 'metadata/general';
 import { Environment } from 'metadata/env';
 
-// Styles
-// import rawStyles from 'Home.module.scss';
-// import { wrapCamelCase } from "utils/styles/camelcase";
-// const [styles, builder] = wrapCamelCase(rawStyles);
 
 // Utils
 import { getCompetitionMetadata } from "metadata/general";

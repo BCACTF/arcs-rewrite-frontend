@@ -21,7 +21,6 @@ interface ChallDropFlagInputProps {
 const ChallDropFlagInput: FC<ChallDropFlagInputProps> = ({challId, userId, teamId }) => {
     const [inputValue, setInputValue] = useState("");
 
-    console.log({ challId, userId, teamId });
     const inputDisabled = !userId || !teamId;
 
     return <div
