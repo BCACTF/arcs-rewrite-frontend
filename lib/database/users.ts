@@ -72,7 +72,7 @@ const checkUserOauth = async ({ id, auth }: CheckUserOauthParams): Promise<boole
             query: {
                 __tag: "auth",
                 id: userIdToStr(id),
-                auth: addClientPerms(auth),
+                auth: await addClientPerms(auth),
             },
         });
         return userData;
@@ -96,7 +96,7 @@ const addUser = async ({ email, name, auth, eligible }: AddNewUserParams) => {
             section: "user",
             query: {
                 __tag: "create",
-                email, name, auth: addClientPerms(auth), eligible,
+                email, name, auth: await addClientPerms(auth), eligible,
             },
         });
         const newUser = dbToCacheUser(newUserRes);
@@ -158,7 +158,7 @@ const joinTeam = async ({ id, auth, teamId, teamPassword }: JoinTeamParams): Pro
             section: "user",
             query: {
                 __tag: "join",
-                id: userIdToStr(id), auth: addClientPerms(auth), teamId: teamIdToStr(teamId), teamPassword,
+                id: userIdToStr(id), auth: await addClientPerms(auth), teamId: teamIdToStr(teamId), teamPassword,
             },
         });
         const user = dbToCacheUser(joinedUser);

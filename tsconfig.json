@@ -19,8 +19,9 @@
       "*" : [
         "lib/*",
         "styles/*",
-        "*",
+        "*"
       ],
+      "api/*": [ "pages/api/*" ]
     },
     "outDir": "dist",
   },

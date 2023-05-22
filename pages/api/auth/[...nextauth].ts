@@ -60,7 +60,12 @@ const getNextAuthOptions = async () => {
             newUser: '/account/new-user',
         },
         callbacks: {
-            jwt: params => params.token,
+            jwt: params => {
+                return {
+                    provider: params.account?.provider,
+                    ...params.token
+                };
+            },
         },
         secret: await getSecret(),
     };

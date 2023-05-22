@@ -3,7 +3,7 @@ import { GetTokenParams } from "next-auth/jwt";
 import { CachedUser } from "cache/users";
 
 // Utils
-import { getTokenSecret } from "pages/api/auth/[...nextauth]";
+import { getTokenSecret } from "api/auth/[...nextauth]";
 import { getAllUsers } from "cache/users";
 
 

@@ -8,7 +8,8 @@ import WebsiteMeta from "components/WebsiteMeta";
 
 // Hooks
 import useUsernameValidation from "hooks/useUsernameValidation";
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { useRouter } from "next/router";
 
 // Types
 import { GetServerSideProps } from "next";
@@ -17,7 +18,8 @@ import { Competition } from "metadata/client";
 
 // Utils
 import getCompetition from "metadata/client";
-import { getTokenSecret } from "pages/api/auth/[...nextauth]";
+import { getTokenSecret } from "api/auth/[...nextauth]";
+import { signOut } from "next-auth/react";
 
 
 interface RegisterPageProps {
@@ -26,12 +28,45 @@ interface RegisterPageProps {
 
 // Use/display the props, especially the competition metadata
 const RegisterPage: FC<RegisterPageProps> = ({ metadata }) => {
+    const router = useRouter();
+
+
     const [username, issue, usernameStatus, updateUsername] = useUsernameValidation();
-    
     const [eligible, setEligible] = useState(false);
     const [affiliationValue, setAffiliationValue] = useState("");
-    
     const [rulesAgreed, setRulesAgreed] = useState(false);
+
+
+
+
+    const sendCreateUserRequest = useCallback(
+        async () => {
+            if (!rulesAgreed) return;
+            const options = {
+                method: "POST",
+                body: JSON.stringify({
+                    username,
+                    eligible,
+                    affiliation: affiliationValue,
+                }),
+            };
+            const response = await fetch("/api/account/create-user", options);
+
+            if (response.ok) router.push("/");
+            else {
+                console.error(response);
+                alert("Error creating user!");
+            }
+        },
+        [username, eligible, affiliationValue, rulesAgreed, router],
+    );
+    const cancelRegistration = useCallback(
+        async () => {
+            await signOut({ redirect: false });
+            router.push("/");
+        },
+        [router],
+    );
     
     return <div className="h-screen w-screen flex place-content-center px-3 align-middle justify-center">
         <WebsiteMeta metadata={metadata} pageName="Play"/>
@@ -87,7 +122,7 @@ const RegisterPage: FC<RegisterPageProps> = ({ metadata }) => {
                 </CheckboxInput>
 
                 <button
-                    onClick={() => console.log({ username, eligible, affiliationValue, rulesAgreed })}
+                    onClick={sendCreateUserRequest}
                     disabled={!rulesAgreed || usernameStatus !== "success"}
                     className="
                         h-12 md:h-14 pb-0.5 w-1/2
@@ -95,6 +130,15 @@ const RegisterPage: FC<RegisterPageProps> = ({ metadata }) => {
                         flex justify-center items-center
                         border-2 border-main-color-500 bg-main-color-700 rounded-lg
                         px-5">Create Account</button>
+
+                <button
+                    onClick={cancelRegistration}
+                    className="
+                        h-12 md:h-14 pb-0.5 w-1/2
+                        text-lg font-medium
+                        flex justify-center items-center
+                        bg-user-profile-no-team-background-color rounded-lg
+                        px-5">Cancel</button>
             </div>
         </div>
     </div>;

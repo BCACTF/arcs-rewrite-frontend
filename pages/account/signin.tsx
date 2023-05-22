@@ -17,7 +17,7 @@ import getAccount, { Account } from "account/validation";
 import Router from 'next/router';
 import { getProviders } from 'next-auth/react';
 import { JWT } from 'next-auth/jwt';
-import { getTokenSecret } from 'pages/api/auth/[...nextauth]';
+import { getTokenSecret } from 'api/auth/[...nextauth]';
 
 
 

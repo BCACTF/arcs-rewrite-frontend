@@ -1,10 +1,11 @@
 import { Auth } from "database/queries/users";
 import { InputAuth } from "database/users";
+import { getConfig } from "metadata/server";
 
-const addClientPerms = (input: InputAuth): Auth => {
+const addClientPerms = async (input: InputAuth): Promise<Auth> => {
     if (input.__type === "oauth") return {
         ...input,
-        trustedClientAuth: process.env.CLIENT_OAUTH_ALLOW_TOKEN ?? "",
+        trustedClientAuth: (await getConfig()).webhook.clientOauthAllowToken,
     };
     else return input;
 };
