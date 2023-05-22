@@ -125,16 +125,16 @@ const RegisterPage: FC<RegisterPageProps> = ({ metadata }) => {
                     onClick={sendCreateUserRequest}
                     disabled={!rulesAgreed || usernameStatus !== "success"}
                     className="
-                        h-12 md:h-14 pb-0.5 w-1/2
+                        h-12 md:h-14 w-screen-2/5 sm:w-1/2 pb-0.5
                         text-lg font-medium
                         flex justify-center items-center
-                        border-2 border-main-color-500 bg-main-color-700 rounded-lg
+                        bg-user-profile-no-team-background-color rounded-lg
                         px-5">Create Account</button>
 
                 <button
                     onClick={cancelRegistration}
                     className="
-                        h-12 md:h-14 pb-0.5 w-1/2
+                        h-12 md:h-14 w-screen-2/5 sm:w-1/2 pb-0.5
                         text-lg font-medium
                         flex justify-center items-center
                         bg-user-profile-no-team-background-color rounded-lg

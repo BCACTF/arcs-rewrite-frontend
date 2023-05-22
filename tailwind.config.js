@@ -60,10 +60,12 @@ module.exports = {
         '100': "100rem",
         '50': "50rem",
         '25': "25rem",
+        '30': "30rem",
         'full': "100%",
       },
       width: {
         'screen/2': "50vw",
+        'screen-2/5': "40vw",
         'screen/5': "20vw",
       },
       height: {

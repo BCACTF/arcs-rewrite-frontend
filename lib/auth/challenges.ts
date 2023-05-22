@@ -1,5 +1,7 @@
-import webhookToken from "./webhook";
+import { getConfig } from "metadata/server";
 
-const validateChallUpdateAuth = (token: string | undefined) => token && webhookToken && token === webhookToken;
+export const webhookToken = async () => (await getConfig()).webhook.authToken;
+
+const validateChallUpdateAuth = async (token: string | undefined) => token && token === await webhookToken();
 
 export default validateChallUpdateAuth;

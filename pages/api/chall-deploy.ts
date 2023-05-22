@@ -1,6 +1,6 @@
 import { NextApiHandler } from "next";
 import { timingSafeEqual } from "crypto";
-import webhookToken from "auth/webhook";
+import { webhookToken } from "auth/challenges";
 import { syncChall } from "database/challs";
 import { challIdFromStr } from "cache/ids";
 
@@ -18,7 +18,9 @@ const handler: NextApiHandler = async (req, res) =>  {
 
     const reqBearer = authorizationHeaderRaw.substring("Bearer ".length);
     
-    if (reqBearer.length !== webhookToken.length) {
+    const webhookTokenValue = await webhookToken();
+
+    if (reqBearer.length !== webhookTokenValue.length) {
         console.log("Invalid bearer token:", authorizationHeaderRaw);
         res.statusMessage = "Invalid bearer token";
         res.status(401);
@@ -26,7 +28,7 @@ const handler: NextApiHandler = async (req, res) =>  {
         return;
     }
     
-    if (!timingSafeEqual(Buffer.from(reqBearer), Buffer.from(webhookToken))) {
+    if (!timingSafeEqual(Buffer.from(reqBearer), Buffer.from(webhookTokenValue))) {
         console.log("Incorrect bearer token:", reqBearer);
         res.statusMessage = "Unauthorized";
         res.status(401);

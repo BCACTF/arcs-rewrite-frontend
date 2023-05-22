@@ -1,65 +1,81 @@
-import getAccount from "account/validation";
-import { getAllTeams } from "cache/teams";
-import { syncUser, joinTeam } from "database/users";
-import { syncAllTeams } from "database/teams";
-import { NextApiHandler } from "next";
+// Types
+import { NextApiHandler, NextApiRequest } from "next";
 
+// Utils
+import { joinTeam } from "database/users";
+import { getAllTeams } from "cache/teams";
+import getAccount from "account/validation";
+
+
+interface JoinTeamApiParams {
+    name: string;
+    password: string;
+}
+
+const getParams = (req: NextApiRequest): JoinTeamApiParams | null => {
+    try {
+        const body: unknown = JSON.parse(req.body);
+        if (typeof body !== "object" || body === null) return null;
+        if (Array.isArray(body) || typeof body === "function") return null;
+    
+        const { name, password } = body as Record<string, unknown>;
+
+        if (typeof name !== "string") return null;
+        if (typeof password !== "string") return null;
+        
+        return { name, password };
+    } catch (e) {
+        console.error(e);
+        return null;
+    }
+};
 
 const handler: NextApiHandler = async (req, res) =>  {
-    {
-        const staleAccount = await getAccount({ req });
-        if (!staleAccount) {
-            res.status(401).send("Not signed in");
-            return;
-        }
-        await syncUser({ id: staleAccount.userId });
-        await syncAllTeams();
+    if (req.method !== "POST") {
+        res.status(400).send("Invalid HTTP method");
     }
+
     const account = await getAccount({ req });
+
+
     if (!account) {
-        res.status(401).send("Not signed in");
-        return;
-    }
-    if (account.teamId) {
-        res.status(403).send("Account already has a team associated");
+        res.status(401).send("You must be signed in to join a team");
         return;
     }
 
-    const json = JSON.parse(req.body);
-    if (typeof json !== 'object' || json === null) {
-        res.status(400).send("Invalid request body");
+    const { userId: id, teamId: currTeamId, sub, provider } = account;
+
+    if (currTeamId) {
+        res.status(400).send("You already are on a team");
         return;
     }
-    
-    const { name, password } = json;
-    if (!name || !password) {
-        res.status(400).send("name and/or password left undefined");
-        return;
+
+
+    const bodyParams = getParams(req);
+    console.log(bodyParams);
+    if (!bodyParams) {
+        res.status(400).send("Incorrect body format");
+        return
     }
+
+    const { name, password: teamPassword } = bodyParams;
 
     const team = (await getAllTeams()).find(team => team.name === name);
 
     if (!team) {
-        res.status(400).send("This team doesn't exist!");
+        res.status(400).send("This team does not exist");
         return;
     }
 
     const teamId = team.id;
-    const userId = account.userId;
-    
-    try {
-        const success = await joinTeam({ id: userId, auth: { __type: "pass", password }, teamId, teamPassword: password });
-        if (success) {
-            res.status(200).send("Team successfully joined!");
-            return
-        } else {
-            res.status(403).send("Invalid password!");
-            return;
-        }
-    } catch (e) {
-        res.status(500).send("Internal Server Error!");
-        return;
-    }
+
+
+    await joinTeam({
+        id, auth: { __type: "oauth", sub, provider },
+        teamId, teamPassword,
+    });
+
+    res.status(200).send("Successfully created user");
 };
 
 export default handler;

@@ -65,6 +65,11 @@ const handler: NextApiHandler = async (req, res) =>  {
 
     const { username, eligible, affiliation } = bodyParams;
 
+    if (!await checkUsernameAvailable({ name: username })) {
+        res.status(400).send("Username is not available");
+        return;
+    }
+
     await addUser({
         email,
         name: username,

@@ -7,7 +7,7 @@ import { getTokenSecret } from "api/auth/[...nextauth]";
 import { getAllUsers } from "cache/users";
 
 
-export type Account = CachedUser & { img: string | null };
+export type Account = CachedUser & { img: string | null, provider: string, sub: string };
 
 const getAccount = async ({ req }: GetTokenParams): Promise<Account | null> => {
     const token = await getTokenSecret({ req });
@@ -17,10 +17,13 @@ const getAccount = async ({ req }: GetTokenParams): Promise<Account | null> => {
     const email = token.email;
     if (!email) return null;
 
+    const { sub, provider } = token;
+    if (typeof sub !== 'string' || typeof provider !== 'string' || !sub || !provider) return null;
+
     const users = await getAllUsers();
     const user = users.find(user => user.email === email);
 
-    return user ? { ...user, img: token.picture ?? null } : null;
+    return user ? { ...user, img: token.picture ?? null, sub, provider } : null;
 };
 
 

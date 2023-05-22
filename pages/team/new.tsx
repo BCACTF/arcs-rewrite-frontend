@@ -1,127 +1,196 @@
 // Components
+import TextInput from "components/inputs/TextInput";
+import CheckboxInput from "components/inputs/CheckboxInput";
+import Divider from "components/inputs/Divider";
 import WebsiteMeta from "components/WebsiteMeta";
+import Link from "next/link";
 
 // Hooks
+import { useState, useCallback } from "react";
+import { useRouter } from "next/router";
 
 // Types
-import React, { FC, useState } from 'react';
-import { GetServerSideProps } from 'next';
-import { Competition } from 'metadata/client';
-
+import { GetServerSideProps } from "next";
+import { FC } from "react"
+import { Competition } from "metadata/client";
 
 // Utils
 import getCompetition from "metadata/client";
-import getAccount, { Account } from "account/validation";
-import HeaderBanner from "components/HeaderBanner";
-import Router from "next/router";
+import getAccount from "account/validation";
+import { validatePassword } from "database";
+
 
 interface NewTeamPageProps {
     metadata: Competition;
-    account: Account | null;
+    canBeEligible: boolean;
 }
 
-const NewTeam: FC<NewTeamPageProps> = ({ metadata, account }) => {
-    const [error, setError] = useState(false);
-    const [passwordsInputted, setPasswordsInputted] = useState(false);
+// Use/display the props, especially the competition metadata
+const NewTeamPage: FC<NewTeamPageProps> = ({ metadata, canBeEligible }) => {
+    const router = useRouter();
 
-    const recalcError = () => {
-        const orig = document.querySelector<HTMLInputElement>("#teampass")?.value ?? "";
-        const confirm = document.querySelector<HTMLInputElement>("#teampassconfirm")?.value ?? "";
-        
-        (orig.length > 0 || confirm.length > 0) ? setPasswordsInputted(true) : setPasswordsInputted(false);
 
-        if (confirm === "" || orig === "") { setError(true); return; }
-        if (orig && confirm && orig !== confirm) setError(true);
-        else setError(false)
-    };
+    const [name, setName] = useState("");
 
-    const submitInformation = () => {
-        const name = document.querySelector<HTMLInputElement>("#teamname")?.value ?? "";
-        const password = document.querySelector<HTMLInputElement>("#teampass")?.value ?? "";
-        const affiliation = document.querySelector<HTMLInputElement>("#teamaffiliation")?.value ?? "";
+    const [eligible, setEligible] = useState(false);
+    const [affiliation, setAffiliation] = useState("");
 
-        if (error) { return; }
-        else fetch(
-            "/api/new-team",
-            {
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+
+    const [passwordError, setPasswordError] = useState<string | null>(null);
+    const [confirmMatches, setConfirmMatches] = useState<boolean>(false);
+
+
+    const [passwordAgreement, setPasswordAgreement] = useState(true);
+
+
+    const sendCreateTeamRequest = useCallback(
+        async () => {
+            if (!passwordAgreement) return;
+            const options = {
                 method: "POST",
-                body: JSON.stringify({ name, password, affiliation }),
-            },
-        ).then(() => Router.push(`/account/${account?.userId ?? "signin"}`))
-    };
+                body: JSON.stringify({
+                    name,
+                    eligible,
+                    affiliation,
+                    password,
+                }),
+            };
+            const response = await fetch("/api/account/new-team", options);
 
-    const baseInput = "h-12 md:h-14 mx-3 w-11/12                            \
-                       py-2 px-2 border rounded-lg \
-                       transition delay-[10ms] bg-signin-background-color";
+            if (response.ok) router.push("/");
+            else {
+                console.error(response);
+                alert("Error joining team!");
+            }
+        },
+        [name, eligible, affiliation, password, confirmPassword, router],
+    );
+    const cancelCreating = useCallback(
+        async () => {
+            router.back();
+        },
+        [router],
+    );
 
-    return (
-        <div className="h-screen w-screen flex place-content-center px-3 align-middle justify-center">
-            <div className="flex flex-col w-[26rem] md-w-[28rem] xl-w-[30rem] text-center
-                            border border-signin-text border-opacity-20 rounded-lg
-                            bg-signin-background-color bg-opacity-50  
-                            justify-center align-center m-auto px-3 pt-8 pb-4">
-                <WebsiteMeta metadata={metadata} pageName="Home"/>
-                <HeaderBanner account={account} meta={metadata} currPage={null} />
-                <h2 className="font-bold text-3xl mb-2">Create New Team</h2>
-                <div className="mb-3">
-                {
-                    (error && passwordsInputted) ? (
-                        <h2 className="text-red-500">Mismatched Passwords</h2>
-                    ) : (
-                        <br></br>
-                    )
-                }
-                </div>
-                <div className="flex flex-col space-y-3 place-content-center">
-                    <div className="flex flex-row place-content-around">
-                        <div className="m-auto">
-                            <label>Team Name</label>
-                        </div>
-                        <div>
-                            <input id="teamname" type="text" className={`${baseInput} border-signin-provider-outline`}/>
-                        </div>
-                    </div>
-                    <hr className="w-4/5 mx-auto opacity-20"></hr>
-                    <div className="flex flex-row place-content-around">
-                        <div className="m-auto">
-                            <label>Team Password</label>
-                        </div>
-                        <div>
-                            <input onInput={recalcError} id="teampass" type="password" className={`${baseInput} ${passwordsInputted ? (error ? "border-red-500" : "border-green-400") : "border-signin-provider-outline"}`}/>
-                        </div>
-                    </div>
-                    <div className="flex flex-row place-content-around">
-                        <div className="m-auto ">
-                            <label>Confirm Password</label>
-                        </div>
-                        <div>
-                            <input onInput={recalcError} id="teampassconfirm" type="password" className={`${baseInput} ${passwordsInputted ? (error ? "border-red-500" : "border-green-400") : "border-signin-provider-outline"}`}/>
-                        </div>
-                    </div>
-                    <hr className="w-4/5 mx-auto opacity-20"></hr>
-                    <div aria-disabled={!account?.eligible} className="group aria-disabled:cursor-not-allowed flex flex-row place-content-around">
-                        <div className="m-auto">
-                            <label className=" group-aria-disabled:text-gray-400 group-aria-disabled:cursor-not-allowed">Team Affiliation:</label>
-                        </div>
-                        <div>
-                            <input disabled={!account?.eligible} id="teamaffiliation" type="text" className={`disabled:saturate-50 group-aria-disabled:cursor-not-allowed ${baseInput} border-signin-provider-outline`}/>
-                        </div>
-                    </div>
-                </div>
-                <button onClick={submitInformation} className="w-32 h-10 mt-4 mx-auto text-center rounded-md bg-signin-light bg-opacity-70 transition hover:text-signin-text-header cursor-pointer hover:bg-signin-provider-hover-color">Submit</button>
+    const updatePasswordError = useCallback(() => {
+        const passwordIssues = validatePassword(password);
+        console.log(passwordIssues);
+        const passwordError = passwordIssues.ok ? null : passwordIssues.issue;
+        setPasswordError(passwordError);
+        setConfirmMatches(true);
+    }, [password, confirmPassword, setPasswordError, setConfirmMatches]);
+
+    
+    return <div className="h-screen w-screen flex place-content-center px-3 align-middle justify-center">
+        <WebsiteMeta metadata={metadata} pageName="Play"/>
+
+        <div className="
+            w-4/5 max-w-30 xl:max-w-[30rem]
+            bg-signin-background-color bg-opacity-50
+            border border-signin-text border-opacity-20 rounded-lg
+            px-1 py-12 my-auto mx-auto
+            align-center justify-center"> 
+            <h3 className="text-3xl text-signin-text text-center mx-auto pb-10 font-bold">
+                Create Team
+            </h3>
+            <div className="flex flex-col items-center space-y-8 place-content-center">
+                <span className="text-lg text-signin-text text-center mx-auto pb-5 px-2">
+                    Enter the team's information. Remember that an eligible team has to have ONLY eligible members.
+                </span>
+                
+
+                <TextInput
+                    promptName="Name"
+                    spellCheck="false"
+                    value={name}
+                    onChange={ev => setName(ev.currentTarget.value)}
+                    additionalClassName="pr-12" />
+
+                <Divider/>
+                
+                <CheckboxInput
+                    id="eligible-checkbox"
+                    checked={eligible}
+                    disabled={!canBeEligible}
+                    onChange={() => setEligible(eligible => !eligible)}>
+                    This team is <Link href="/rules" className="font-bold underline text-main-color-300">
+                        eligible
+                    </Link> for prizes in this competition.
+                </CheckboxInput>
+                <TextInput
+                    promptName="Affiliation"
+                    spellCheck="false"
+                    value={affiliation}
+                    onChange={event => setAffiliation(event.target.value)}/>
+
+                <Divider/>
+
+                <TextInput
+                    promptName="Password"
+                    spellCheck="false"
+                    type="password"
+                    value={password}
+                    onBlur={updatePasswordError}
+                    onChange={event => setPassword(event.target.value)}/>
+                
+                <span className="text-red-500">{passwordError}</span>
+
+                <TextInput
+                    promptName="Confirm Password"
+                    spellCheck="false"
+                    type="password"
+                    value={confirmPassword}
+                    onBlur={() => setConfirmMatches(confirmPassword === password)}
+                    onChange={event => setConfirmPassword(event.target.value)}/>
+                {confirmMatches || <span className="text-red-500">Passwords do not match</span>}
+
+                <Divider/>
+                
+                <CheckboxInput
+                    id="rules-agreement-checkbox"
+                    checked={passwordAgreement}
+                    onChange={() => setPasswordAgreement(agreed => !agreed)}>
+                    I understand that I MUST save this team password.
+                    It cannot be changed, and the CTF admins can't give it to you in case you lose it.
+                </CheckboxInput>
+
+                <button
+                    onClick={sendCreateTeamRequest}
+                    disabled={!passwordAgreement || password !== confirmPassword || !!passwordError}
+                    className="
+                        h-12 md:h-14 w-screen-2/5 sm:w-1/2 pb-0.5
+                        text-lg font-medium
+                        flex justify-center items-center
+                        border-2 border-main-color-500 bg-main-color-700 rounded-lg
+                        disabled:saturate-50 saturate-100 transition-[filter] duration-300
+                        px-5">Join Team</button>
+
+                <button
+                    onClick={cancelCreating}
+                    className="
+                        h-12 md:h-14 pb-0.5 w-1/2
+                        text-lg font-medium
+                        flex justify-center items-center
+                        bg-user-profile-no-team-background-color rounded-lg
+                        px-5">Cancel</button>
             </div>
         </div>
-    )
-}
+    </div>;
+};
 
 export const getServerSideProps: GetServerSideProps<NewTeamPageProps> = async context => {
     const account = await getAccount(context);
 
+    if (!account) return { notFound: true, redirect: "/" };
+
+
     const props: NewTeamPageProps = {
         metadata: await getCompetition(),
-        account,
+        canBeEligible: account.eligible,
     };
     return { props };
 };
 
-export default NewTeam;
+export default NewTeamPage;

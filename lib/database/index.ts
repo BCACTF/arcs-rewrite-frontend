@@ -1,7 +1,7 @@
 
 type Heuristic = [(pass: string) => boolean, string];
 
-const containsMatch = (str: string, match: RegExp): boolean => str.split(match).some(s => s.match(match));
+const containsMatch = (str: string, match: RegExp): boolean => str.split("").some(s => s.match(match));
 const doesntContainMatch = (str: string, match: RegExp): boolean => !containsMatch(str, match);
 
 const doesntMatch = (str: string, match: RegExp): boolean => !str.match(match);
