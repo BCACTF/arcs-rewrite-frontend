@@ -1,23 +1,16 @@
-// Components
-
-
-// Hooks
-
-
 // Types
-import { GetTokenParams, getToken } from "next-auth/jwt";
-import { CachedUser, getAllUsers } from "cache/users";
-
-
-// Styles
-
+import { GetTokenParams } from "next-auth/jwt";
+import { CachedUser } from "cache/users";
 
 // Utils
+import { getTokenSecret } from "pages/api/auth/[...nextauth]";
+import { getAllUsers } from "cache/users";
+
 
 export type Account = CachedUser & { img: string | null };
 
 const getAccount = async ({ req }: GetTokenParams): Promise<Account | null> => {
-    const token = await getToken({ req });
+    const token = await getTokenSecret({ req });
 
     if (!token || !token.email) return null;
 

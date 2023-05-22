@@ -1,10 +1,10 @@
 import { addUser } from "database/users";
 import { NextApiHandler } from "next";
-import { getToken } from "next-auth/jwt";
+import { getTokenSecret } from "./auth/[...nextauth]";
 
 
 const handler: NextApiHandler = async (req, res) =>  {
-    const token = await getToken({ req });
+    const token = await getTokenSecret({ req });
     if (!token) return "nl";
     const { email, name } = { email: token?.email, name: JSON.parse(req.body).name };
     if (email && name) {

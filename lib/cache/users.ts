@@ -97,7 +97,7 @@ export const parseUser = (userJson: string): CachedUser | null => {
 }
 
 export const getUsers = async (ids: UserId[]): Promise<CachedUser[]> => {
-    const rawCachedUsers = await cache.hmget(USER_HASH_KEY, ...ids.map(userIdToStr));
+    const rawCachedUsers = await (await cache()).hmget(USER_HASH_KEY, ...ids.map(userIdToStr));
     const optCachedUsers = rawCachedUsers.flatMap(raw => raw ? [raw] : []).map(parseUser);
 
     return optCachedUsers.flatMap(user => user ? [user] : []);
@@ -108,21 +108,18 @@ export const getUsersByTeam = async (teamId: TeamId): Promise<CachedUser[]> => {
     return allUsers.filter(user => user.teamId === teamId);
 };
 export const getAllUsers = async (): Promise<CachedUser[]> => {
-    const rawCachedUsers = await cache.hvals(USER_HASH_KEY);
+    const rawCachedUsers = await (await cache()).hvals(USER_HASH_KEY);
     const optCachedUsers = rawCachedUsers.flatMap(raw => raw ? [raw] : []).map(parseUser);
 
     return optCachedUsers.flatMap(user => user ? [user] : []);
 };
-const getAllUserKeys = async (): Promise<string[]> => await cache.hkeys(USER_HASH_KEY);
+const getAllUserKeys = async (): Promise<string[]> => await (await cache()).hkeys(USER_HASH_KEY);
 
-// export const getAllUserIds = async (): Promise<UserId[]> => (await cache.hkeys(USER_HASH_KEY))
-//     .map(userIdFromStr)
-//     .flatMap(id => id ? [id] : []);
 
 export const update = async (userData: CachedUser): Promise<CachedUser | null> => {
     const userIdStr = userIdToStr(userData.userId);
 
-    const setResult = await cache
+    const setResult = await (await cache())
         .pipeline()
         .hget(USER_HASH_KEY, userIdToStr(userData.userId))
         .hset(USER_HASH_KEY, { [userIdStr]: JSON.stringify(userData) })
@@ -136,7 +133,7 @@ export const removeStale = async (notStale: UserId[]): Promise<UserId[]> => {
     const currSet = new Set(notStale.map(userIdToStr));
     const cachedIds = await getAllUserKeys();
     const removeIds = cachedIds.filter(id => !currSet.has(id));
-    if (removeIds.length) await cache.hdel(USER_HASH_KEY, ...removeIds);
+    if (removeIds.length) await (await cache()).hdel(USER_HASH_KEY, ...removeIds);
 
     return removeIds.map(userIdFromStr).flatMap(id => id ? [id] : []);
 };

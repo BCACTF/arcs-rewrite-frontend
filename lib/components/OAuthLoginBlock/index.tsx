@@ -5,7 +5,7 @@ import Image from "next/image";
 
 
 // Types
-import React, { CSSProperties, FC } from "react";
+import React, { FC } from "react";
 
 // Utils
 import { ClientSafeProvider, signIn } from "next-auth/react";
@@ -16,7 +16,6 @@ interface OAuthLoginBlockProps {
     iconLink: string;
 
     provider: ClientSafeProvider;
-    // csrfToken: string | undefined;
 }
 
 

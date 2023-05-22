@@ -9,34 +9,32 @@ import Link from "next/link";
 // Types
 import React, { FC, useEffect } from 'react';
 import { GetServerSideProps } from 'next';
-import { CompetitionMetadata } from 'metadata/general';
-import { Environment } from 'metadata/env';
+import { Competition } from 'metadata/client';
 
 // Utils
-import { getCompetitionMetadata } from "metadata/general";
-import { getEnvironment } from "metadata/env";
+import getCompetition from "metadata/client";
 import getAccount, { Account } from "account/validation";
 import Router from 'next/router';
 import { getProviders } from 'next-auth/react';
-import { JWT, getToken } from 'next-auth/jwt';
+import { JWT } from 'next-auth/jwt';
+import { getTokenSecret } from 'pages/api/auth/[...nextauth]';
 
 
 
 interface SignInProps {
-    compMeta: CompetitionMetadata;
-    envData: Environment;
+    metadata: Competition;
     account: Account | null;
     token: JWT | null;
     providers: Exclude<Awaited<ReturnType<typeof getProviders>>, null>;
 }
 
 
-const SignIn: FC<SignInProps> = ({ providers, account, token, envData, compMeta }) => {
-
+const SignIn: FC<SignInProps> = ({ providers, account, token, metadata }) => {
+    console.log({ account, token });
     useEffect(
         () => {
             if (account) Router.replace("/");
-            else if (token) Router.replace("/account/new-user");
+            else if (token) Router.replace("/account/register");
         },
         [account, token],
     );
@@ -50,7 +48,7 @@ const SignIn: FC<SignInProps> = ({ providers, account, token, envData, compMeta 
                         Sign In
                 </h3>
                 <div className="flex flex-col space-y-8 place-content-center">
-                    <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Sign In"/>
+                    <WebsiteMeta metadata={metadata} pageName="Sign In"/>
                     {
                         github && <OAuthLoginBlock
                             iconLink={"/icons/github.png"}
@@ -84,13 +82,12 @@ export const getServerSideProps: GetServerSideProps<SignInProps> = async context
     
     if (!providers) return { notFound: true };
     const account = await getAccount(context);
-    const token = await getToken(context);
+    const token = await getTokenSecret(context);
 
 
 
     const props: SignInProps = {
-        envData: getEnvironment(),
-        compMeta: getCompetitionMetadata(),
+        metadata: await getCompetition(),
         account,
         token,
         providers,

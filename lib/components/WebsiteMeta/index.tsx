@@ -1,11 +1,9 @@
-import { Environment } from "metadata/env";
 import Head from "next/head";
 import React, { FC } from "react";
-import { CompetitionMetadata } from "metadata/general"
+import { Competition } from "metadata/client";
 
 export interface WebsiteHeaderProps {
-    compMeta: CompetitionMetadata;
-    envConfig: Environment;
+    metadata: Competition;
     pageName: string;
 }
 
@@ -16,11 +14,11 @@ export interface WebsiteHeaderProps {
  * @param {WebsiteHeaderProps} props
  * @returns {JSX} The WebsiteMeta JSX representation
  */
-const WebsiteMeta: FC<WebsiteHeaderProps> = ({ compMeta, envConfig, pageName }) => {
-    const title = `${pageName} | ${compMeta.name}`;
+const WebsiteMeta: FC<WebsiteHeaderProps> = ({ metadata, pageName }) => {
+    const title = `${pageName} | ${metadata.name}`;
     return <Head>
         <title>{title}</title>
-        <link rel="icon" href={envConfig.fileLocations.favicon} />
+        <link rel="icon" href={metadata.logoUrl} />
     </Head>
 };
 

@@ -1,0 +1,48 @@
+{
+    "type": "object",
+    "title": "Competition Config Schema",
+    "required": [
+        "port",
+        "frontendAuthToken",
+        "webhook",
+        "redisKeyPrefix"
+    ],
+    "properties": {
+        "port": {
+            "type": "integer",
+            "minimum": "1",
+            "maximum": "65535"
+        },
+        "frontendAuthToken": {
+            "type": "string",
+            "pattern": "^\\S{20}\\S*$"
+        },
+        "webhook": {
+            "type": "object",
+            "required": [
+                "authToken",
+                "url",
+                "clientOauthAllowToken"
+            ],
+            "properties": {
+                "authToken": {
+                    "type": "string",
+                    "pattern": "^\\S{20}\\S*$"
+                },
+                "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "pattern": "^https?://"
+                },
+                "clientOauthAllowToken": {
+                    "type": "string",
+                    "pattern": "^\\S{20}\\S*$"
+                }
+            }   
+        },
+        "redisKeyPrefix": {
+            "type": "string",
+            "pattern": "^\\S*$"
+        }
+    }
+}

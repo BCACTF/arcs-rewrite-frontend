@@ -44,3 +44,10 @@ next-env.d.ts
 *.png
 
 test-*.json
+
+
+# Explicitly allowing individual schemas to prevent against accidentally committing secrets/ids
+envcfg/*.json
+!envcfg/oauth-schema.json
+!envcfg/competition-schema.json
+!envcfg/config-schema.json

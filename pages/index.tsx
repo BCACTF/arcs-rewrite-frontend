@@ -10,33 +10,29 @@ import HeaderBanner, { HeaderBannerPage } from "components/HeaderBanner";
 // Types
 import React, { FC } from 'react';
 import { GetServerSideProps } from 'next';
-import { CompetitionMetadata } from 'metadata/general';
-import { Environment } from 'metadata/env';
+import { Competition } from 'metadata/client';
 
 // Styles
 
 
 // Utils
-import { getCompetitionMetadata } from "metadata/general";
-import { getEnvironment } from "metadata/env";
+import getCompetition from "metadata/client";
 import getAccount, { Account } from "account/validation";
 
 interface HomeProps {
-    compMeta: CompetitionMetadata;
-    envData: Environment;
+    metadata: Competition;
     account: Account | null;
 }
 
-const Home: FC<HomeProps> = ({ compMeta, envData, account }) => {
+const Home: FC<HomeProps> = ({ metadata, account }) => {
     return (
         <div className="flex flex-col place-content-evenly h-screen">
-            <HeaderBanner account={account} meta={compMeta} currPage={HeaderBannerPage.HOME}/>
+            <HeaderBanner account={account} meta={metadata} currPage={HeaderBannerPage.HOME}/>
             <div className="sm:pb-20 sm:my-auto max-sm:mb-auto grid place-content-center">
-                <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Home"/>
+                <WebsiteMeta metadata={metadata} pageName="Home"/>
                 <NoSsr>
                     <WebsiteCountdown
-                        compMeta={compMeta}
-                        envConfig={envData}
+                        metadata={metadata}
                         formatter={({days, hours, minutes, seconds}) => <div className={""}>{"T+"} {days}{"d"} {hours}{"h "}{minutes}{"m "}{seconds}{"s "}</div>} />
                 </NoSsr>
             </div>
@@ -46,8 +42,7 @@ const Home: FC<HomeProps> = ({ compMeta, envData, account }) => {
 
 export const getServerSideProps: GetServerSideProps<HomeProps> = async context => {
     const props: HomeProps = {
-        envData: getEnvironment(),
-        compMeta: getCompetitionMetadata(),
+        metadata: await getCompetition(),
         account: await getAccount(context),
     };
     return { props };

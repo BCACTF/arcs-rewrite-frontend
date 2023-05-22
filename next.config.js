@@ -1,12 +1,17 @@
-/** @type {import('next').NextConfig} */
 const path = require('path');
+const { readFileSync } = require('fs');
 
-let event_url_domain = process.env.NEXT_PUBLIC_EVENT_LOGO_URL;
 
-if (!event_url_domain) {
-    throw new Error("NEXT_PUBLIC_EVENT_LOGO_URL not defined");
+const configFileLocation = path.join(process.env.CONFIG_FILE_DIR || "./envcfg", "competition.json");
+const logoUrl = JSON.parse(readFileSync(configFileLocation, "utf8"))?.logoUrl;
+
+console.log(logoUrl.split("://")[1].split("/")[0]);
+
+if (typeof logoUrl !== "string" || !logoUrl) {
+    throw new Error("competition.json is not valid");
 }
 
+/** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: true,
     swcMinify: true,
@@ -18,7 +23,7 @@ const nextConfig = {
     },
     images: {
         // assumes http or https preprended, and trailing 
-        domains: [ event_url_domain.split("://")[1].split("/")[0] ],
+        domains: [ logoUrl.split("://")[1].split("/")[0] ],
         // domains: [ "storage.googleapis.com" ],
     },
 }

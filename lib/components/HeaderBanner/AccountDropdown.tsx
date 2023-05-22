@@ -19,9 +19,9 @@ import { Account } from 'account/validation';
 interface DropdownEntryProps {
     href: string;
     entryText: string;
-    open: boolean;
+    open: boolean; // TODO: Figure out if this is still useful or needed whatsoever.
 }
-export const DropdownEntry: FC<DropdownEntryProps> = ({ href, entryText, open }) => (
+export const DropdownEntry: FC<DropdownEntryProps> = ({ href, entryText }) => (
     <Link href={href} className="flex items-center justify-center w-full h-10 hover:bg-opacity-10 sm:hover:bg-navbar-account-dropdown-hover-color group max-sm:text-navbar-text-color-normal sm:text-navbar-account-dropdown-text-color">
         <span className="max-sm:hover:text-navbar-text-color-dark max-sm:ml-auto  max-sm:text-lg sm:ml-4">{entryText}</span>
         <span className="max-sm:hidden sm:ml-auto sm:mr-6 group-hover:translate-x-1 transition-transform">→</span>

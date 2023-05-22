@@ -6,30 +6,27 @@ import WebsiteMeta from "components/WebsiteMeta";
 // Types
 import React, { FC } from 'react';
 import { GetServerSideProps } from 'next';
-import { CompetitionMetadata } from 'metadata/general';
-import { Environment } from 'metadata/env';
+import { Competition } from 'metadata/client';
 
 
 // Utils
-import { getCompetitionMetadata } from "metadata/general";
-import { getEnvironment } from "metadata/env";
+import getCompetition from "metadata/client";
 import getAccount, { Account } from "account/validation";
 import HeaderBanner from "components/HeaderBanner";
 import Router from "next/router";
 
 interface NewTeamPageProps {
-    compMeta: CompetitionMetadata;
-    envData: Environment;
+    metadata: Competition;
     account: Account | null;
 }
 
-const NewTeam: FC<NewTeamPageProps> = ({ compMeta, envData, account }) => {
+const NewTeam: FC<NewTeamPageProps> = ({ metadata, account }) => {
 
     const baseInput = "w-40 h-12 bg-slate-800 border-2 border-slate-700 rounded-lg p-3";
     return (
         <div className="flex flex-col items-center mt-16 p-4 justify-center h-screen">
-            <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Home"/>
-            <HeaderBanner account={account} meta={compMeta} currPage={null} />
+            <WebsiteMeta metadata={metadata} pageName="Home"/>
+            <HeaderBanner account={account} meta={metadata} currPage={null} />
             <h2 className="font-bold text-3xl mb-9">Join Existing Team</h2>
             <span>
                 <label className="pr-4 inline-block w-48 text-right">Team Name:</label>
@@ -61,8 +58,7 @@ export const getServerSideProps: GetServerSideProps<NewTeamPageProps> = async co
     const account = await getAccount(context);
 
     const props: NewTeamPageProps = {
-        envData: getEnvironment(),
-        compMeta: getCompetitionMetadata(),
+        metadata: await getCompetition(),
         account,
     };
     return { props };

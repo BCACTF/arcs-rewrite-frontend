@@ -1,28 +1,40 @@
-import NextAuth, { AuthOptions } from 'next-auth';
+import NextAuthBuilder, { AuthOptions } from 'next-auth';
+
+import { NextApiRequest, NextApiResponse } from 'next';
+
+import { Provider } from 'next-auth/providers';
 import AppleProvider from 'next-auth/providers/apple';
 import GoogleProvider from 'next-auth/providers/google';
 import GithubProvider from 'next-auth/providers/github';
-import { Provider } from 'next-auth/providers';
-// import { checkUserOauth } from 'database/users';
 
-const getProvider = <T>(prefix: string, providerFn: (options: { clientId: string, clientSecret: string }) => T): T | undefined => {
-    const { id, secret } = { id: process.env[`${prefix}_ID`], secret: process.env[`${prefix}_SECRET`] };
+import { getOauth } from 'metadata/server';
 
-    if (id && secret) return providerFn({ clientId: id, clientSecret: secret });
-}
+import { GetTokenParams, JWT, getToken } from 'next-auth/jwt';
 
-export let activeProviders: string[] = [];
+export const getSecret = async () => (await getOauth()).nextAuth.secret;
+export const getTokenSecret = async (params: GetTokenParams<false>): Promise<JWT | null> => await getToken({
+    secret: await getSecret(),
+    ...params,
+});
 
-const getProviders = (): Provider[] => {
+const getProvider = async <T>(name: string, providerFn: (options: { clientId: string, clientSecret: string }) => T): Promise<T | undefined> => {
+    const provider = (await getOauth()).providers[name];
+
+    if (provider) return providerFn({ clientId: provider.id, clientSecret: provider.secret });
+};
+
+const getProviders = async (): Promise<Provider[]> => {
     const [
         apple,
         github,
         google
-    ] = [
-        getProvider("APPLE",  AppleProvider),
-        getProvider("GITHUB", GithubProvider),
-        getProvider("GOOGLE", GoogleProvider),
-    ];
+    ] = await Promise.all([
+        getProvider("apple",  AppleProvider),
+        getProvider("github", GithubProvider),
+        getProvider("google", GoogleProvider),
+    ]);
+
+    process.env.NEXTAUTH_URL = (await getOauth()).nextAuth.url;
 
     const providers = [
         apple  ? [ apple] : [],
@@ -30,28 +42,35 @@ const getProviders = (): Provider[] => {
         google ? [google] : [],
     ].flat(1);
 
-    activeProviders = providers.map(provider => provider.id);
-
     return providers;
 };
 
-export const authOptions: AuthOptions = {
-    providers: getProviders(),
-    pages: {
-        signIn: '/account/signin',
-        signOut: '/account/signout',
-        error: '/account/error',
-        newUser: '/account/new-user',
-    },
-    callbacks: {
-        jwt: params => params.token,
-        // signIn: async ({ account, email, profile, user }) => {
-        //     if (!account) return false;
-        //     if (!checkUserOauth({ id: ,  }))
-        //     return true;
-        // },
-    },
-    secret: process.env.NEXTAUTH_SECRET,
+
+
+let savedOptions: AuthOptions | undefined = undefined;
+
+const getNextAuthOptions = async () => {
+    if (savedOptions) return savedOptions;
+    const options: AuthOptions = {
+        providers: await getProviders(),
+        pages: {
+            signIn: '/account/signin',
+            signOut: '/account/signout',
+            error: '/account/error',
+            newUser: '/account/new-user',
+        },
+        callbacks: {
+            jwt: params => params.token,
+        },
+        secret: await getSecret(),
+    };
+
+    savedOptions = options;
+
+    return options;
 };
 
-export default NextAuth(authOptions);
+export default async function NextAuth(req: NextApiRequest, res: NextApiResponse) {
+    // Do whatever you want here, before the request is passed down to `NextAuth`
+    return await NextAuthBuilder(req, res, await getNextAuthOptions())
+}

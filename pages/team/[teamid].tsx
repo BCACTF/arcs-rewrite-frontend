@@ -6,16 +6,14 @@ import WebsiteMeta from "components/WebsiteMeta";
 // Types
 import React, { FC } from 'react';
 import { GetServerSideProps } from 'next';
-import { CompetitionMetadata } from 'metadata/general';
-import { Environment } from 'metadata/env';
+import { Competition } from 'metadata/client';
 import { CachedTeamMeta } from "cache/teams";
 import { ClientSideMeta as ClientSideMetaUser } from "cache/users";
 import { CachedSolveMeta, sortBy as sortSolvesBy } from "cache/solves";
 
 
 // Utils
-import { getCompetitionMetadata } from "metadata/general";
-import { getEnvironment } from "metadata/env";
+import getCompetition from "metadata/client";
 import getAccount, { Account } from "account/validation";
 import { getTeams } from "cache/teams";
 import { getUsersByTeam, sortBy as sortUsersBy } from "cache/users";
@@ -28,8 +26,7 @@ import { ClientSideMeta as ClientSideMetaChall, getAllChallenges } from "cache/c
 import HeaderBanner from "components/HeaderBanner";
 
 interface TeamPageProps {
-    compMeta: CompetitionMetadata;
-    envData: Environment;
+    metadata: Competition;
     team: CachedTeamMeta;
     users: ClientSideMetaUser[];
     solves: CachedSolveMeta[];
@@ -37,12 +34,12 @@ interface TeamPageProps {
     account: Account | null;
 }
 
-const Home: FC<TeamPageProps> = ({ compMeta, envData, team, users, solves, challs, account }) => {
+const Home: FC<TeamPageProps> = ({ metadata, team, users, solves, challs, account }) => {
     return (
         <div className="flex flex-col h-screen">
-            <HeaderBanner account={account} meta={compMeta} currPage={null} />
+            <HeaderBanner account={account} meta={metadata} currPage={null} />
             <div className="flex flex-row ">
-                <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Home"/>
+                <WebsiteMeta metadata={metadata} pageName="Home"/>
 
                 <div className="flex flex-col border-r-2 border-slate-700">
                     <TeamInfo team={team}/>
@@ -72,8 +69,7 @@ export const getServerSideProps: GetServerSideProps<TeamPageProps> = async conte
     const challs = await getAllChallenges();
 
     const props: TeamPageProps = {
-        envData: getEnvironment(),
-        compMeta: getCompetitionMetadata(),
+        metadata: await getCompetition(),
         team,
         users: users.map(user => user.clientSideMetadata),
         solves,

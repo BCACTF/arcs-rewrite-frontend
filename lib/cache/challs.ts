@@ -128,28 +128,19 @@ export const parseChallenge = (challJson: string): CachedChall | null => {
     return { visible, id: challId, clientSideMetadata };
 }
 
-// export const getChallenges = async (ids: ChallId[]): Promise<CachedChall[]> => {
-//     const rawCachedChalls = await cache.hmget(CHALLENGE_HASH_KEY, ...ids.map(challIdToStr));
-//     const optCachedChalls = rawCachedChalls.flatMap(raw => raw ? [raw] : []).map(parseChallenge);
-
-//     return optCachedChalls.flatMap(chall => chall ? [chall] : []);
-// };
 export const getAllChallenges = async (): Promise<CachedChall[]> => {
-    const rawCachedChalls = await cache.hvals(CHALLENGE_HASH_KEY);
+    const rawCachedChalls = await (await cache()).hvals(CHALLENGE_HASH_KEY);
     const optCachedChalls = rawCachedChalls.flatMap(raw => raw ? [raw] : []).map(parseChallenge);
 
     return optCachedChalls.flatMap(chall => chall ? [chall] : []);
 };
-const getAllChallKeys = async (): Promise<string[]> => await cache.hkeys(CHALLENGE_HASH_KEY);
+const getAllChallKeys = async (): Promise<string[]> => await (await cache()).hkeys(CHALLENGE_HASH_KEY);
 
-// export const getAllChallIds = async (): Promise<ChallId[]> => (await cache.hkeys(CHALLENGE_HASH_KEY))
-//     .map(challIdFromStr)
-//     .flatMap(id => id ? [id] : []);
 
 export const update = async (challData: CachedChall): Promise<CachedChall | null> => {
     const challIdStr = challIdToStr(challData.id);
 
-    const setResult = await cache
+    const setResult = await (await cache())
         .pipeline()
         .hget(CHALLENGE_HASH_KEY, challIdToStr(challData.id))
         .hset(CHALLENGE_HASH_KEY, { [challIdStr]: JSON.stringify(challData) })
@@ -163,7 +154,7 @@ export const removeStale = async (notStale: ChallId[]): Promise<ChallId[]> => {
     const currSet = new Set(notStale.map(challIdToStr));
     const cachedIds = await getAllChallKeys();
     const removeIds = cachedIds.filter(id => !currSet.has(id));
-    if (removeIds.length) await cache.hdel(CHALLENGE_HASH_KEY, ...removeIds);
+    if (removeIds.length) await (await cache()).hdel(CHALLENGE_HASH_KEY, ...removeIds);
 
     return removeIds.map(challIdFromStr).flatMap(id => id ? [id] : []);
 };

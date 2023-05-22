@@ -8,31 +8,28 @@ import HeaderBanner from "components/HeaderBanner";
 // Types
 import React, { FC } from 'react';
 import { GetServerSideProps } from 'next';
-import { CompetitionMetadata } from 'metadata/general';
-import { Environment } from 'metadata/env';
+import { Competition } from 'metadata/client';
 
 // Styles
 
 
 // Utils
-import { getCompetitionMetadata } from "metadata/general";
-import { getEnvironment } from "metadata/env";
+import getCompetition from "metadata/client";
 import getAccount, { Account } from "account/validation";
 import { CachedTeamMeta, getTeams } from "cache/teams";
 
 interface SettingsPageProps {
-    compMeta: CompetitionMetadata;
-    envData: Environment;
+    metadata: Competition;
     account: Account;
     team: CachedTeamMeta | null;
 }
 
-const UserPage: FC<SettingsPageProps> = ({ compMeta, envData, account }) => {
+const UserPage: FC<SettingsPageProps> = ({ metadata, account }) => {
     return (
         <div className="flex flex-col place-content-evenly h-screen">
-            <HeaderBanner account={account} meta={compMeta} currPage={null} />
+            <HeaderBanner account={account} meta={metadata} currPage={null} />
             <div className="flex flex-col items-center my-auto">
-                <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Home"/>
+                <WebsiteMeta metadata={metadata} pageName="Home"/>
             </div>
         </div>
     )
@@ -48,8 +45,7 @@ export const getServerSideProps: GetServerSideProps<SettingsPageProps> = async c
 
 
     const props: SettingsPageProps = {
-        envData: getEnvironment(),
-        compMeta: getCompetitionMetadata(),
+        metadata: await getCompetition(),
         account,
         team,
     };

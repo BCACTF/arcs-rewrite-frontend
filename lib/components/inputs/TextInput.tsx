@@ -52,6 +52,10 @@ const ValidityDisplay: FC<{ state: VerificationState }> = ({ state }) => {
             <div className={`${base} bg-green-500`}/>
             {tooltip}
         </>;
+        case "stalesuccess": return <>
+            <div className={`${base} bg-green-500`}/>
+            {tooltip}
+        </>;
         case "failure": return <>
             <div className={`${base} bg-red-500`}/>
             {tooltip}
@@ -67,7 +71,7 @@ const TextInput: FC<Props> = (props) => (
                 h-12 md:h-14 py-2 w-full
                 flex flex-row place-content-around
                 border border-signin-provider-outline rounded-lg
-                px-5
+                px-5 bg-signin-background-color
                 ${props.additionalClassName ?? ""}`}
                 {...omitted(props, ["promptName", "verificationState", "additionalClassName"])}/>
             {props.verificationState && <ValidityDisplay state={props.verificationState}/>}

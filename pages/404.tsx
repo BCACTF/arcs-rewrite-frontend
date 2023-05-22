@@ -9,28 +9,26 @@ import useStorage from "hooks/useStorage";
 // Types
 import { GetStaticProps } from "next";
 import React, { FC } from "react";
-import { CompetitionMetadata } from "metadata/general";
-import { Environment } from "metadata/env";
+import { Competition } from "metadata/client";
 
 // Styles
 
 // Utilities
-import { getEnvironment } from "metadata/env";
+import getCompetition from "metadata/client";
 import { safeRandomFlagChars } from "utils/random";
 
 
 interface Err404Props {
-    compMeta: CompetitionMetadata;
-    envData: Environment;
+    metadata: Competition;
 }
 
-const Err404: FC<Err404Props> = ({ compMeta, envData }) => {
+const Err404: FC<Err404Props> = ({ metadata }) => {
     const [randomL] = useStorage("/404 | randomL", () => safeRandomFlagChars(10));
     const [randomR] = useStorage("/404 | randomR", () => safeRandomFlagChars(10));
     
     
     return <div className="h-screen w-screen grid place-content-center text-center text-404-text-color">
-        <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="404"/>
+        <WebsiteMeta metadata={metadata} pageName="404"/>
 
         <h1 className="text-8xl font-extrabold m-2 pb-1 text-404-text-color-header">404</h1>
         <h3 className="text-3xl border-b-[1px] border-404-bar-colors mb-2 pb-3 font-semibold">Page Not Found</h3>
@@ -55,8 +53,7 @@ const Err404: FC<Err404Props> = ({ compMeta, envData }) => {
 
 export const getStaticProps: GetStaticProps<Err404Props> = async () => {
     const props = {
-        envData: getEnvironment(),
-        compMeta: {name: "BCACTF 4.0", start: 0, end: 1670533082},
+        metadata: await getCompetition(),
     };
     return { props };
 };

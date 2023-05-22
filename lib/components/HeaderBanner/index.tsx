@@ -8,7 +8,7 @@ import Link from "next/link";
 
 // Types
 import React, { FC, useState } from "react"
-import { CompetitionMetadata } from "metadata/general";
+import { Competition } from "metadata/client";
 import { Account } from "account/validation";
 
 // Styles
@@ -21,7 +21,7 @@ import { Account } from "account/validation";
 
 interface HeaderBannerProps {
     account: Account | null;
-    meta: CompetitionMetadata;
+    meta: Competition;
     currPage: HeaderBannerPage | null;
 }
 

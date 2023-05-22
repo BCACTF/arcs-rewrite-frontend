@@ -10,6 +10,7 @@ export enum OAuthProvider {
 const useAccount = () => {
     const session = useSession();
 
+
     const sessionStatus = session.status;
     const signInMemoized = useCallback(
         (provider: OAuthProvider) => {

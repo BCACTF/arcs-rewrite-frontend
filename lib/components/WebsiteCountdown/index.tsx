@@ -1,21 +1,14 @@
 import React, { CSSProperties, FC, ReactNode } from "react";
-import { Environment } from "metadata/env";
-import { CompetitionMetadata, JsonDate } from "metadata/general"
 import useInterval from "hooks/useInterval";
 import useRerender from "hooks/useRerender";
 import now, { DurationComponents, durationToComponents } from "utils/dates";
 import { wrapInSpan } from "utils/html";
 import Image from "next/image";
+import { Competition } from "metadata/client";
 
-const event_logo_url = process.env.NEXT_PUBLIC_EVENT_LOGO_URL;
-
-if(typeof event_logo_url === "undefined") {
-    throw new Error("EVENT_LOGO_URL not defined. Check your .env file.");
-}
 
 export interface WebsiteCountdownProps {
-    compMeta: CompetitionMetadata;
-    envConfig: Environment;
+    metadata: Competition;
 
     state?: CompetitionState;
 
@@ -36,7 +29,7 @@ export enum CompetitionState {
     After,
 }
 
-const getState = (start: JsonDate, end: JsonDate) => {
+const getState = (start: number, end: number) => {
     if (now() < start) {
         return CompetitionState.Before;
     } else if (now() > end) {
@@ -47,7 +40,7 @@ const getState = (start: JsonDate, end: JsonDate) => {
 };
 
 
-const getDuration = (start: JsonDate, end: JsonDate, state: CompetitionState): JsonDate => {
+const getDuration = (start: number, end: number, state: CompetitionState): number => {
     switch (state) {
         case CompetitionState.Before:
             return start - now();
@@ -91,15 +84,15 @@ const defaultFormatter = ({days, hours, minutes, seconds}: DurationComponents<JS
 );
 
 const WebsiteCountdown: FC<WebsiteCountdownProps> = ({
-    compMeta,
+    metadata,
     className,
     state: optState,
     formatter: optFormatter,
 }) => {
-    const state = optState ?? getState(compMeta.start, compMeta.end);
+    const state = optState ?? getState(metadata.start, metadata.end);
     const formatter = optFormatter ?? defaultFormatter;
 
-    const duration = getDuration(compMeta.start, compMeta.end, state);
+    const duration = getDuration(metadata.start, metadata.end, state);
     const componentNumbers = durationToComponents(duration, 1);
     
 
@@ -113,13 +106,13 @@ const WebsiteCountdown: FC<WebsiteCountdownProps> = ({
             <div>
                 {/* <div className="bg-event-logo h-[50vh] w-screen bg-cover bg-no-repeat m-auto"> </div> */}
                 <Image 
-                    src={event_logo_url}
+                    src={metadata.logoUrl}
                     alt={"Event Logo"}
                     height={400}
                     width={400}
                 />
                 <div className="text-landing-text-color">
-                    {compMeta.name + stateText(state)}
+                    {metadata.name + stateText(state)}
                 </div>
                 <div className="text-landing-timer-color">
                     {formatter(componentElements)}

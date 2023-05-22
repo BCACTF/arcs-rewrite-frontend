@@ -1,5 +1,7 @@
 // Components
-
+import Router from "next/router";
+import WebsiteMeta from 'components/WebsiteMeta';
+import HeaderBanner from 'components/HeaderBanner';
 
 // Hooks
 
@@ -7,33 +9,30 @@
 // Types
 import React, { FC } from 'react';
 import { GetServerSideProps } from 'next';
+import { Competition } from "metadata/client";
+import { JWT } from "next-auth/jwt";
 
 // Styles
 
 
 // Utils
-import { CompetitionMetadata, getCompetitionMetadata } from "metadata/general";
-import { Environment, getEnvironment } from "metadata/env";
-import { JWT, getToken } from "next-auth/jwt";
-import Router from "next/router";
-import WebsiteMeta from 'components/WebsiteMeta';
-import HeaderBanner from 'components/HeaderBanner';
+import getCompetition from "metadata/client";
 import { signOut } from 'next-auth/react';
+import { getTokenSecret } from 'pages/api/auth/[...nextauth]';
 
 
 interface NewUserPageProps {
-    compMeta: CompetitionMetadata;
-    envData: Environment;
+    metadata: Competition;
     token: JWT;
 }
 
-const NewUserPage: FC<NewUserPageProps> = ({ compMeta, envData }) => {
+const NewUserPage: FC<NewUserPageProps> = ({ metadata }) => {
     const baseInput = "w-48 h-12 bg-slate-800 border-2 border-slate-700 rounded-lg p-3 mr-12";
     
     return (
         <div className="flex flex-col items-center justify-center pt-16 h-screen">
-            <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Home"/>
-            <HeaderBanner account={null} meta={compMeta} currPage={null} />
+            <WebsiteMeta metadata={metadata} pageName="Home"/>
+            <HeaderBanner account={null} meta={metadata} currPage={null} />
             <h2 className="font-bold text-3xl mb-9">Create New User</h2>
             <span>
                 <label className="pr-4 inline-block w-48 text-right">Username:</label>
@@ -58,13 +57,12 @@ const NewUserPage: FC<NewUserPageProps> = ({ compMeta, envData }) => {
 }
 
 export const getServerSideProps: GetServerSideProps<NewUserPageProps> = async context => {
-    const token = await getToken(context);
+    const token = await getTokenSecret(context);
 
     if (!token) return { notFound: true, redirect: "/" };
 
     const props: NewUserPageProps = {
-        envData: getEnvironment(),
-        compMeta: getCompetitionMetadata(),
+        metadata: await getCompetition(),
         token,
     };
     return { props };

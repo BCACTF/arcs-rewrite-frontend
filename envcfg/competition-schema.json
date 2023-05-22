@@ -1,0 +1,32 @@
+{
+    "type": "object",
+    "title": "Competition Config Schema",
+    "required": [
+        "name",
+        "start",
+        "end",
+        "logoUrl"
+    ],
+    "properties": {
+        "name": "string",
+        "start": {
+            "type": "integer",
+            "minimum": 1680000000,
+            "maximum": 20000000000
+        },
+        "end": {
+            "type": "integer",
+            "minimum": 1680000000,
+            "maximum": 50000000000
+        },
+        "logoUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https?://",
+            "default": "http://0.0.0.0/public/logo.png",
+            "examples": [
+                "https://yourctfwebsite.com/public/logo.png"
+            ]
+        }
+    }
+}

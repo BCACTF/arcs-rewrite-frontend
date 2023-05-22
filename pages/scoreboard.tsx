@@ -7,31 +7,28 @@ import TeamList from "components/leaderboard/TeamList";
 // Types
 import React, { FC } from 'react';
 import { GetServerSideProps } from 'next';
-import { CompetitionMetadata } from 'metadata/general';
-import { Environment } from 'metadata/env';
+import { Competition } from 'metadata/client';
 import { CachedTeamMeta } from "cache/teams";
 
 // Styles
 
 // Utils
-import { getCompetitionMetadata } from "metadata/general";
-import { getEnvironment } from "metadata/env";
+import getCompetition from "metadata/client";
 import getAccount, { Account } from "account/validation";
 import { getAllTeams, sortBy as sortTeamsBy } from "cache/teams";
 import HeaderBanner, { HeaderBannerPage } from "components/HeaderBanner";
 
 interface TeamPageProps {
-    compMeta: CompetitionMetadata;
-    envData: Environment;
+    metadata: Competition;
     teams: CachedTeamMeta[];
     account: Account | null;
 }
 
-const Home: FC<TeamPageProps> = ({ compMeta, envData, teams, account }) => {
+const Home: FC<TeamPageProps> = ({ metadata, teams, account }) => {
     return (
         <div className="flex flex-col">
-            <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Home"/>
-            <HeaderBanner account={account} meta={compMeta} currPage={HeaderBannerPage.LEAD} />
+            <WebsiteMeta metadata={metadata} pageName="Home"/>
+            <HeaderBanner account={account} meta={metadata} currPage={HeaderBannerPage.LEAD} />
             <TeamList teams={teams}/>
         </div>
     )
@@ -43,8 +40,7 @@ export const getServerSideProps: GetServerSideProps<TeamPageProps> = async conte
     const teams = sortTeamsBy(await getAllTeams()).reverse();
 
     const props: TeamPageProps = {
-        envData: getEnvironment(),
-        compMeta: getCompetitionMetadata(),
+        metadata: await getCompetition(),
         account,
         teams,
     };

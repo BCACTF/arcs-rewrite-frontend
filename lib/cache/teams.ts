@@ -62,27 +62,23 @@ export const parseTeam = (teamJson: string): CachedTeamMeta | null => {
 }
 
 export const getTeams = async (ids: TeamId[]): Promise<CachedTeamMeta[]> => {
-    const rawCachedTeams = await cache.hmget(TEAM_HASH_KEY, ...ids.map(teamIdToStr));
+    const rawCachedTeams = await (await cache()).hmget(TEAM_HASH_KEY, ...ids.map(teamIdToStr));
     const optCachedTeams = rawCachedTeams.flatMap(raw => raw ? [raw] : []).map(parseTeam);
 
     return optCachedTeams.flatMap(team => team ? [team] : []);
 };
 export const getAllTeams = async (): Promise<CachedTeamMeta[]> => {
-    const rawCachedTeams = await cache.hvals(TEAM_HASH_KEY);
+    const rawCachedTeams = await (await cache()).hvals(TEAM_HASH_KEY);
     const optCachedTeams = rawCachedTeams.flatMap(raw => raw ? [raw] : []).map(parseTeam);
 
     return optCachedTeams.flatMap(team => team ? [team] : []);
 };
-const getAllTeamKeys = async (): Promise<string[]> => await cache.hkeys(TEAM_HASH_KEY);
-
-// export const getAllTeamIds = async (): Promise<TeamId[]> => (await cache.hkeys(TEAM_HASH_KEY))
-//     .map(teamIdFromStr)
-//     .flatMap(id => id ? [id] : []);
+const getAllTeamKeys = async (): Promise<string[]> => await (await cache()).hkeys(TEAM_HASH_KEY);
 
 export const update = async (teamData: CachedTeamMeta): Promise<CachedTeamMeta | null> => {
     const teamIdStr = teamIdToStr(teamData.id);
 
-    const setResult = await cache
+    const setResult = await (await cache())
         .pipeline()
         .hget(TEAM_HASH_KEY, teamIdToStr(teamData.id))
         .hset(TEAM_HASH_KEY, { [teamIdStr]: JSON.stringify(teamData) })
@@ -96,7 +92,7 @@ export const removeStale = async (notStale: TeamId[]): Promise<TeamId[]> => {
     const currSet = new Set(notStale.map(teamIdToStr));
     const cachedIds = await getAllTeamKeys();
     const removeIds = cachedIds.filter(id => !currSet.has(id));
-    if (removeIds.length) await cache.hdel(TEAM_HASH_KEY, ...removeIds);
+    if (removeIds.length) await (await cache()).hdel(TEAM_HASH_KEY, ...removeIds);
 
     return removeIds.map(teamIdFromStr).flatMap(id => id ? [id] : []);
 };

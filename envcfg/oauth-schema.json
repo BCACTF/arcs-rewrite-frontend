@@ -1,0 +1,73 @@
+{
+    "type": "object",
+    "title": "OAuth Config Schema",
+    "required": [
+        "providers",
+        "nextAuth"
+    ],
+    "properties": {
+        "providers": {
+            "type": "object",
+            "default": {
+                "<provider>": {
+                    "id": "<provider-id>",
+                    "secret": "<provider-secret>"
+                }
+            },
+            "required": [],
+            "patternProperties": {
+                "^[a-z\\d\\-]*$": {
+                    "type": "object",
+                    "default": {
+                        "id": "",
+                        "secret": ""
+                    },
+                    "title": "Single provider options",
+                    "required": [
+                        "id",
+                        "secret"
+                    ],
+                    "properties": {
+                        "id": "string",
+                        "secret": "string"
+                    }
+                }
+            },
+            "examples": [{
+                "google": {
+                    "id": "012345678901-abcdefghijklmnopqrstuvwxyz012345.apps.googleusercontent.com",
+                    "secret": "ABCDEF-AbCdEfHiJkLmNoPqRs0123456789"
+                },
+                "github": {
+                    "id": "0123456789abcdef0123",
+                    "secret": "0123456789abcdef0123456789abcdef01234567"
+                }
+            }]
+        },
+        "nextAuth": {
+            "type": "object",
+            "default": {},
+            "title": "NextAuth config options",
+            "required": [
+                "secret",
+                "url"
+            ],
+            "properties": {
+                "secret": "string",
+                "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "pattern": "^https?://",
+                    "default": "http://127.0.0.1:5000",
+                    "examples": [
+                        "https://example.com"
+                    ]
+                }
+            },
+            "examples": [{
+                "secret": "MY SECRET_SECRET",
+                "url": "https://example.com"
+            }]
+        }
+    }
+}

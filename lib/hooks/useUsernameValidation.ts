@@ -2,7 +2,7 @@ import { useCallback, useMemo, useReducer } from "react";
 import getUsernameIssue, { UsernameIssue } from "utils/username";
 
 
-export type VerificationState = "pending" | "success" | "failure";
+export type VerificationState = "pending" | "success" | "stalesuccess" | "failure";
 
 type CheckState = {
     output: VerificationState;
@@ -85,6 +85,7 @@ function reducer(prevState: CheckState, action: Action): CheckState {
                 ...prevState,
                 issue,
                 value,
+                output: "stalesuccess",
             };
         }
 
@@ -109,7 +110,6 @@ function reducer(prevState: CheckState, action: Action): CheckState {
         
         case "recieve": {
             const id = action.id;
-            console.log(action);
 
             if (id === actionIds.clear && id !== actionIds.recieve) {
                 actionIds.recieve = id;
@@ -123,7 +123,7 @@ function reducer(prevState: CheckState, action: Action): CheckState {
     }
 }
 
-type HookReturn = [UsernameIssue | null, VerificationState, (v: string) => void];
+type HookReturn = [string, UsernameIssue | null, VerificationState, (v: string) => void];
 const useUsernameValidation = (): HookReturn => {
     const [state, dispatch] = useReducer<typeof reducer>(reducer, { issue: null, output: "failure", value: "" });
 
@@ -132,7 +132,10 @@ const useUsernameValidation = (): HookReturn => {
         [dispatch],
     );
 
-    const retVal = useMemo<HookReturn>(() => [state.issue, state.output, update], [state.output, state.issue, update]);
+    const retVal = useMemo<HookReturn>(
+        () => [state.value, state.issue, state.output, update],
+        [state.value, state.output, state.issue, update],
+    );
 
     return retVal;
 };

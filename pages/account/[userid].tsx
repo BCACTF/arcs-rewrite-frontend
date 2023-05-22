@@ -8,12 +8,10 @@ import HeaderBanner from "components/HeaderBanner";
 // Types
 import React, { FC } from 'react';
 import { GetServerSideProps } from 'next';
-import { CompetitionMetadata } from 'metadata/general';
-import { Environment } from 'metadata/env';
+import { Competition } from 'metadata/client';
 
 // Utils
-import { getCompetitionMetadata } from "metadata/general";
-import { getEnvironment } from "metadata/env";
+import getCompetition from "metadata/client";
 import getAccount, { Account } from "account/validation";
 import { ClientSideMeta as ClientSideMetaUsers, getUsers } from "cache/users";
 import { UserId, userIdFromStr } from "cache/ids";
@@ -21,8 +19,7 @@ import UserCard from "components/users/UserCard";
 import { CachedTeamMeta, getTeams } from "cache/teams";
 
 interface UserPageProps {
-    compMeta: CompetitionMetadata;
-    envData: Environment;
+    metadata: Competition;
     user: ClientSideMetaUsers;
     userId: UserId;
     account: Account | null;
@@ -30,12 +27,12 @@ interface UserPageProps {
     team: CachedTeamMeta | null;
 }
 
-const UserPage: FC<UserPageProps> = ({ compMeta, envData, user, team, userImgHref, account }) => {
+const UserPage: FC<UserPageProps> = ({ metadata, user, team, userImgHref, account }) => {
     return (
         <div className="flex flex-col place-content-evenly h-screen">
-            <HeaderBanner account={account} meta={compMeta} currPage={null}/>
+            <HeaderBanner account={account} meta={metadata} currPage={null}/>
             <div className="m-auto pb-20">
-                <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Home"/>
+                <WebsiteMeta metadata={metadata} pageName="Home"/>
                 <UserCard {...{user, team, userImgHref, isMe: account?.userId === user.userId}}/>
             </div>
         </div>
@@ -55,8 +52,7 @@ export const getServerSideProps: GetServerSideProps<UserPageProps> = async conte
     const team = user.teamId ? await getTeams([user.teamId]).then(teams => teams[0] ?? null) : null;
 
     const props: UserPageProps = {
-        envData: getEnvironment(),
-        compMeta: getCompetitionMetadata(),
+        metadata: await getCompetition(),
         userId,
         user: user.clientSideMetadata,
         team,

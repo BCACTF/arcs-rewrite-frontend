@@ -6,24 +6,21 @@ import WebsiteMeta from "components/WebsiteMeta";
 // Types
 import React, { FC, useState } from 'react';
 import { GetServerSideProps } from 'next';
-import { CompetitionMetadata } from 'metadata/general';
-import { Environment } from 'metadata/env';
+import { Competition } from 'metadata/client';
 
 
 // Utils
-import { getCompetitionMetadata } from "metadata/general";
-import { getEnvironment } from "metadata/env";
+import getCompetition from "metadata/client";
 import getAccount, { Account } from "account/validation";
 import HeaderBanner from "components/HeaderBanner";
 import Router from "next/router";
 
 interface NewTeamPageProps {
-    compMeta: CompetitionMetadata;
-    envData: Environment;
+    metadata: Competition;
     account: Account | null;
 }
 
-const NewTeam: FC<NewTeamPageProps> = ({ compMeta, envData, account }) => {
+const NewTeam: FC<NewTeamPageProps> = ({ metadata, account }) => {
     const [error, setError] = useState(false);
     const [passwordsInputted, setPasswordsInputted] = useState(false);
 
@@ -63,8 +60,8 @@ const NewTeam: FC<NewTeamPageProps> = ({ compMeta, envData, account }) => {
                             border border-signin-text border-opacity-20 rounded-lg
                             bg-signin-background-color bg-opacity-50  
                             justify-center align-center m-auto px-3 pt-8 pb-4">
-                <WebsiteMeta compMeta={compMeta} envConfig={envData} pageName="Home"/>
-                <HeaderBanner account={account} meta={compMeta} currPage={null} />
+                <WebsiteMeta metadata={metadata} pageName="Home"/>
+                <HeaderBanner account={account} meta={metadata} currPage={null} />
                 <h2 className="font-bold text-3xl mb-2">Create New Team</h2>
                 <div className="mb-3">
                 {
@@ -121,8 +118,7 @@ export const getServerSideProps: GetServerSideProps<NewTeamPageProps> = async co
     const account = await getAccount(context);
 
     const props: NewTeamPageProps = {
-        envData: getEnvironment(),
-        compMeta: getCompetitionMetadata(),
+        metadata: await getCompetition(),
         account,
     };
     return { props };
