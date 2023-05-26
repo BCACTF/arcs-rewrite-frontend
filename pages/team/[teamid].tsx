@@ -41,15 +41,15 @@ const Home: FC<TeamPageProps> = ({ metadata, team, users, solves, challs, accoun
     return (
         <div className="flex flex-col h-screen">
             <HeaderBanner account={account} meta={metadata} currPage={null} />
-            <div className="flex flex-row ">
+            <div className="w-full">
                 <WebsiteMeta metadata={metadata} pageName="Home"/>
 
-                <div className="flex flex-col border-r-2 border-slate-700">
-                    <TeamInfo team={team}/>
+                <TeamInfo team={team}/>
+                <div className="flex flex-col sm:flex-row place-content-evenly mx-auto pt-10">
                     <UserList users={users}/>
+                    <SolveList {...{ users, team, solves, challs }} />
                 </div>
 
-                <SolveList {...{ users, team, solves, challs }} />
             </div>
         </div>
     )

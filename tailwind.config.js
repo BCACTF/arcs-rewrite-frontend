@@ -50,6 +50,13 @@ module.exports = {
         'user-profile-create-team-background-color': "#008d0c",
         'user-profile-join-team-background-color': "#0030a8",
         'user-profile-no-team-background-color': "#3d3d3d",
+
+        'team-line-color': "#fcfbfb",
+        'team-team-name-color': "#6d6dd5",
+        'team-line-color': "#fcfbfb",
+        'team-boxes-background-color': "#372950",
+        'team-boxes-border-color': "#b7b7b7",
+        'team-entry-hover-color': "#4b4ba3",
       },
       minWidth: {
         '30': "30rem",
