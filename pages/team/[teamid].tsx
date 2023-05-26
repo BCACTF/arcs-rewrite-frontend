@@ -1,15 +1,20 @@
 // Components
 import WebsiteMeta from "components/WebsiteMeta";
+import HeaderBanner from "components/HeaderBanner";
+import TeamInfo from "components/teams/TeamInfo";
+import UserList from "components/teams/UserList";
+import SolveList from "components/teams/SolveList";
 
 // Hooks
 
 // Types
 import React, { FC } from 'react';
-import { GetServerSideProps } from 'next';
+import { GetServerSidePropsResult } from 'next';
 import { Competition } from 'metadata/client';
 import { CachedTeamMeta } from "cache/teams";
 import { ClientSideMeta as ClientSideMetaUser } from "cache/users";
-import { CachedSolveMeta, sortBy as sortSolvesBy } from "cache/solves";
+import { CachedSolveMeta } from "cache/solves";
+import { ClientSideMeta as ClientSideMetaChall } from "cache/challs";
 
 
 // Utils
@@ -19,11 +24,9 @@ import { getTeams } from "cache/teams";
 import { getUsersByTeam, sortBy as sortUsersBy } from "cache/users";
 import { teamIdFromStr } from "cache/ids";
 import { getSolves } from "cache/solves";
-import TeamInfo from "components/teams/TeamInfo";
-import UserList from "components/teams/UserList";
-import SolveList from "components/teams/SolveList";
-import { ClientSideMeta as ClientSideMetaChall, getAllChallenges } from "cache/challs";
-import HeaderBanner from "components/HeaderBanner";
+import { sortBy as sortSolvesBy } from "cache/solves";
+import { getAllChallenges } from "cache/challs";
+import { pageLogger, wrapServerSideProps } from "logging";
 
 interface TeamPageProps {
     metadata: Competition;
@@ -52,21 +55,24 @@ const Home: FC<TeamPageProps> = ({ metadata, team, users, solves, challs, accoun
     )
 }
 
-export const getServerSideProps: GetServerSideProps<TeamPageProps> = async context => {
+export const getServerSideProps = wrapServerSideProps(async (context): Promise<GetServerSidePropsResult<TeamPageProps>> => {
+    pageLogger.info`Recieved request for ${context.resolvedUrl}`;
+
     const account = await getAccount(context);
     
     const teamIdRaw = context.query.teamid?.toString() ?? "";
     const teamId = teamIdFromStr(teamIdRaw);
-    if (!teamId) throw new Error("istg this is just an MVP thx bye");
+    if (!teamId) return { notFound: true } as const;
 
     const team = await getTeams([teamId]).then(team => team[0]);
-    if (!team) throw new Error("istg this is just an MVP thx bye");
+    if (!teamId) return { notFound: true } as const;
+
+    pageLogger.info`Uuid ${teamId} identified as ${team.name}`;
 
     const users = sortUsersBy(await getUsersByTeam(teamId));
-
     const solves = sortSolvesBy(await getSolves(teamId)).reverse();
-
     const challs = await getAllChallenges();
+
 
     const props: TeamPageProps = {
         metadata: await getCompetition(),
@@ -75,8 +81,10 @@ export const getServerSideProps: GetServerSideProps<TeamPageProps> = async conte
         solves,
         challs: challs.map(c => c.clientSideMetadata),
         account,
-    };
+    } as const;
+
+    pageLogger.info`Props built for ${team.name} request`;
     return { props };
-};
+});
 
 export default Home;

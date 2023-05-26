@@ -1,6 +1,7 @@
 // Components
 import WebsiteMeta from "components/WebsiteMeta";
 import TeamList from "components/leaderboard/TeamList";
+import HeaderBanner, { HeaderBannerPage } from "components/HeaderBanner";
 
 // Hooks
 
@@ -16,7 +17,7 @@ import { CachedTeamMeta } from "cache/teams";
 import getCompetition from "metadata/client";
 import getAccount, { Account } from "account/validation";
 import { getAllTeams, sortBy as sortTeamsBy } from "cache/teams";
-import HeaderBanner, { HeaderBannerPage } from "components/HeaderBanner";
+import { pageLogger, wrapServerSideProps } from "logging";
 
 interface TeamPageProps {
     metadata: Competition;
@@ -34,7 +35,9 @@ const Home: FC<TeamPageProps> = ({ metadata, teams, account }) => {
     )
 }
 
-export const getServerSideProps: GetServerSideProps<TeamPageProps> = async context => {
+export const getServerSideProps: GetServerSideProps<TeamPageProps> = wrapServerSideProps(async context => {
+    pageLogger.info`Recieved request for ${context.resolvedUrl}`;
+
     const account = await getAccount(context);
     
     const teams = sortTeamsBy(await getAllTeams()).reverse();
@@ -45,6 +48,6 @@ export const getServerSideProps: GetServerSideProps<TeamPageProps> = async conte
         teams,
     };
     return { props };
-};
+});
 
 export default Home;

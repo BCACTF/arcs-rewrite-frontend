@@ -21,6 +21,7 @@ import { Account } from "account/validation";
 import getCompetition from "metadata/client";
 import { getAllChallenges, sortBy } from "cache/challs";
 import getAccount from "account/validation";
+import { pageLogger, wrapServerSideProps } from "logging";
 
 
 interface PlayProps {
@@ -52,7 +53,9 @@ const Play: FC<PlayProps> = ({ metadata, challenges, account }) => {
     </div>
 }
 
-export const getServerSideProps: GetServerSideProps<PlayProps> = async context => {
+export const getServerSideProps: GetServerSideProps<PlayProps> = wrapServerSideProps(async context => {
+    pageLogger.info`Recieved request for ${context.resolvedUrl}`;
+
     const [
         account,
         challengesRaw,
@@ -71,6 +74,6 @@ export const getServerSideProps: GetServerSideProps<PlayProps> = async context =
         account,
     };
     return { props };
-};
+});
 
 export default Play;

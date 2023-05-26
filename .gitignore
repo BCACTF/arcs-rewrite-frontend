@@ -51,3 +51,4 @@ envcfg/*.json
 !envcfg/oauth-schema.json
 !envcfg/competition-schema.json
 !envcfg/config-schema.json
+logs/*.log

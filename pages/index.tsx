@@ -18,6 +18,7 @@ import { Competition } from 'metadata/client';
 // Utils
 import getCompetition from "metadata/client";
 import getAccount, { Account } from "account/validation";
+import { wrapServerSideProps, pageLogger } from "logging";
 
 interface HomeProps {
     metadata: Competition;
@@ -40,12 +41,16 @@ const Home: FC<HomeProps> = ({ metadata, account }) => {
     )
 }
 
-export const getServerSideProps: GetServerSideProps<HomeProps> = async context => {
+export const getServerSideProps: GetServerSideProps<HomeProps> = wrapServerSideProps(async context => {
+    pageLogger.info`Recieved request for ${context.resolvedUrl}`;
+
+    console.log(new Error().stack);
+
     const props: HomeProps = {
         metadata: await getCompetition(),
         account: await getAccount(context),
     };
     return { props };
-};
+});
 
 export default Home;
