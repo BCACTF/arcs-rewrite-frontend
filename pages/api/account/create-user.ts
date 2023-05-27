@@ -37,6 +37,7 @@ const getParams = (req: NextApiRequest): NewUserApiParams | null => {
 const handler: NextApiHandler = async (req, res) =>  {
     if (req.method !== "POST") {
         res.status(400).send("Invalid HTTP method");
+        return;
     }
 
     const token = await getTokenSecret({ req });

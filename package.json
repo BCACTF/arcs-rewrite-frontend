@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "bun run ./lib/utils/sync-once.ts && next dev",
+    "sync": "ts-node -r tsconfig-paths/register --compilerOptions '{\"module\":\"commonjs\"}' ./lib/utils/sync-once",
+    "dev": "npm run sync && next dev",
     "build": "next build",
-    "start": "bun run ./lib/utils/sync-once.ts && next start",
+    "start": "npm run sync && next start",
     "lint": "next lint",
     "find-dead": "ts-prune -p tsconfig.ts-prune.json"
   },
@@ -19,7 +20,7 @@
     "@types/react-dom": "18.0.9",
     "@types/uuid": "^9.0.1",
     "@typescript-eslint/parser": "^5.56.0",
-    "arcs-logging-node": "0.1.2",
+    "arcs-logging-node": "^0.1",
     "eslint-config-next": "13.0.6",
     "fp-ts": "^2.13.1",
     "ioredis": "^5.3.1",
@@ -40,7 +41,9 @@
     "sass": "^1.60.0",
     "sharp": "^0.32.0",
     "sqlite3": "^5.1.6",
+    "ts-node": "^10.9.1",
     "ts-prune": "^0.10.3",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "4.9.4",
     "uuid": "^9.0.0",
     "webfontloader": "^1.6.28"

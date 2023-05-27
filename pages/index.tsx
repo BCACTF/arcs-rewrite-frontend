@@ -44,8 +44,6 @@ const Home: FC<HomeProps> = ({ metadata, account }) => {
 export const getServerSideProps: GetServerSideProps<HomeProps> = wrapServerSideProps(async context => {
     pageLogger.info`Recieved request for ${context.resolvedUrl}`;
 
-    console.log(new Error().stack);
-
     const props: HomeProps = {
         metadata: await getCompetition(),
         account: await getAccount(context),
