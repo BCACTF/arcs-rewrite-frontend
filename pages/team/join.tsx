@@ -59,14 +59,14 @@ const JoinTeamPage: FC<JoinTeamPageProps> = ({ metadata }) => {
         [router],
     );
     
-    return <div className="h-screen w-screen flex place-content-center px-3 align-middle justify-center">
+    return <div className="h-screen w-screen flex place-content-center px-3 align-middle justify-center my-5">
         <WebsiteMeta metadata={metadata} pageName="Play"/>
 
         <div className="
             w-4/5 max-w-30 xl:max-w-[30rem]
             bg-signin-background-color bg-opacity-50
             border border-signin-text border-opacity-20 rounded-lg
-            px-1 py-12 my-auto mx-auto
+            px-1 py-12 my-auto
             align-center justify-center"> 
             <h3 className="text-3xl text-signin-text text-center mx-auto pb-10 font-bold">
                 Join Team
