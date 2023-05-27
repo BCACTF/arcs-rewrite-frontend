@@ -57,6 +57,13 @@ module.exports = {
         'team-boxes-background-color': "#372950",
         'team-boxes-border-color': "#b7b7b7",
         'team-entry-hover-color': "#4b4ba3",
+
+        'leaderboard-row-hover-color': "#4b4ba3",
+        'leaderboard-leaderboard-header-color': "#e9d23b",
+        'leaderboard-firstplace-number-color': "#e9d23b",
+        'leaderboard-secondplace-number-color': "#b3b3b3",
+        'leaderboard-thirdplace-number-color': "#b76500",
+        'leaderboard-number-color': "#ffffff",
       },
       minWidth: {
         '30': "30rem",
