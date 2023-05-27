@@ -50,7 +50,7 @@ const JoinTeamPage: FC<JoinTeamPageProps> = ({ metadata }) => {
                 alert("Error joining team!");
             }
         },
-        [name, password, router],
+        [name, password, router, disclaimerAgreed],
     );
     const cancelJoining = useCallback(
         async () => {
@@ -94,7 +94,7 @@ const JoinTeamPage: FC<JoinTeamPageProps> = ({ metadata }) => {
                 <CheckboxInput
                     id="rules-checkbox"
                     checked={disclaimerAgreed}
-                    onChange={event => setDisclaimerAgreed(event.target.checked)}>
+                    onChange={() => setDisclaimerAgreed(agreed => !agreed)}>
                     I understand that once I join this team,
                     I cannot leave this team or switch teams for the purpose of sharing flags
                     or other challenge information.
