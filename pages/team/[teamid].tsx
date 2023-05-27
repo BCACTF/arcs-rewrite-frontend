@@ -45,8 +45,11 @@ const Home: FC<TeamPageProps> = ({ metadata, team, users, solves, challs, accoun
                 <WebsiteMeta metadata={metadata} pageName="Home"/>
 
                 <TeamInfo team={team}/>
-                <div className="flex flex-col sm:flex-row place-content-evenly mx-auto pt-10">
+                <hr className="sm:hidden border-b-team-line-color w-3/4 mx-auto "></hr>
+                <div className="flex flex-col sm:flex-row place-content-evenly max-sm:w-4/5 mx-auto pt-4 sm:mb-4">
+                    <span className="sm:hidden text-center text-lg font-bold pb-2">Team Members</span>
                     <UserList users={users}/>
+                    <span className="sm:hidden text-center text-lg font-bold pb-3">Solves</span>
                     <SolveList {...{ users, team, solves, challs }} />
                 </div>
 

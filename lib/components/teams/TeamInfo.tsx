@@ -47,8 +47,8 @@ const formatDate = (dateNum: number) => {
 
 const TeamInfo: FC<TeamInfoProps> = ({ team: { name, score, lastSolve, eligible, affiliation } }) => (
     <div className="flex flex-col items-center p-8">
-        <code className="text-[2rem] pb-1 font-semibold">Team</code>
-        <code className="text-[2.4rem] mb-3 font-semibold text-team-team-name-color">{name}</code>
+        <code className="text-[1.6rem] sm:text-[2rem] pb-1 font-semibold">Team</code>
+        <code className="text-[1.8rem] sm:text-[2.4rem] mb-3 font-semibold text-team-team-name-color">{name}</code>
         
         {
             is_eligible(eligible, affiliation) ? (
@@ -61,14 +61,14 @@ const TeamInfo: FC<TeamInfoProps> = ({ team: { name, score, lastSolve, eligible,
         <hr className="border border-team-line-color w-1/2"></hr>
 
         <code className="text-2xl mt-5 mb-1 font-bold">{score} Points</code>
-        <code className="flex flex-col items-center mt-3 text-xl">
+        <code className="flex flex-col items-center mt-6 text-xl">
             <span className="text-md">
             {
                 (is_eligible(true, affiliation)) ? "Eligible for prizes" : "Ineligible for prizes"
             }
             </span>
         </code>
-        <NoSsr>{lastSolve ? <code className="text-xl mb-0.5">Last solve at: {formatDate(lastSolve)}</code> : <></>}</NoSsr>
+        {/* <NoSsr>{lastSolve ? <code className="text-xl mb-0.5">Last solve at: {formatDate(lastSolve)}</code> : <></>}</NoSsr> */}
         {/* <Eligibility elig={eligible} aff={affiliation} /> */}
     </div>
 );
