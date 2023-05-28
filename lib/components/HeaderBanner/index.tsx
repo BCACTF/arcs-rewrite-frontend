@@ -39,12 +39,14 @@ export enum HeaderBannerPage {
     HOME = "Home",
     PLAY = "Play",
     LEAD = "Leaderboard",
+    RULE = "Rules",
 }
 
 const linkMapping: Record<HeaderBannerPage, string> = {
     [HeaderBannerPage.HOME]: "/",
     [HeaderBannerPage.PLAY]: "/play",
     [HeaderBannerPage.LEAD]: "/scoreboard",
+    [HeaderBannerPage.RULE]: "/rules",
 };
 
 const HeaderBanner: FC<HeaderBannerProps> = ({ account, meta, currPage }) => {
@@ -63,7 +65,7 @@ const HeaderBanner: FC<HeaderBannerProps> = ({ account, meta, currPage }) => {
         } else {
             // return ` transition-all duration-500 p-3 py-3 px-7 h-${links.length * 8}`
             // TODO --> figure out a nicer thing for the height of navbar extension on mobile?
-            return (account ? `transition-all duration-500 h-64` : `transition-all duration-500 h-40`)
+            return (account ? `transition-all duration-500 h-72` : `transition-all duration-500 h-48`)
         }
     }
 
@@ -73,10 +75,10 @@ const HeaderBanner: FC<HeaderBannerProps> = ({ account, meta, currPage }) => {
                 <Link href="#" className="text-2xl my-auto font-semibold text-navbar-text-color ml-5 pr-7 border-r-2 border-navbar-text-color-dark text-center">
                     {meta.name} 
                 </Link>
-                {[ HeaderBannerPage.HOME, HeaderBannerPage.PLAY, HeaderBannerPage.LEAD ]
+                {[ HeaderBannerPage.HOME, HeaderBannerPage.PLAY, HeaderBannerPage.LEAD, HeaderBannerPage.RULE ]
                     .map((page, idx) => 
                         <div className="
-                            my-auto ml-7 pr-4
+                            my-auto ml-3 pr-3 md:ml-5 md:pr-5
                             text-navbar-text-color-normal
                             hover:text-navbar-text-color-dark"
                             key={idx}>
@@ -131,7 +133,7 @@ const HeaderBanner: FC<HeaderBannerProps> = ({ account, meta, currPage }) => {
                     w-screen bg-navbar-background-color  \
                     max-sm:bg-navbar-background-color-mobile-only \
                     shadow-md rounded-b-md " + setTransition(menuOpen)}>
-                    {[ HeaderBannerPage.HOME, HeaderBannerPage.PLAY, HeaderBannerPage.LEAD ]
+                    {[ HeaderBannerPage.HOME, HeaderBannerPage.PLAY, HeaderBannerPage.LEAD, HeaderBannerPage.RULE ]
                         .map((page, idx) => 
                             <div className="
                                 hover:drop-shadow-md transition

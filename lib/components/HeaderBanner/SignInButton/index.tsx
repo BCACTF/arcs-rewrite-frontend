@@ -21,7 +21,7 @@ const SignInButton: FC = () => (
             <Link href={"/account/signin"} className="
                 max-sm:hidden
                 flex flex-row justify-center items-center
-                h-9 w-60 transition delay-[5ms]
+                h-9 w-40 md:w-54 lg:w-60 transition delay-[5ms]
                 rounded-2xl bg-navbar-account-dropdown-background-color hover:bg-navbar-account-dropdown-background-color-hover
                 text-navbar-account-dropdown-text-color">
                 Sign In

@@ -64,6 +64,13 @@ module.exports = {
         'leaderboard-secondplace-number-color': "#b3b3b3",
         'leaderboard-thirdplace-number-color': "#b76500",
         'leaderboard-number-color': "#ffffff",
+
+        'rules-header-color': "#e9d23b",
+        'rules-subheader-color': "#9999f6",
+        'rules-divider-color': "#ffffff",
+        'rules-link-color': "#e9d23b",
+        'rules-link-hover-color': "#9999f6",
+        
       },
       minWidth: {
         '30': "30rem",

@@ -57,7 +57,7 @@ const AccountDropdown: FC<Account> = (
             {/* not mobile */}
             <div className={` max-sm:hidden
                 flex flex-row justify-end items-center
-                w-60 h-9 py-2 relative
+                md:w-54 lg:w-60 h-9 py-2 relative
                 rounded-t-2xl  transition-all duration-200
                 bg-navbar-account-dropdown-background-color
                 hover:navbar-account-dropdown-background-color-hover
