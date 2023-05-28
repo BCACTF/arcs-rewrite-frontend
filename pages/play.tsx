@@ -54,7 +54,7 @@ const Play: FC<PlayProps> = ({ metadata, challenges, teamSolves, account }) => {
                 submission: { challId: chall.id, teamId: account.teamId, userId: account.userId }
             })
         ),
-        []
+        [filteredChallenges, solvedIds],
     );
 
     return <div className="flex flex-col items-center justify-start w-screen h-screen min-h-60 pb-4">
