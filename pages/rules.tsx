@@ -14,7 +14,6 @@ import { Competition } from 'metadata/client';
 import getCompetition from "metadata/client";
 import getAccount, { Account } from "account/validation";
 import { wrapServerSideProps, pageLogger } from "logging";
-import Divider from "components/inputs/Divider";
 import Link from "next/link";
 
 interface RulePageProps {
@@ -72,7 +71,7 @@ const RulePage: FC<RulePageProps> = ({ metadata, account }) => {
 }
 
 export const getServerSideProps: GetServerSideProps<RulePageProps> = wrapServerSideProps(async context => {
-    pageLogger.info`Recieved request for ${context.resolvedUrl}`;
+    pageLogger.info`Received request for ${context.resolvedUrl}`;
 
     const props: RulePageProps = {
         metadata: await getCompetition(),

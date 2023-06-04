@@ -169,7 +169,7 @@ const NewTeamPage: FC<NewTeamPageProps> = ({ metadata, canBeEligible }) => {
                             flex justify-center items-center
                             border-2 border-main-color-500 bg-main-color-700 rounded-lg
                             disabled:saturate-50 saturate-100 transition-[filter] duration-300
-                            px-5">Join Team</button>
+                            px-5">Create Team</button>
 
                     <button
                         onClick={cancelCreating}

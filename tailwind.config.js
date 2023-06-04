@@ -70,6 +70,12 @@ module.exports = {
         'rules-divider-color': "#ffffff",
         'rules-link-color': "#e9d23b",
         'rules-link-hover-color': "#9999f6",
+
+        'about-header-color': "#e9d23b",
+        'about-subheader-color': "#9999f6",
+        'about-divider-color': "#ffffff",
+        'about-link-color': "#e9d23b",
+        'about-link-hover-color': "#9999f6",
         
       },
       minWidth: {

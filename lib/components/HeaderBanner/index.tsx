@@ -40,6 +40,7 @@ export enum HeaderBannerPage {
     PLAY = "Play",
     LEAD = "Leaderboard",
     RULE = "Rules",
+    ABOUT = "About"
 }
 
 const linkMapping: Record<HeaderBannerPage, string> = {
@@ -47,6 +48,7 @@ const linkMapping: Record<HeaderBannerPage, string> = {
     [HeaderBannerPage.PLAY]: "/play",
     [HeaderBannerPage.LEAD]: "/scoreboard",
     [HeaderBannerPage.RULE]: "/rules",
+    [HeaderBannerPage.ABOUT]: "/about"
 };
 
 const HeaderBanner: FC<HeaderBannerProps> = ({ account, meta, currPage }) => {
@@ -75,7 +77,7 @@ const HeaderBanner: FC<HeaderBannerProps> = ({ account, meta, currPage }) => {
                 <Link href="#" className="text-2xl my-auto font-semibold text-navbar-text-color ml-5 pr-7 border-r-2 border-navbar-text-color-dark text-center">
                     {meta.name} 
                 </Link>
-                {[ HeaderBannerPage.HOME, HeaderBannerPage.PLAY, HeaderBannerPage.LEAD, HeaderBannerPage.RULE ]
+                {[ HeaderBannerPage.HOME, HeaderBannerPage.PLAY, HeaderBannerPage.LEAD, HeaderBannerPage.RULE, HeaderBannerPage.ABOUT ]
                     .map((page, idx) => 
                         <div className="
                             my-auto ml-3 pr-3 md:ml-5 md:pr-5
@@ -133,7 +135,7 @@ const HeaderBanner: FC<HeaderBannerProps> = ({ account, meta, currPage }) => {
                     w-screen bg-navbar-background-color  \
                     max-sm:bg-navbar-background-color-mobile-only \
                     shadow-md rounded-b-md " + setTransition(menuOpen)}>
-                    {[ HeaderBannerPage.HOME, HeaderBannerPage.PLAY, HeaderBannerPage.LEAD, HeaderBannerPage.RULE ]
+                    {[ HeaderBannerPage.HOME, HeaderBannerPage.PLAY, HeaderBannerPage.LEAD, HeaderBannerPage.RULE, HeaderBannerPage.ABOUT ]
                         .map((page, idx) => 
                             <div className="
                                 hover:drop-shadow-md transition
