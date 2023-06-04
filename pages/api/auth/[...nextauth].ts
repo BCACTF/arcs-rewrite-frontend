@@ -1,15 +1,23 @@
+// Auth types
 import NextAuthBuilder, { AuthOptions } from 'next-auth';
+import { GetTokenParams, JWT } from 'next-auth/jwt';
 
+// Req types
 import { NextApiRequest, NextApiResponse } from 'next';
 
+// Providers
 import { Provider } from 'next-auth/providers';
 import AppleProvider from 'next-auth/providers/apple';
 import GoogleProvider from 'next-auth/providers/google';
 import GithubProvider from 'next-auth/providers/github';
 
+// Get metadata
+import { getToken } from 'next-auth/jwt';
 import { getOauth } from 'metadata/server';
+import { getAllUsers } from 'cache/users';
 
-import { GetTokenParams, JWT, getToken } from 'next-auth/jwt';
+import { checkUserOauth } from 'database/users';
+
 
 export const getSecret = async () => (await getOauth()).nextAuth.secret;
 export const getTokenSecret = async (params: GetTokenParams<false>): Promise<JWT | null> => await getToken({
@@ -65,6 +73,28 @@ const getNextAuthOptions = async () => {
                     provider: params.account?.provider,
                     ...params.token
                 };
+            },
+            signIn: async ({ profile: oauth, account: oauthMeta }) => {
+                if (!oauth || !oauthMeta) return false;
+
+                const email = oauth.email;
+                const sub = oauth.sub || oauthMeta.providerAccountId;
+
+                if (!email || !sub) return false;
+
+                const users = await getAllUsers();
+                const user = users.find(user => user.email === email);
+
+                if (!user) return true;
+                
+                const checkOauthParams: Parameters<typeof checkUserOauth>[0] = {
+                    id: user.userId,
+                    auth: { __type: "oauth", sub, provider: oauthMeta.provider },
+                };
+
+                const methodsMatch = await checkUserOauth(checkOauthParams);
+
+                return methodsMatch;
             },
         },
         secret: await getSecret(),
