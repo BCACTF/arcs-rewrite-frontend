@@ -34,7 +34,6 @@ interface SignInProps {
 const SignIn: FC<SignInProps> = ({ providers, account, token, metadata }) => {
     const [badMethodUsed, setBMU] = useState(false);
 
-    console.log({ account, token });
     useEffect(
         () => {
             if (account) Router.replace("/");

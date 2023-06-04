@@ -76,7 +76,6 @@ const NewTeamPage: FC<NewTeamPageProps> = ({ metadata, canBeEligible }) => {
 
     const updatePasswordError = useCallback(() => {
         const passwordIssues = validatePassword(password);
-        console.log(passwordIssues);
         const passwordError = passwordIssues.ok ? null : passwordIssues.issue;
         setPasswordError(passwordError);
         setConfirmMatches(true);

@@ -25,10 +25,8 @@ interface TeamListProps {
 type TeamRowProps = (CachedTeamMeta & { isHeader: false, idx: number }) | (Omit<CachedTeamMeta, "id"> & { idx: number, isHeader: true, id?: unknown });
 
 const getPositionColor = (idx: number) => {
-    console.log(idx);
     switch(idx) {
         case 0:
-            console.log("FHDSJBFVuhewnvgyu")
             return "text-leaderboard-firstplace-number-color";
         case 1:
             return "text-leaderboard-secondplace-number-color";
