@@ -4,19 +4,21 @@ import OAuthLoginBlock from 'components/OAuthLoginBlock';
 import Link from "next/link";
 
 // Hooks
+import { useEffect, useState } from 'react';
 
 
 // Types
-import React, { FC, useEffect } from 'react';
+import React, { FC } from 'react';
 import { GetServerSideProps } from 'next';
 import { Competition } from 'metadata/client';
+import { JWT } from 'next-auth/jwt';
+import { Account } from "account/validation";
 
 // Utils
 import getCompetition from "metadata/client";
-import getAccount, { Account } from "account/validation";
+import getAccount from "account/validation";
 import Router from 'next/router';
 import { getProviders } from 'next-auth/react';
-import { JWT } from 'next-auth/jwt';
 import { getTokenSecret } from 'api/auth/[...nextauth]';
 
 
@@ -30,6 +32,8 @@ interface SignInProps {
 
 
 const SignIn: FC<SignInProps> = ({ providers, account, token, metadata }) => {
+    const [badMethodUsed, setBMU] = useState(false);
+
     console.log({ account, token });
     useEffect(
         () => {
@@ -37,6 +41,11 @@ const SignIn: FC<SignInProps> = ({ providers, account, token, metadata }) => {
             else if (token) Router.replace("/account/register");
         },
         [account, token],
+    );
+
+    useEffect(
+        () => setBMU(!!new URLSearchParams(window.location.search).get("methodError")),
+        []
     );
 
     const [google, github] = [providers.google, providers.github];
@@ -47,6 +56,9 @@ const SignIn: FC<SignInProps> = ({ providers, account, token, metadata }) => {
                 <h3 className="text-4xl text-signin-text-header text-center mx-auto pb-12">
                         Sign In
                 </h3>
+                <div className="mx-auto mb-5 text-red-400 text-center text-lg" hidden={!badMethodUsed}>
+                    Please use your original sign-in method.
+                </div>
                 <div className="flex flex-col space-y-8 place-content-center">
                     <WebsiteMeta metadata={metadata} pageName="Sign In"/>
                     {

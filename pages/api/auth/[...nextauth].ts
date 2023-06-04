@@ -75,12 +75,12 @@ const getNextAuthOptions = async () => {
                 };
             },
             signIn: async ({ profile: oauth, account: oauthMeta }) => {
-                if (!oauth || !oauthMeta) return false;
+                if (!oauth || !oauthMeta) return "/account/signin?methodError=true";
 
                 const email = oauth.email;
                 const sub = oauth.sub || oauthMeta.providerAccountId;
 
-                if (!email || !sub) return false;
+                if (!email || !sub) return "/account/signin?methodError=true";
 
                 const users = await getAllUsers();
                 const user = users.find(user => user.email === email);
@@ -94,7 +94,7 @@ const getNextAuthOptions = async () => {
 
                 const methodsMatch = await checkUserOauth(checkOauthParams);
 
-                return methodsMatch;
+                return methodsMatch || "/account/signin?methodError=true";
             },
         },
         secret: await getSecret(),
