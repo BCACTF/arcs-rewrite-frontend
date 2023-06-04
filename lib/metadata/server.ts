@@ -54,7 +54,7 @@ const validateConfigJSON = (rawJson: unknown): rawJson is Config => {
     return true;
 };
 
-const getConfig = async (): Promise<Config> => {
+const getConfigNonCached = async (): Promise<Config> => {
     const dir = await getConfigFileDir();
     const filePath = join(dir, "config.json");
     const fileContents = await readFile(filePath, "utf8");
@@ -62,6 +62,17 @@ const getConfig = async (): Promise<Config> => {
 
     if (!validateConfigJSON(json)) throw new MetadataError("config");
     else return json;
+};
+
+let cachedConfig: Config | null = null;
+
+const getConfig = async (): Promise<Config> => {
+    if (cachedConfig) return cachedConfig;
+
+    const config = await getConfigNonCached();
+    cachedConfig = config;
+
+    return config;
 };
 
 
@@ -133,7 +144,7 @@ const validateOauthJSON = (rawJson: unknown): rawJson is Oauth => {
     return true;
 };
 
-const getOauth = async (): Promise<Oauth> => {
+const getOauthNonCached = async (): Promise<Oauth> => {
     const dir = await getConfigFileDir();
     const filePath = join(dir, "oauth.json");
     const fileContents = await readFile(filePath, "utf8");
@@ -141,6 +152,17 @@ const getOauth = async (): Promise<Oauth> => {
 
     if (!validateOauthJSON(json)) throw new MetadataError("oauth");
     else return json;
+};
+
+let cachedOauth: Oauth | null = null;
+
+const getOauth = async (): Promise<Oauth> => {
+    if (cachedOauth) return cachedOauth;
+
+    const oauth = await getOauthNonCached();
+    cachedOauth = oauth;
+
+    return oauth;
 };
 
 export { getConfig, getOauth };

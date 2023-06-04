@@ -28,13 +28,11 @@ interface PlayProps {
     metadata: Competition;
     challenges: ClientSideMetaChalls[];
     teamSolves: CachedSolveMeta[];
-    account: Account | null;
+    account: Account;
 }
 
 const Play: FC<PlayProps> = ({ metadata, challenges, teamSolves, account }) => {
     const filterState = useFilter();
-
-    if (!account) throw new Error("unreachable");
 
     const solvedIds = useMemo(() => new Map(teamSolves.flatMap(
         solve => solve.teamId === account.teamId

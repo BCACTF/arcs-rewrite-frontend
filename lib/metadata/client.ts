@@ -25,7 +25,7 @@ const validateJSON = (rawJson: unknown): rawJson is Competition => {
     return true;
 };
 
-const getCompetition = async (): Promise<Competition> => {
+const getCompetitionNonCached = async (): Promise<Competition> => {
     const dir = await getConfigFileDir();
     const filePath = join(dir, "competition.json");
     const fileContents = await readFile(filePath, "utf8");
@@ -33,6 +33,17 @@ const getCompetition = async (): Promise<Competition> => {
 
     if (!validateJSON(json)) throw new MetadataError("competition");
     else return json;
+};
+
+let cachedCompetition: Competition | null = null;
+
+const getCompetition = async (): Promise<Competition> => {
+    if (cachedCompetition) return cachedCompetition;
+
+    const config = await getCompetitionNonCached();
+    cachedCompetition = config;
+
+    return cachedCompetition;
 };
 
 export default getCompetition;

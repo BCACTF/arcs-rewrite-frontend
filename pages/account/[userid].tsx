@@ -44,10 +44,11 @@ export const getServerSideProps: GetServerSideProps<UserPageProps> = async conte
 
     const userIdRaw = context.query.userid?.toString() ?? "";
     const userId = userIdFromStr(userIdRaw);
-    if (!userId) throw new Error("Bad UserID!");
-
+    
+    if (!userId) return { notFound: true };
+    
     const user = await getUsers([userId]).then(arr => arr[0]);
-    if (!user) throw new Error("Uh this person doesn't exist sorry");
+    if (!user) return { notFound: true };
 
     const team = user.teamId ? await getTeams([user.teamId]).then(teams => teams[0] ?? null) : null;
 
