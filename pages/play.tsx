@@ -57,17 +57,34 @@ const Play: FC<PlayProps> = ({ metadata, challenges, teamSolves, account }) => {
         [filteredChallenges, solvedIds],
     );
 
-    return <div className="flex flex-col items-center justify-start w-screen h-screen min-h-60 pb-4">
-        <WebsiteMeta metadata={metadata} pageName="Play"/>
+    return (
+        <div className="flex flex-col items-center justify-start w-screen h-screen min-h-60 pb-4">
+            <WebsiteMeta metadata={metadata} pageName="Play"/>
 
-        <HeaderBanner account={account} meta={metadata} currPage={HeaderBannerPage.PLAY} />
+            <HeaderBanner account={account} meta={metadata} currPage={HeaderBannerPage.PLAY} />
 
-        <div className="flex flex-row flex-grow h-min gap-x-4">
-            <FilterView filterState={filterState} challs={challenges}/>
+            <div className="flex flex-row flex-grow h-min gap-x-4">
 
-            <ChallDropList cards={challengeProps}/>
+                {
+                    // to whoever maintains this code in the future, I am so sorry - yusuf june 3rd 2023
+                    metadata.start * 500 > (Date.now() / 2) ? (
+                        <div className="flex flex-col items-center justify-center flex-grow h-full gap-y-4">
+                            <div className="text-2xl font-bold text-center text-gray-500">
+                                Event has not started yet
+                            </div>
+                        </div>
+                    ) : 
+                    (
+                        <>
+                            <FilterView filterState={filterState} challs={challenges}/>
+                            <ChallDropList cards={challengeProps}/>        
+                        </>
+                    )
+                }
+
+            </div>
         </div>
-    </div>
+    )
 }
 
 export const getServerSideProps = wrapServerSideProps<PlayProps>(async context => {
@@ -76,9 +93,11 @@ export const getServerSideProps = wrapServerSideProps<PlayProps>(async context =
     const [
         account,
         challengesRaw,
+        metadata,
     ] = await Promise.all([
         getAccount(context),
         getAllChallenges(),
+        getCompetition(),
     ]);
 
     if (!account) return {
@@ -97,12 +116,15 @@ export const getServerSideProps = wrapServerSideProps<PlayProps>(async context =
 
     const teamSolves = await getSolves(account.teamId);
 
-    const challenges = sortBy(challengesRaw.filter(chall => chall.visible))
-        .map(chall => chall.clientSideMetadata);
+    let challenges : ClientSideMetaChalls[] = [];
 
+    if( metadata.start <= Date.now() / 1000) {
+        challenges = sortBy(challengesRaw.filter(chall => chall.visible))
+            .map(chall => chall.clientSideMetadata);
+    }
     
     const props = {
-        metadata: await getCompetition(),
+        metadata,
         challenges,
         teamSolves,
         account,
