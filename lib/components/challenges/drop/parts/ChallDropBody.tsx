@@ -122,6 +122,7 @@ const ChallDropBody: FC<ChallDropProps & { open: boolean }> = ({
         }}>
         <div className="m-5 mt-10" style={{ gridArea: "cntn" }}>
             <ReactMarkdown
+                components={components}
                 remarkPlugins={[remarkGfm]}>
                 {desc}
             </ReactMarkdown>
@@ -144,5 +145,41 @@ const ChallDropBody: FC<ChallDropProps & { open: boolean }> = ({
 
     </div>
 );
+
+
+type ReactMarkdownComponentStyles = Parameters<typeof ReactMarkdown>[0]["components"];
+
+const components: ReactMarkdownComponentStyles = {
+
+    a: ({ className, children, ...props}) => (
+        <a {...props} className={`${className} text-rules-link-hover-color underline`}>{children}</a>
+    ),
+    link: ({ className, children, ...props}) => (
+        <link {...props} className={`${className} text-rules-link-hover-color underline`}>{children}</link>
+    ),
+    h1: ({ className, children, ...props}) => <h1 {...props} className={`${className} text-3xl font-bold`}>{children}</h1>,
+    h2: ({ className, children, ...props}) => <h2 {...props} className={`${className} text-2xl font-semibold`}>{children}</h2>,
+    h3: ({ className, children, ...props}) => <h3 {...props} className={`${className} text-xl font-semibold`}>{children}</h3>,
+    h4: ({ className, children, ...props}) => <h4 {...props} className={`${className} text-lg`}>{children}</h4>,
+    h5: ({ className, children, ...props}) => <h5 {...props} className={`${className} text-lg`}>{children}</h5>,
+    h6: ({ className, children, ...props}) => <h6 {...props} className={`${className} text-base`}>{children}</h6>,
+
+    p: ({ className, children, ...props}) => (
+        <p {...props} className={`${className} mb-3`}>{children}</p>
+    ),
+
+    ol: ({ className, children, ...props}) => (
+        <ol {...props} className={`${className} text-base font-normal list-decimal pl-8 my-3`}>{children}</ol>
+    ),
+    hr: ({ className, children, ...props}) => (
+        <hr {...props} className={`${className} my-3`}>{children}</hr>
+    ),
+
+
+    section: ({ className, children, ...props}) => (
+        <section {...props} className={`${className} mt-5 text-xl font-semibold`}>{children}</section>
+    )
+};
+
 
 export default ChallDropBody;
