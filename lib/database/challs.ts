@@ -2,6 +2,7 @@ import { removeStale as removeStaleChalls, update as updateChall } from "cache/c
 import makeWebhookRequest from "./makeWebhookReq";
 import { ChallId, challIdToStr } from "cache/ids";
 import { DbChallengeMeta, dbToCacheChall } from "./db-types";
+import { apiLogger } from "logging";
 
 
 
@@ -25,23 +26,31 @@ const syncAllChalls = async () => {
 };
 const syncChall = async ({ id }: { id: ChallId }) => {
     try {
-        console.log("making webhook request woooo");
+        apiLogger.trace`Runnning syncChall on chall ${id}.`;
+
         const challData = await makeWebhookRequest<DbChallengeMeta>({
             section: "challenge",
             query: { __tag: "get", id: challIdToStr(id), },
         });
-        console.log("it made the webhook request")
-        console.log("it was successful")
+
+        apiLogger.trace`Challenge identified as ${challData.name}.`;
+
         const chall = dbToCacheChall(challData);
-        console.log("to cache we went");
+
+        apiLogger.debug`Cache challenge: ${chall}.`;
+
         if (!chall) {
-            console.error("recieved bad challenge from webhook");
+            apiLogger.error`Webhook returned a badly formatted challenge ${challData}.`;
             return null;
         }
-        console.log("chall seemed good");
-        console.log("challenge:", chall);
-        await updateChall(chall);
-        console.log("we have updated the challenge wooooooo")
+
+        apiLogger.trace`Adding challenge to redis cache...`;
+        
+        const cachedChallenge = await updateChall(chall);
+        if (cachedChallenge) apiLogger.error`Replaced chall ${cachedChallenge}`;
+        
+        apiLogger.info`${challData.name} sync successful.`;
+
         return chall;
     } catch (err) {
         console.error("failed to rerequest challenges", err);

@@ -175,7 +175,7 @@ const compareCriteria = (a: CachedChall, b: CachedChall, criteria: SortingCriter
         case POINTS:
             return a.clientSideMetadata.points - b.clientSideMetadata.points;
         case CATEGORY:
-            return a.clientSideMetadata.categories[0].localeCompare(b.clientSideMetadata.categories[0]);
+            return a.clientSideMetadata.categories[0]?.localeCompare(b.clientSideMetadata.categories[0]) ?? -1;
         case SOLVES:
             return a.clientSideMetadata.solveCount - b.clientSideMetadata.solveCount;
         case NAME:

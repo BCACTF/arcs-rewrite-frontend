@@ -134,7 +134,7 @@ const ChallDropBody: FC<ChallDropProps & { open: boolean }> = ({
                 <Links urls={links.nc} type={"nc"} key={"nc"}/>
                 <Links urls={links.web} type={"web"} key={"web"}/>
                 <Links urls={links.admin} type={"admin"} key={"admin"}/>
-                <Links urls={links.web} type={"static"} key={"static"}/>
+                <Links urls={links.static} type={"static"} key={"static"}/>
             </div>
         </div>
 

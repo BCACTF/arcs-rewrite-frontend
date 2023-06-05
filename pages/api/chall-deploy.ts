@@ -3,13 +3,14 @@ import { timingSafeEqual } from "crypto";
 import { webhookToken } from "auth/challenges";
 import { syncChall } from "database/challs";
 import { challIdFromStr } from "cache/ids";
+import { wrapApiEndpoint, apiLogger } from "logging";
 
-const handler: NextApiHandler = async (req, res) =>  {
-    console.log("request recieved");
+const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
+    apiLogger.trace`${req.method} request recieved for ${req.url}`;
 
     const authorizationHeaderRaw = req.headers.authorization;
     if (!authorizationHeaderRaw || !authorizationHeaderRaw.startsWith("Bearer ")) {
-        console.log("Invalid bearer token:", authorizationHeaderRaw);
+        apiLogger.secWarn`Request had invalid bearer token ${authorizationHeaderRaw}`;
         res.statusMessage = "Invalid bearer token";
         res.status(401);
         res.end();
@@ -21,7 +22,7 @@ const handler: NextApiHandler = async (req, res) =>  {
     const webhookTokenValue = await webhookToken();
 
     if (reqBearer.length !== webhookTokenValue.length) {
-        console.log("Invalid bearer token:", authorizationHeaderRaw);
+        apiLogger.secWarn`Request had invalid bearer token ${authorizationHeaderRaw}`;
         res.statusMessage = "Invalid bearer token";
         res.status(401);
         res.end();
@@ -29,7 +30,7 @@ const handler: NextApiHandler = async (req, res) =>  {
     }
     
     if (!timingSafeEqual(Buffer.from(reqBearer), Buffer.from(webhookTokenValue))) {
-        console.log("Incorrect bearer token:", reqBearer);
+        apiLogger.secWarn`Request had unknown bearer token ${authorizationHeaderRaw}. (Unauthorized access.)`;
         res.statusMessage = "Unauthorized";
         res.status(401);
         res.end();
@@ -38,27 +39,31 @@ const handler: NextApiHandler = async (req, res) =>  {
     
     try {
         // TODO --> Do something with poll_id once admin panel is done
-        const { chall_id, poll_id } = req.body as { chall_id: unknown, poll_id: unknown };
-        console.log("trying to sync");
+        const { chall_id, poll_id } = req.body as { chall_id: unknown, poll_id: unknown };        
         if (typeof chall_id !== "string") throw "chall_id";
         if (typeof poll_id !== "string") throw "poll_id";
-        console.log("trying to sync this challenge even more");
+
+        apiLogger.debug`Deploy info: ${{ chall_id, poll_id }}`;
+        
         const id = challIdFromStr(chall_id);
         if (!id) throw "chall_id";
-
-        await syncChall({ id });
-        console.log("successfully synced challenge");
-
+        
+        
+        const chall = await syncChall({ id });
+        
+        apiLogger.debug`Challenge ${chall}`;
+        
         res.statusMessage = "Challenge successfully synced";
         res.status(200);
-        res.end();
+        res.send("{}");
     } catch (e) {
-        console.log("Invalid payload:", req.body);
+        apiLogger.error`Invalid payload or network error ${String(e).slice(0, 16)}.`;
+        apiLogger.debug`Payload ${req.body}.`;
+
         res.statusMessage = "Invalid payload";
         res.status(400);
         res.end();
     }
-    
-};
+});
 
 export default handler;

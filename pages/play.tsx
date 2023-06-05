@@ -112,6 +112,10 @@ export const getServerSideProps = wrapServerSideProps<PlayProps>(async context =
         },
     };
 
+    pageLogger.debug`Challenges: ${
+        challengesRaw.map(challenge => `${challenge.id}:${challenge.clientSideMetadata.name}`)
+    }`;
+
     const teamSolves = await getSolves(account.teamId);
 
     let challenges : ClientSideMetaChalls[] = [];
