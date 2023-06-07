@@ -43,9 +43,8 @@ const ChallengeCard: FC<ChallengeCardProps> = ({ metadata: { name, solveCount, c
 
         <SolvedIcon {...solved} />
         
-        
         <small className={styles.solves}>
-            {solveCount.toLocaleString('en-US', {maximumFractionDigits: 0})} solves
+            {solveCount.toLocaleString('en-US', {maximumFractionDigits: 0})} {solveCount === 1 ? "solve" : "solves"}
         </small>
     </li>
 );

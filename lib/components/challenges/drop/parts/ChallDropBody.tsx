@@ -23,7 +23,7 @@ const ListItem = ({ item, className, style }: { item: string, style?: CSSPropert
 )
 const EnglishList = ({ items: list, style, className }: { items: string[], style?: CSSProperties, className?: string }) => {
     if (list.length === 0) return <></>;
-    else if (list.length === 1) return <code className={className} key={0}>list[0]</code>;
+    else if (list.length === 1) return <code className={className} key={0}>{list[0]}</code>;
     else if (list.length === 2) return <><ListItem {...{style, className, item: list[0]}} key={0}/> and <ListItem {...{style, className, item: list[1]}} key={1}/></>;
     else return <>
         {list.slice(0, -1).map(
@@ -54,7 +54,7 @@ const BodyMeta: FC<Pick<
             {solveCount.toLocaleString('en-US', {maximumFractionDigits: 0})} {solveCount === 1 ? "solve" : "solves"}
         </span>
         <div className="mt-auto">
-            By <EnglishList className="font-mono text-yellow-100" items={[...authors, "sky", "yusuf", "anli"]}/>
+            By <EnglishList className="font-mono text-yellow-100" items={authors}/>
         </div>
     </div>
 );

@@ -56,30 +56,45 @@ const Play: FC<PlayProps> = ({ metadata, challenges, teamSolves, account }) => {
     );
 
     return (
-        <div className="flex flex-col items-center justify-start w-screen h-screen min-h-60 pb-4">
+        <div className="flex flex-col items-center justify-start w-screen h-full min-h-60 pb-4">
             <WebsiteMeta metadata={metadata} pageName="Play"/>
 
             <HeaderBanner account={account} meta={metadata} currPage={HeaderBannerPage.PLAY} />
 
-            <div className="flex flex-row flex-grow h-min gap-x-4">
+            {
+                account.admin ? (
+                    <span className="text-center text-xl font-bold pt-3 pb-4">Admin View</span>
+                ) : null
+            }
 
+            <div className="flex flex-row flex-grow h-min gap-x-4">
                 {
                     // to whoever maintains this code in the future, I am so sorry - yusuf june 3rd 2023
-                    metadata.start * 500 > (Date.now() / 2) ? (
-                        <div className="flex flex-col items-center justify-center flex-grow h-full gap-y-4">
-                            <div className="text-2xl font-bold text-center text-gray-500">
-                                Event has not started yet
-                            </div>
-                        </div>
-                    ) : 
+                    (metadata.start * 500 > (Date.now() / 2)) ? // checks event start
                     (
-                        <>
-                            <FilterView filterState={filterState} challs={challenges}/>
+                        account.admin ? (
+                            <>
+                                <FilterView filterState={filterState} challs={challenges}/>
+                                <ChallDropList cards={challengeProps}/>        
+                            </>
+                        ) : 
+                        (
+                            <div className="flex flex-col items-center justify-center flex-grow h-full gap-y-4">
+                                <div className="text-2xl font-bold text-center text-navbar-text-color-dark">
+                                    Event has not started yet
+                                </div>
+                            </div>
+                        )
+                    ) :
+                    (
+                        <div className="flex flex-row place-content-between px-4 sm:px-8 w-screen h-full overflow-y-hidden">
+                            <div className="max-sm:hidden w-[23%] mr-2 md:mr-4">
+                                <FilterView filterState={filterState} challs={challenges}/>
+                            </div>
                             <ChallDropList cards={challengeProps}/>        
-                        </>
+                        </div>
                     )
                 }
-
             </div>
         </div>
     )
@@ -123,7 +138,11 @@ export const getServerSideProps = wrapServerSideProps<PlayProps>(async context =
     if( metadata.start <= Date.now() / 1000) {
         challenges = sortBy(challengesRaw.filter(chall => chall.visible))
             .map(chall => chall.clientSideMetadata);
+    } else if (account.admin) {
+        challenges = sortBy(challengesRaw).map(chall => chall.clientSideMetadata);  // display all challs to admins at all times
     }
+
+
     
     const props = {
         metadata,

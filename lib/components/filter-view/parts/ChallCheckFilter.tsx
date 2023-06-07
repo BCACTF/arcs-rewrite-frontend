@@ -29,16 +29,29 @@ const CheckBox: FC<CheckBoxProps> = ({ checked, set, label: inner }) => (
             checked={checked}
             onChange={() => set(!checked)}
             className="
-                bg-transparent checked:bg-indigo-500
+                bg-transparent 
+                transition
+                checked:bg-play-button-selected-fill-color
+
+                hover:bg-play-button-hover-unselected-fill-color
+                checked:hover:bg-play-button-hover-selected-fill-color
+
                 appearance-none cursor-pointer peer
 
                 w-6 h-6 mr-2
                 
                 border-3 rounded-sm
-                border-gray-400 checked:border-indigo-100"/>
+                border-play-button-outline-color checked:border-play-button-selected-outline-color"/>
         <label
             // onClickCapture={}
-            className="text-xl text-gray-400 peer-checked:text-indigo-100">
+            className="
+                text-xl
+                transition
+                text-play-button-default-text-color
+                peer-hover:text-play-button-hover-unselected-text-color
+                peer-checked:peer-hover:text-play-button-hover-selected-text-color
+
+                peer-checked:text-play-button-selected-text-color">
             {inner}
         </label>
     </span>
@@ -54,13 +67,15 @@ interface ChallCheckFilterProps {
 
 const ChallCheckFilter: FC<ChallCheckFilterProps> = ({ list, heading, has, set }) => (
     <div className="flex flex-col justify-start items-start w-full">
-        <h4 className="border-b border-b-gray-400 w-full mb-4 text-2xl pb-1">{heading}</h4>
+        <h4 className="border-b border-b-play-selector-line-divider-color w-full mb-4 text-2xl pb-1">{heading}</h4>
         {list.map(
-            (item, idx) => <CheckBox
-                key={idx}
-                checked={has(item)}
-                set={v => set(item, v)}
-                label={item}/>
+            (item, idx) => (
+                <CheckBox
+                    key={idx}
+                    checked={has(item)}
+                    set={v => set(item, v)}
+                    label={item}/>
+            )
         )}
     </div>
 );

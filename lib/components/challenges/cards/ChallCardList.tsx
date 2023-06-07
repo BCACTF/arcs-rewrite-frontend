@@ -25,7 +25,6 @@ export interface ChallengeListProps {
 
 const ChallengeList: FC<ChallengeListProps> = ({ cards }) => (
     <ul aria-label="challenge list" className={styles.list}>
-        {/* {cards.map((card, idx) => <ChallengeCard {...card} key={idx}/>)} */}
         {cards.map((card, idx) => <ChallengeCard {...card} key={idx}/>)}
     </ul>
 );

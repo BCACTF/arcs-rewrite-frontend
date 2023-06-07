@@ -38,7 +38,7 @@ const useFilter = (): FilterStateHook => {
     }, [currState]);
 
     const setCategory = useCallback((categoryUnformatted: string, selected: boolean) => {
-        const category = categoryUnformatted.toUpperCase();
+        const category = categoryUnformatted.toLowerCase();
 
         const newSet = new Set(currState.categories);
         if (selected) newSet.add(category);
@@ -101,11 +101,11 @@ const useFilter = (): FilterStateHook => {
         // if (!searchMatches(chall, currState.search)) return false;
 
         const stateCategories = currState.categories;
-        if (stateCategories) if (!chall.categories.some(cat => stateCategories.has(cat.toUpperCase()))) return false;
+        if (stateCategories) if (!chall.categories.some(cat => stateCategories.has(cat.toLowerCase()))) return false;
 
 
         const stateTags = currState.tags;
-        if (stateTags) if (!chall.tags.some(tag => stateTags.has(tag.toUpperCase()))) return false;
+        if (stateTags) if (!chall.tags.some(tag => stateTags.has(tag.toLowerCase()))) return false;
 
         const points = currState.points;
         if (points) if (!(chall.points >= points[0]) || !(chall.points <= points[1])) return false;

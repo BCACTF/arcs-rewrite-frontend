@@ -23,7 +23,7 @@ module.exports = {
         'navbar-text-color-normal': "#f4f4f4",
         'navbar-text-color-dark': "#e1d169",
         'navbar-background-color': "#3d29c2",
-        'navbar-background-color-mobile-only': "#6c55ff",
+        'navbar-background-color-mobile-only': "#3d29c2",
 
         'navbar-account-dropdown-background-color': "#ffffff",
         'navbar-account-dropdown-background-color-hover': "#e1d169",
@@ -76,7 +76,33 @@ module.exports = {
         'about-divider-color': "#ffffff",
         'about-link-color': "#e9d23b",
         'about-link-hover-color': "#9999f6",
+
+        'play-selector-box-outline-color': "#2a2a53",
+        'play-selector-line-divider-color': "#6d6dd5",
         
+        'play-button-default-text-color': "#7e7e7e",
+        'play-button-outline-color': "#ebebeb",
+        'play-button-selected-outline-color': "#ebebeb",
+
+        'play-button-hover-unselected-fill-color': "#e9d23b",
+        'play-button-hover-unselected-text-color': "#e9d23b",
+        
+        'play-button-hover-selected-fill-color': "#3d3d3d",
+        'play-button-hover-selected-text-color': "#3d3d3d",
+
+        'play-button-selected-fill-color': "#6d6dd5",
+        'play-button-selected-text-color': "#6d6dd5",
+      
+        'play-pointselector-dot-color-active': "#e9d23b",
+        'play-pointselector-dot-color-inactive': "#7e7e7e",
+        'play-pointselector-default-line-color': "#7e7e7e", // for the most part, you want this to be the same as inactive dot color
+
+
+        'chall-hover-default-shadow-color': "#d5b900",      // doesn't do anything right now
+        'chall-hover-transition-shadow-color': "#eb0000",   // doesn't do anything right now
+        'chall-solved-side-color': "#20a02c",
+        'chall-unsolved-side-color': "#3f3f3f",
+
       },
       minWidth: {
         '30': "30rem",

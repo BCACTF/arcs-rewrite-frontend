@@ -76,19 +76,19 @@ const PointsRangeFilter: FC<PointsRangeFilterProps> = ({ max, range: [vLo, vHi],
 
     const stopsActive = [0, ...stops, max].map(stop => [
         `${stop / max * 100}%`,
-        vLo <= stop && stop <= vHi ? "bg-purple-500" : "bg-gray-700",
+        vLo <= stop && stop <= vHi ? "bg-play-pointselector-dot-color-active" : "bg-play-pointselector-dot-color-inactive",
     ] as const);
 
     const loMoving = vLo === vHi ? Moving.UNKNOWN : Moving.LOW;
     const hiMoving = vLo === vHi ? Moving.UNKNOWN : Moving.HIGH;
 
     return <span className="w-full flex flex-col mb-4">
-        <h4 className="border-b border-b-gray-400 w-full mb-3 text-2xl pb-1">Points:</h4>
+        <h4 className="border-b border-b-play-selector-line-divider-color w-full mb-3 text-2xl pb-1">Points:</h4>
         <span
             className="mx-auto w-11/12 h-6 transparent flex items-center relative"
             onMouseMoveCapture={onMouseMoveCallback}>
-            <span className="h-1 w-full bg-gray-700"/>
-            <span className="h-1 bg-purple-500 100 absolute" style={{ left: `${loPercentage}%`, right: `${100 - hiPercentage}%` }}/>
+            <span className="h-1 w-full bg-play-pointselector-default-line-color"/>
+            <span className="h-1 bg-play-pointselector-dot-color-active 100 absolute" style={{ left: `${loPercentage}%`, right: `${100 - hiPercentage}%` }}/>
 
             {stopsActive.map(
                 ([left, active], idx) => <span
@@ -98,11 +98,11 @@ const PointsRangeFilter: FC<PointsRangeFilterProps> = ({ max, range: [vLo, vHi],
             )}
 
             <span
-                className="h-5 rounded-full bg-purple-500 w-5 absolute -translate-x-1/2"
+                className="h-5 rounded-full bg-play-pointselector-dot-color-active w-5 absolute -translate-x-1/2"
                 style={{ left: loLeft }}
                 onMouseDownCapture={() => setMoving(loMoving)}/>
             <span
-                className="h-5 rounded-full bg-purple-500 w-5 absolute -translate-x-1/2"
+                className="h-5 rounded-full bg-play-pointselector-dot-color-active w-5 absolute -translate-x-1/2"
                 style={{ left: hiLeft}}
                 onMouseDownCapture={() => setMoving(hiMoving)}/>
         </span>

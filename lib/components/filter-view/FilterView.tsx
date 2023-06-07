@@ -26,11 +26,11 @@ interface FilterViewProps {
 
 const FilterView: FC<FilterViewProps> = ({ filterState, challs }) => {
     const categories = useMemo(
-        () => [...new Set(challs.flatMap(c => c.categories).map(s => s.toUpperCase())).values()].sort(),
+        () => [...new Set(challs.flatMap(c => c.categories).map(s => s.toLowerCase())).values()].sort(),
         [challs],
     );
     const tags = useMemo(
-        () => [...new Set(challs.flatMap(c => c.tags).map(s => s.toUpperCase())).values()].sort(),
+        () => [...new Set(challs.flatMap(c => c.tags).map(s => s.toLowerCase())).values()].sort(),
         [challs],
     );
     const points = useMemo(() => challs.map(c => c.points), [challs]);
@@ -48,6 +48,7 @@ const FilterView: FC<FilterViewProps> = ({ filterState, challs }) => {
         heading="Categories:"
         has={cat => filterState.currState.categories?.has(cat) ?? false}
         set={(cat, val) => filterState.setCategory(cat, val)}/>;
+
     const tagSelectors = <ChallCheckFilter
         list={tags}
         heading="Tags:"
@@ -60,12 +61,16 @@ const FilterView: FC<FilterViewProps> = ({ filterState, challs }) => {
         stops={points}/>
 
 
-    return <div className="flex flex-col justify-start items-start w-60 border-2 border-gray-600 p-4">
-        {categorySelectors}
+    return <div className="flex flex-col justify-start items-start w-full border-r-2 border-play-selector-box-outline-color p-4 mr-4 mt-1 h-full">
+        {
+            categories.length > 0 ? categorySelectors : null
+        }
 
         {pointSelectors}
 
-        {tagSelectors}
+        {
+            tags.length > 0 ? tagSelectors : null
+        }
     </div>;
 };
 
