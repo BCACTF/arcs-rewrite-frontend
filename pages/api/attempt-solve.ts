@@ -4,9 +4,17 @@ import { getTeams } from "cache/teams";
 import { syncUser } from "database/users";
 import { attemptSolve } from "database/solves";
 import { NextApiHandler } from "next";
+import getCompetition from "metadata/client";
 
 
 const handler: NextApiHandler = async (req, res) =>  {
+    const { start, end } = await getCompetition();
+    const now = Date.now() / 1000;
+    if (start > now || now > end) {
+        res.status(400).send("Competition not running.");
+        return;
+    }
+
     {
         const staleAccount = await getAccount({ req });
         if (!staleAccount) {
