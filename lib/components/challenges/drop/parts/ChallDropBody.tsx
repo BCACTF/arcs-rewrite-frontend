@@ -53,8 +53,8 @@ const BodyMeta: FC<Pick<
         <span className="py-1.5">
             {solveCount.toLocaleString('en-US', {maximumFractionDigits: 0})} {solveCount === 1 ? "solve" : "solves"}
         </span>
-        <div className="mt-auto">
-            By <EnglishList className="font-mono text-yellow-100" items={authors}/>
+        <div className="py-1.5 mb-auto">
+            By <EnglishList className="font-mono text-chall-author-name-color" items={authors}/>
         </div>
     </div>
 );
@@ -91,13 +91,13 @@ const Links: FC<{ urls: string[], type: LinkType }> = ({ urls, type }) => {
             </div>;
         case "nc":
             return <div>
-                <span className="text-lg mb-1.5 block">Netcat servers:</span>
+                <span className="text-lg mb-1.5 block">Netcat Links:</span>
                 <code
                     className="
-                        border-slate-600 border-2 bg-slate-800 rounded-lg
-                        text-pink-400
-                        w-max py-2 px-6
-                        flex flex-col">{
+                        border-chall-nc-border-color border-2 bg-chall-nc-background-color rounded-lg
+                        text-chall-nc-text-color
+                        w-max px-3
+                        flex flex-col text-sm">{
                     urls.map(url => <span key={url} className="my-1">nc {getFileName(url)}</span>)
                 }</code>
             </div>;
@@ -112,15 +112,15 @@ const ChallDropBody: FC<ChallDropProps & { open: boolean }> = ({
 }) => (
     <div
         className="
-            border-slate-600 border border-t-0
-            bg-white bg-opacity-10 text-white
+            border-chall-border-color border border-t-0
+            bg-chall-background-color text-chall-text-color
             min-h-max max-w-full
             grid"
         style={{
             gridTemplateAreas: "'cntn meta' 'flag flag'",
             gridTemplateColumns: "3fr 1fr",
         }}>
-        <div className="m-5 mt-10" style={{ gridArea: "cntn" }}>
+        <div className="m-5 mt-5" style={{ gridArea: "cntn" }}>
             <ReactMarkdown
                 components={components}
                 remarkPlugins={[remarkGfm]}>
@@ -129,7 +129,7 @@ const ChallDropBody: FC<ChallDropProps & { open: boolean }> = ({
             <div className="
                 border-t-1 border-white border-opacity-20 border-t
                 pt-3 mt-3 w-full
-                flex flex-col gap-4">
+                flex flex-col gap-2">
                 <h4 className="text-xl font-bold">Resources:</h4>
 
                 <Links urls={links.nc} type={"nc"} key={"nc"}/>

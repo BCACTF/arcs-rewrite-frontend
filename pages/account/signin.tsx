@@ -51,7 +51,7 @@ const SignIn: FC<SignInProps> = ({ providers, account, token, metadata }) => {
 
     return (
         <div className="h-screen w-screen flex place-content-center px-3 align-middle justify-center">
-            <div className="w-80 xl:w-[30rem] bg-signin-background-color border border-signin-text border-opacity-20 bg-opacity-50 px-1 pt-8 pb-4 align-center justify-center my-auto rounded-lg mx-auto"> 
+            <div className="w-80 xl:w-[30rem] bg-signin-background-color border border-signin-text border-opacity-20 px-1 pt-8 pb-4 align-center justify-center my-auto rounded-lg mx-auto"> 
                 <h3 className="text-4xl text-signin-text-header text-center mx-auto pb-12">
                         Sign In
                 </h3>
@@ -79,7 +79,7 @@ const SignIn: FC<SignInProps> = ({ providers, account, token, metadata }) => {
                     </EmailPasswordSignIn> */}
                 </div>
                 <div className="text-center m-auto pt-8 text-lg">
-                    <Link href={"/"} className="w-1/4 px-3 py-1 m-auto bg-signin-light bg-opacity-70 transition hover:text-signin-text-header cursor-pointer rounded-lg hover:bg-signin-provider-hover-color" >
+                    <Link href={"/"} className="w-1/4 px-3 py-1 m-auto bg-signin-button-background-color border-[1px] border-signin-button-border-color bg-opacity-70 transition text-signin-button-text-color hover:text-signin-button-hover-text-color cursor-pointer rounded-lg hover:bg-signin-provider-hover-color" >
                         Go Home
                     </Link>
                 </div>

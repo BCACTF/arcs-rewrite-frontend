@@ -18,7 +18,7 @@ const [styles, builder] = wrapCamelCase(rawStyles); // FIXME: Tailwindify.
 const Tag = ({ name }: { name: string }) => (<span className={styles.tag}>{name}</span>);
 
 const ChallDropHeader: FC<ChallDropProps & { open: boolean }> = ({ metadata: { name, solveCount, categories, points, tags }, solved, open }) => (
-    <div className={builder.dropHeader.IF(open).open()}>
+    <div className={"flex flex-row transition-all text-white bg-chall-background-color border border-chall-border-color"}>
         {/* <ReactSVG className={`${builder.chevron.IF(open).open()} mx-4 mt-0.5 flex w-4`} src="/icons/chevron.svg" wrapper={"span"} /> */}
 
         <h3 className="text-sm sm:text-md md:text-md lg:text-lg sm:pl-4 font-bold my-auto px-2 mr-auto w-1/3">{name}</h3>
@@ -35,7 +35,7 @@ const ChallDropHeader: FC<ChallDropProps & { open: boolean }> = ({ metadata: { n
         <span className="max-h-min my-auto flex justify-end items-center">
             <span
                 aria-label="category"
-                className="w-20 text-right px-2 py-2 pl-4 border-l border-spacer-dropdown max-sm:hidden">
+                className="w-20 text-right px-2 py-2 pl-4 border-l border-chall-divider-color max-sm:hidden">
                 {categories[0]}
             </span>
             <span className="sm:w-28 text-right px-2 py-2 max-sm:hidden">
@@ -48,7 +48,7 @@ const ChallDropHeader: FC<ChallDropProps & { open: boolean }> = ({ metadata: { n
                 {solveCount.toLocaleString('en-US', {maximumFractionDigits: 0})} {solveCount === 1 ? "solve" : "solves"}
             </span>
         </span>
-        <span className={"border-l-2 border-spacer-dropdown flex justify-center items-center w-[30%] sm:p-5 sm:px-7 ml-1 sm:w-[16%] lg:max-w-[10%]" + ( (solved.byTeam || solved.byUser) ? " bg-chall-solved-side-color" : " bg-chall-unsolved-side-color" )}>
+        <span className={"border-l-2 border-chall-divider-color flex justify-center items-center w-[30%] sm:p-5 sm:px-7 ml-1 sm:w-[16%] lg:max-w-[10%]" + ( (solved.byTeam || solved.byUser) ? " bg-chall-solved-side-color" : " bg-chall-unsolved-side-color" )}>
             {(solved.byTeam || solved.byUser) ? "Solved" : "Unsolved"}
         </span>
     </div>

@@ -53,7 +53,7 @@ const TeamInfo: FC<TeamInfoProps> = ({ team: { name, score, lastSolve, eligible,
         {
             is_eligible(eligible, affiliation) ? (
                 <code className="flex flex-col items-center mb-5 text-xl">
-                    <span className="text-xl">{affiliation}</span>
+                    <span className="text-xl text-center">{affiliation}</span>
                 </code>
             ) : null
         }

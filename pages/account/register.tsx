@@ -73,7 +73,7 @@ const RegisterPage: FC<RegisterPageProps> = ({ metadata }) => {
 
         <div className="
             w-80 xl:w-[30rem]
-            bg-signin-background-color bg-opacity-50
+            bg-signin-background-color
             border border-signin-text border-opacity-20 rounded-lg
             px-1 py-12 my-auto mx-auto
             align-center justify-center"> 
@@ -125,10 +125,15 @@ const RegisterPage: FC<RegisterPageProps> = ({ metadata }) => {
                     onClick={sendCreateUserRequest}
                     disabled={!rulesAgreed || usernameStatus !== "success"}
                     className="
+                        disabled:bg-signin-button-ifthethingisdisabledshowthis-background-color disabled:cursor-default
                         h-12 md:h-14 w-screen-2/5 sm:w-1/2 pb-0.5
                         text-lg font-medium
                         flex justify-center items-center
-                        bg-user-profile-no-team-background-color rounded-lg
+                        border-[1px]
+                        border-border-signin-button-border-color
+                        text-signin-button-text-color
+                        hover:bg-signin-provider-hover-color
+                        bg-signin-button-background-color rounded-lg
                         px-5">Create Account</button>
 
                 <button
@@ -137,7 +142,12 @@ const RegisterPage: FC<RegisterPageProps> = ({ metadata }) => {
                         h-12 md:h-14 w-screen-2/5 sm:w-1/2 pb-0.5
                         text-lg font-medium
                         flex justify-center items-center
-                        bg-user-profile-no-team-background-color rounded-lg
+                        border-[1px]
+                        border-border-signin-button-border-color
+                        text-signin-button-text-color
+                        hover:bg-signin-provider-hover-color
+                        bg-signin-button-background-color
+                         rounded-lg
                         px-5">Cancel</button>
             </div>
         </div>

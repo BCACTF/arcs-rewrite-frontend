@@ -74,9 +74,9 @@ const formatDate = (dateNum: number) => {
 const UserCard: FC<UserCardProps> = ({ user: { name, lastSolve, score, admin }, team, isMe }) => (
     <div
         className="
-            bg-user-profile-card-color bg-opacity-20 rounded-lg border-2 border-user-profile-card-color border-opacity-25 min-w-15 max-w-50 w-screen/3
+            bg-user-profile-card-color rounded-lg border-2 border-user-profile-card-color border-opacity-25 min-w-15 max-w-50 w-screen/3
             flex flex-col items-center px-8 py-8 text-user-profile-text-color">
-        <h2 className="text-5xl font-semibold mb-3">{name}</h2>
+        <h2 className="max-sm:text-xl text-5xl font-semibold mb-3">{name}</h2>
         <span className="text-xl mb-3">{admin ? "Non-Participant" : "Participant"}</span>
         <span className="text-xl mt-2 mb-3">{score} points</span>
         <NoSsr>{lastSolve ? <span className="text-xl mb-5">Last solve at: {formatDate(lastSolve)}</span> : <></>}</NoSsr>

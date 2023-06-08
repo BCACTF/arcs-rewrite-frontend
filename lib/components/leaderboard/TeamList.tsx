@@ -51,6 +51,7 @@ const TeamRow: FC<TeamRowProps> = ({ name, id, affiliation, eligible, lastSolve,
             transition-colors
             ${isHeader ? "" : "hover:bg-leaderboard-row-hover-color"}
             border-b-2
+            border-leaderboard-divider-color
             px-2 sm:px-8 py-6
             ${isHeader ? "font-bold border-b-4 cursor-default" : "hover:"}`}>
         <code className={

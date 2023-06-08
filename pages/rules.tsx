@@ -54,7 +54,9 @@ const RulePage: FC<RulePageProps> = ({ metadata, account }) => {
                 <hr className="border border-b-rules-divider-color w-3/5 mx-auto mt-6 mb-6"></hr>
 
                 <span className="text-3xl font-semibold text-center text-rules-subheader-color pb-3">Prizes</span>
-                <p className="text-md mx-16 pb-4">The top ten eligible teams will receive prizes out of a pool of <strong>$3000 USD</strong> courtesy of <Link className="underline text-rules-link-color hover:text-rules-link-hover-color transition" href="https://www.trailofbits.com/">Trail of Bits</Link> and <Link className="underline text-rules-link-color hover:text-rules-link-hover-color transition" href="https://www.digitalocean.com">DigitalOcean</Link>. The distribution is as follows:</p>
+                <span className="text-xl font-semibold text-center pb-3">Information Coming Soon</span>
+                {/* <p className="text-md mx-16 pb-4">The top ten eligible teams will receive prizes out of a pool of <strong>$3000 USD</strong> courtesy of <Link className="underline text-rules-link-color hover:text-rules-link-hover-color transition" href="https://www.trailofbits.com/">Trail of Bits</Link> and <Link className="underline text-rules-link-color hover:text-rules-link-hover-color transition" href="https://www.digitalocean.com">DigitalOcean</Link>. The distribution is as follows:</p> */}
+                {/* <p className="text-md mx-16 pb-4">The top ten eligible teams will receive prizes out of a pool of <strong>$3000 USD</strong> courtesy of <Link className="underline text-rules-link-color hover:text-rules-link-hover-color transition" href="https://www.trailofbits.com/">Trail of Bits</Link> and <Link className="underline text-rules-link-color hover:text-rules-link-hover-color transition" href="https://www.digitalocean.com">DigitalOcean</Link>. The distribution is as follows:</p>
                 <ul className="list-[circle] mx-20 pb-8">
                     <li>First place: $500 and $250 DO Credits</li>
                     <li>Second place: $250 and $250 DO Credits</li>
@@ -63,7 +65,7 @@ const RulePage: FC<RulePageProps> = ({ metadata, account }) => {
                     <li>Fifth place: $50 and $250 DO Credits</li>
                     <li>Sixth place: $250 DO Credits</li>
                     <li>Seventh to Tenth place: $125 DO Credits</li>
-                </ul>
+                </ul> */}
 
             </div>
         </div>

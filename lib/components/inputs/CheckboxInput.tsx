@@ -40,7 +40,7 @@ const CheckboxInput: FC<CheckboxInputProps> = (props) => (
                 after:-translate-x-1/2 after:-translate-y-3/4
                 after:rotate-45"
             {...omitted(props, ["children"])}/>
-        <span className="flex-grow text-center sm:text-start mt-2 sm:mt-0">{props.children}</span>
+        <span className="flex-grow text-center sm:text-start mt-2 sm:mt-0 text-signin-text">{props.children}</span>
     </label>
 );
 

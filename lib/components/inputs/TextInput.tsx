@@ -66,7 +66,7 @@ const ValidityDisplay: FC<{ state: VerificationState }> = ({ state }) => {
 const TextInput: FC<Props> = (props) => (
     <div className="flex sm:flex-row flex-col items-center w-5/6">
         <span className="
-            grow
+            grow text-signin-text
             mb-2 text-center w-full 
             sm:mb-0 sm:mr-6 sm:text-end sm:w-1/5">{props.promptName}</span>
         <div className="relative w-full sm:w-3/4">
@@ -74,7 +74,7 @@ const TextInput: FC<Props> = (props) => (
                 h-12 sm:h-14 py-2 w-full
                 flex flex-row place-content-around
                 border border-signin-provider-outline rounded-lg
-                px-5 bg-signin-background-color
+                px-5 bg-signin-background-color text-signin-text
                 ${props.additionalClassName ?? ""}`}
                 {...omitted(props, ["promptName", "verificationState", "additionalClassName"])}/>
             {props.verificationState && <ValidityDisplay state={props.verificationState}/>}

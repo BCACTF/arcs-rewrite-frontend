@@ -26,7 +26,6 @@ interface JoinTeamPageProps {
 const JoinTeamPage: FC<JoinTeamPageProps> = ({ metadata }) => {
     const router = useRouter();
 
-
     const [name, setName] = useState("");
     const [password, setPassword] = useState("");
     
@@ -64,7 +63,7 @@ const JoinTeamPage: FC<JoinTeamPageProps> = ({ metadata }) => {
 
         <div className="
             w-4/5 max-w-30 xl:max-w-[30rem]
-            bg-signin-background-color bg-opacity-50
+            bg-signin-background-color
             border border-signin-text border-opacity-20 rounded-lg
             px-1 py-12 my-auto
             align-center justify-center"> 
@@ -107,7 +106,10 @@ const JoinTeamPage: FC<JoinTeamPageProps> = ({ metadata }) => {
                         h-12 md:h-14 w-screen-2/5 sm:w-1/2 pb-0.5
                         text-lg font-medium
                         flex justify-center items-center
-                        border-2 border-main-color-500 bg-main-color-700 rounded-lg
+                        border-[1px] border-border-signin-button-border-color bg-signin-button-background-color rounded-lg
+                        enabled:hover:bg-signin-provider-hover-color
+                        text-signin-text
+                        disabled:border-border-signin-button-ifthethingisdisabledshowthis-background-color
                         disabled:saturate-50 saturate-100 transition-[filter] duration-300
                         px-5">Join Team</button>
 
@@ -117,7 +119,11 @@ const JoinTeamPage: FC<JoinTeamPageProps> = ({ metadata }) => {
                         h-12 md:h-14 w-screen-2/5 sm:w-1/2 pb-0.5
                         text-lg font-medium
                         flex justify-center items-center
-                        bg-user-profile-no-team-background-color rounded-lg
+                        border-[1px] border-border-signin-button-border-color bg-signin-button-background-color
+                        enabled:hover:bg-signin-provider-hover-color
+                        text-signin-text
+                        disabled:border-border-signin-button-ifthethingisdisabledshowthis-background-color
+                        rounded-lg
                         px-5">Cancel</button>
             </div>
         </div>

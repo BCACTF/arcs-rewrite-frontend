@@ -89,7 +89,7 @@ const NewTeamPage: FC<NewTeamPageProps> = ({ metadata, canBeEligible }) => {
 
             <div className="
                 sm:w-3/5 
-                bg-signin-background-color bg-opacity-50
+                bg-signin-background-color
                 border border-signin-text border-opacity-20 rounded-lg
                 px-1 py-6 mx-auto my-auto
                 align-center justify-center"> 
@@ -161,13 +161,14 @@ const NewTeamPage: FC<NewTeamPageProps> = ({ metadata, canBeEligible }) => {
 
                     <button
                         onClick={sendCreateTeamRequest}
-                        disabled={!passwordAgreement || password !== confirmPassword || !!passwordError}
+                        disabled={!passwordAgreement || password !== confirmPassword || !!passwordError || password === "" || confirmPassword === "" || name === ""}
                         className="
                             h-12 md:h-14 w-screen-2/5 sm:w-1/2 pb-0.5
                             text-lg font-medium
                             flex justify-center items-center
-                            border-2 border-main-color-500 bg-main-color-700 rounded-lg
-                            disabled:saturate-50 saturate-100 transition-[filter] duration-300
+                            border-[1px] border-team-boxes-border-color bg-team-boxes-background-color text-team-boxes-text-color enabled:hover:bg-signin-provider-hover-color 
+                            rounded-lg disabled:saturate-50 saturate-100 transition-[filter] duration-300
+                            disabled:bg-signin-button-ifthethingisdisabledshowthis-background-color disabled:cursor-default
                             px-5">Create Team</button>
 
                     <button
@@ -176,7 +177,10 @@ const NewTeamPage: FC<NewTeamPageProps> = ({ metadata, canBeEligible }) => {
                             h-12 md:h-14 pb-0.5 w-1/2
                             text-lg font-medium
                             flex justify-center items-center
-                            bg-user-profile-no-team-background-color rounded-lg
+                            border-[1px] border-team-boxes-border-color bg-team-boxes-background-color text-team-boxes-text-color hover:bg-signin-provider-hover-color 
+                            rounded-lg
+
+
                             px-5">Cancel</button>
                 </div>
             </div>

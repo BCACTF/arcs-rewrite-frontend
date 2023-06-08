@@ -74,7 +74,7 @@ const HeaderBanner: FC<HeaderBannerProps> = ({ account, meta, currPage }) => {
     return (
         <div className="w-screen bg-navbar-background-color max-sm:bg-navbar-background-color-mobile-only sm:backdrop:backdrop-blur-md mb-4 h-16 sticky top-0">
             <div className="max-sm:hidden flex flex-row h-full">
-                <Link href="/" className="text-2xl my-auto font-semibold text-navbar-text-color ml-5 pr-7 border-r-2 border-navbar-text-color-dark text-center">
+                <Link href="/" className="text-2xl my-auto font-semibold text-navbar-text-color ml-5 pr-5 border-r-2 border-navbar-text-color-dark text-center text-navbar-event-name">
                     {meta.name} 
                 </Link>
                 {[ HeaderBannerPage.PLAY, HeaderBannerPage.LEAD, HeaderBannerPage.RULE, HeaderBannerPage.ABOUT ]
@@ -101,7 +101,7 @@ const HeaderBanner: FC<HeaderBannerProps> = ({ account, meta, currPage }) => {
             </div>
             <div className='sm:hidden'>
                 <div className="w-screen h-1/5 p-3 flex flex-row place-content-between ">
-                    <Link href="#" className="text-xl my-auto font-semibold text-navbar-text-color">
+                    <Link href="#" className="text-xl my-auto font-semibold text-navbar-text-color-normal">
                         {meta.name} 
                     </Link>
                     <button

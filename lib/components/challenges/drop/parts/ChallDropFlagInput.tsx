@@ -33,7 +33,9 @@ const ChallDropFlagInput: FC<ChallDropFlagInputProps> = ({challId, userId, teamI
                 text-sm bg-white bg-opacity-5
                 disabled:opacity-50
                 border border-white border-opacity-30 border-r-0 rounded-l-xl
-                p-3 pl-6"
+                p-3 pl-6
+                max-sm:w-5
+                "
             value={inputValue}
             onChange={e => setInputValue(e.target.value)}
             disabled={inputDisabled} type="text" id={`flaginput-${challId}`}
@@ -52,8 +54,8 @@ const ChallDropFlagInput: FC<ChallDropFlagInputProps> = ({challId, userId, teamI
                         method: "POST",
                         body: JSON.stringify({ challId, userId, teamId, flag: inputValue }),
                     });
-                    if (res.ok && await res.text() === "true") alert("yes");
-                    else alert("no");
+                    if (res.ok && await res.text() === "true") location.reload();
+                    else alert("Invalid Flag");
                 }
             }}/>
         <div
