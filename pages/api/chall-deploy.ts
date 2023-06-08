@@ -1,9 +1,12 @@
 import { NextApiHandler } from "next";
 import { timingSafeEqual } from "crypto";
 import { webhookToken } from "auth/challenges";
-import { syncChall } from "database/challs";
+import { syncAllChalls, syncChall } from "database/challs";
 import { challIdFromStr } from "cache/ids";
 import { wrapApiEndpoint, apiLogger } from "logging";
+import { syncAllTeams } from "database/teams";
+import { syncAllUsers } from "database/users";
+import { syncSolves } from "database/solves";
 
 const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
     apiLogger.trace`${req.method} request recieved for ${req.url}`;
@@ -54,6 +57,8 @@ const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
         apiLogger.debug`Challenge ${chall}`;
         
         res.statusMessage = "Challenge successfully synced";
+
+
         res.status(200);
         res.send("{}");
     } catch (e) {
@@ -63,6 +68,13 @@ const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
         res.statusMessage = "Invalid payload";
         res.status(400);
         res.end();
+    } finally {
+        await Promise.all([
+            syncAllChalls(),
+            syncAllTeams(),
+            syncAllUsers(),
+            syncSolves(),
+        ])
     }
 });
 
