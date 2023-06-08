@@ -16,6 +16,7 @@ import { Competition } from "metadata/client";
 // Utils
 import getCompetition from "metadata/client";
 import getAccount from "account/validation";
+import useJoinTeamnameValidation from "hooks/useJoinTeamnameValidation";
 
 
 interface JoinTeamPageProps {
@@ -26,7 +27,9 @@ interface JoinTeamPageProps {
 const JoinTeamPage: FC<JoinTeamPageProps> = ({ metadata }) => {
     const router = useRouter();
 
-    const [name, setName] = useState("");
+    
+    const [teamname, issue, teamnameStatus, updateTeamname] = useJoinTeamnameValidation();
+
     const [password, setPassword] = useState("");
     
     const [disclaimerAgreed, setDisclaimerAgreed] = useState(false);
@@ -37,7 +40,7 @@ const JoinTeamPage: FC<JoinTeamPageProps> = ({ metadata }) => {
             const options = {
                 method: "POST",
                 body: JSON.stringify({
-                    name,
+                    name: teamname,
                     password,
                 }),
             };
@@ -49,7 +52,7 @@ const JoinTeamPage: FC<JoinTeamPageProps> = ({ metadata }) => {
                 alert("Error joining team!");
             }
         },
-        [name, password, router, disclaimerAgreed],
+        [teamname, password, router, disclaimerAgreed],
     );
     const cancelJoining = useCallback(
         async () => {
@@ -78,9 +81,14 @@ const JoinTeamPage: FC<JoinTeamPageProps> = ({ metadata }) => {
 
                 <TextInput
                     promptName="Team Name"
+                    verificationState={teamnameStatus}
                     spellCheck="false"
-                    value={name}
-                    onChange={ev => setName(ev.currentTarget.value)}
+                    value={teamname}
+                    onChange={ev => {
+                        updateTeamname(ev.currentTarget.value);
+                        ev.preventDefault();
+                        ev.stopPropagation();
+                    }}
                     additionalClassName="pr-12" />
                 <Divider/>
                 <TextInput

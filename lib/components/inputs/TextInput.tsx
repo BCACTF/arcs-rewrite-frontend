@@ -5,7 +5,9 @@
 
 
 // Types
-import { VerificationState } from "hooks/useUsernameValidation";
+import { VerificationState as VerStateUser } from "hooks/useUsernameValidation";
+import { VerificationState as VerStateTeam } from "hooks/useTeamnameValidation";
+import { VerificationState as VerStateJoinTeam } from "hooks/useJoinTeamnameValidation";
 import { ComponentProps, FC } from "react";
 
 
@@ -16,17 +18,24 @@ import { ComponentProps, FC } from "react";
 import { omitted } from "utils/general";
 
 
+type VerificationState = VerStateUser | VerStateTeam | VerStateJoinTeam;
 interface Props extends Omit<ComponentProps<"input">, "className"> {
     promptName: string;
     verificationState?: VerificationState;
     additionalClassName?: string;
 }
 
-const getText = (state: VerificationState) => {
+const getText = (state: VerificationState): string => {
     switch (state) {
-        case "pending": return "Checking username availability...";
-        case "success": return "Username is available.";
-        case "failure": return "Username is already in use or is invalid.";
+        case "pending": return "Checking name availability...";
+        case "success": return "Name is available.";
+        case "stalesuccess": return "Previous checked name was available.";
+        case "failure": return "Name is already in use or is invalid.";
+
+        case "noexist": return "A team with this name does not exist.";
+        case "maxmembers": return "This team already has the maximum number of members.";
+
+        case "error": return "Invalid name format.";
     }
 };
 
@@ -35,7 +44,7 @@ const ValidityDisplay: FC<{ state: VerificationState }> = ({ state }) => {
     const tooltip = <div className="
         absolute bottom-3/4 right-3 translate-x-1/2
         rounded-md text-sm px-1.5 py-0.5
-        bg-slate-800
+        bg-signin-text
         opacity-0
         peer-hover:opacity-100 transition-opacity
     ">{getText(state)}</div>;
@@ -56,6 +65,9 @@ const ValidityDisplay: FC<{ state: VerificationState }> = ({ state }) => {
             <div className={`${base} bg-green-500`}/>
             {tooltip}
         </>;
+        case "noexist":
+        case "maxmembers":
+        case "error":
         case "failure": return <>
             <div className={`${base} bg-red-500`}/>
             {tooltip}

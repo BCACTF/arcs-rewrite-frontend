@@ -7,6 +7,7 @@ export interface Competition {
     start: number;
     end: number;
     logoUrl: string;
+    maxTeamSize: number;
 }
 
 const validateJSON = (rawJson: unknown): rawJson is Competition => {
@@ -15,12 +16,13 @@ const validateJSON = (rawJson: unknown): rawJson is Competition => {
 
     const json = rawJson as Record<string, unknown>;
 
-    const { name, start, end, logoUrl } = json;
+    const { name, start, end, logoUrl, maxTeamSize } = json;
 
     if (typeof name !== "string") return false;
     if (typeof start !== "number") return false;
     if (typeof end !== "number") return false;
     if (typeof logoUrl !== "string") return false;
+    if (typeof maxTeamSize !== "number") return false;
 
     return true;
 };
