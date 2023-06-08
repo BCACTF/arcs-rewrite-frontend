@@ -18,6 +18,8 @@ import { Competition } from "metadata/client";
 import getCompetition from "metadata/client";
 import getAccount from "account/validation";
 import { validatePassword } from "database";
+import useTeamnameValidation from "hooks/useTeamnameValidation";
+import TeamnameIssue from "components/inputs/TeamnameIssue";
 
 
 interface NewTeamPageProps {
@@ -29,8 +31,7 @@ interface NewTeamPageProps {
 const NewTeamPage: FC<NewTeamPageProps> = ({ metadata, canBeEligible }) => {
     const router = useRouter();
 
-
-    const [name, setName] = useState("");
+    const [teamname, issue, teamnameStatus, updateTeamname] = useTeamnameValidation();
 
     const [eligible, setEligible] = useState(false);
     const [affiliation, setAffiliation] = useState("");
@@ -51,12 +52,13 @@ const NewTeamPage: FC<NewTeamPageProps> = ({ metadata, canBeEligible }) => {
             const options = {
                 method: "POST",
                 body: JSON.stringify({
-                    name,
+                    name: teamname,
                     eligible,
                     affiliation,
                     password,
                 }),
             };
+            console.log(options);
             const response = await fetch("/api/account/new-team", options);
 
             if (response.ok) router.push("/");
@@ -65,7 +67,7 @@ const NewTeamPage: FC<NewTeamPageProps> = ({ metadata, canBeEligible }) => {
                 alert("Error joining team!");
             }
         },
-        [name, eligible, affiliation, password, confirmPassword, router],
+        [teamname, eligible, affiliation, password, confirmPassword, router],
     );
     const cancelCreating = useCallback(
         async () => {
@@ -101,13 +103,18 @@ const NewTeamPage: FC<NewTeamPageProps> = ({ metadata, canBeEligible }) => {
                         Enter the team's information. Remember that an eligible team has to have ONLY eligible members.
                     </span>
                     
-
                     <TextInput
                         promptName="Name"
+                        verificationState={teamnameStatus}
                         spellCheck="false"
-                        value={name}
-                        onChange={ev => setName(ev.currentTarget.value)}
+                        value={teamname}
+                        onChange={ev => {
+                            updateTeamname(ev.currentTarget.value);
+                            ev.preventDefault();
+                            ev.stopPropagation();
+                        }}
                         additionalClassName="pr-12" />
+                    <TeamnameIssue issue={issue}/>
 
                     <Divider/>
                     
@@ -161,7 +168,7 @@ const NewTeamPage: FC<NewTeamPageProps> = ({ metadata, canBeEligible }) => {
 
                     <button
                         onClick={sendCreateTeamRequest}
-                        disabled={!passwordAgreement || password !== confirmPassword || !!passwordError || password === "" || confirmPassword === "" || name === ""}
+                        disabled={!passwordAgreement || password !== confirmPassword || !!passwordError || password === "" || confirmPassword === "" || teamname === ""}
                         className="
                             h-12 md:h-14 w-screen-2/5 sm:w-1/2 pb-0.5
                             text-lg font-medium

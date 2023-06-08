@@ -2,9 +2,14 @@
 import { NextApiHandler, NextApiRequest } from "next";
 
 // Utils
-import { addNewTeam } from "database/teams";
+import { addNewTeam, checkTeamnameAvailable } from "database/teams";
 import { getAllTeams } from "cache/teams";
 import getAccount from "account/validation";
+import getTeamnameIssue from "utils/teamname";
+
+import { apiLogger, wrapApiEndpoint } from "logging";
+import { fmtLogT, fmtLogU } from "cache/ids";
+
 
 
 interface CreateTeamApiParams {
@@ -35,48 +40,77 @@ const getParams = (req: NextApiRequest): CreateTeamApiParams | null => {
     }
 };
 
-const handler: NextApiHandler = async (req, res) =>  {
+const handler: NextApiHandler = wrapApiEndpoint(async function newTeam(req, res) {
+    apiLogger.trace`Recieved ${req.method} request for ${req.url}.`;
+
     if (req.method !== "POST") {
+        apiLogger.warn`Recieved invalid req method.`;
         res.status(400).send("Invalid HTTP method");
+        return;
     }
 
     const account = await getAccount({ req });
 
-
     if (!account) {
+        apiLogger.warn`Recieved request from a non-signed-in user.`;
         res.status(401).send("You must be signed in to create a team");
         return;
     }
 
     const { userId: initialUser, teamId: currTeamId } = account;
 
+    apiLogger.debug`Request recieved to create team from ${fmtLogU(initialUser)}.`;
+    
     if (currTeamId) {
+        apiLogger.warn`Recieved request from a user with a team.`;
         res.status(400).send("You already are on a team");
         return;
     }
-
-    console.log(req.body);
+    
+    apiLogger.debug`Req body: ${req.body}.`;
 
     const bodyParams = getParams(req);
-    console.log(bodyParams);
     if (!bodyParams) {
+        apiLogger.debug`Request body deemed invalid.`;
         res.status(400).send("Incorrect body format");
         return
     }
-
+    
     const { name, eligible, affiliation, password } = bodyParams;
-
-    const team = (await getAllTeams()).find(team => team.name === name);
-    if (team) {
+    
+    apiLogger.debug`Request was to create team ${name}.`;
+    
+    if (getTeamnameIssue(name)) {
+        apiLogger.warn`Invalid team name ${name}.`;
+        res.status(400).send("Invalid team name");
+        return
+    }
+    
+    const nameInUse = (await Promise.all([
+        getAllTeams().then(teams => teams.find(team => team.name !== name)),
+        checkTeamnameAvailable({ name }),
+    ])).every(Boolean);
+    
+    
+    if (nameInUse) {
+        apiLogger.warn`Team name ${name} in use.`;
         res.status(400).send("A team with this name already exists");
         return;
     }
-
+    
     const createdTeam = await addNewTeam({
         name, eligible, affiliation, password, initialUser,
     });
 
-    res.status(200).send(createdTeam?.id);
-};
+    if (!createdTeam) {
+        apiLogger.error`Failed to create team. Check webhook & frontend logs for information.`;
+        res.status(500).send("Failed to create team");
+        return;
+    }
+
+    apiLogger.info`Created team ${createdTeam.name} ${fmtLogT(createdTeam.id)} with initial user ${fmtLogU(initialUser)}.`;
+    
+    res.status(200).send(createdTeam.id);
+});
 
 export default handler;

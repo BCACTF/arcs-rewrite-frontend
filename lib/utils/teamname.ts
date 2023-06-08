@@ -17,12 +17,13 @@ const charSet = new Set([
     ...numer.split(""),
     ...symbl.split(""),
     ...specl.split(""),
+    " ",
 ]);
 
 const minLen = 3;
-const maxLen = 32;
+const maxLen = 40;
 
-export type UsernameIssue = {
+export type TeamnameIssue = {
     __type: "bad_chars", chars: Set<string>,
 } | {
     __type: "too_short", name: string,
@@ -32,13 +33,13 @@ export type UsernameIssue = {
 
 export const MONO_SEPERATOR = "{{MONOSPACE}}"
 
-export const getIssueText = (issue: UsernameIssue) => {
+export const getIssueText = (issue: TeamnameIssue) => {
     switch (issue.__type) {
         case "bad_chars": {
             const characters = `${MONO_SEPERATOR}${[...issue.chars.values()].join("")}${MONO_SEPERATOR}`;
             const plurality = issue.chars.size === 1 ? '' : 's';
             const conjugation = issue.chars.size === 1 ? 'is' : 'are';
-            const p1 = `The character${plurality} ${characters} ${conjugation} not allowed in usernames.`;
+            const p1 = `The character${plurality} ${characters} ${conjugation} not allowed in teamnames.`;
             const sym = `${MONO_SEPERATOR}${symbl}${MONO_SEPERATOR}`;
             const sch = `${MONO_SEPERATOR}ß${MONO_SEPERATOR}`;
             const ene = `${MONO_SEPERATOR}ñÑ${MONO_SEPERATOR}`;
@@ -48,12 +49,12 @@ export const getIssueText = (issue: UsernameIssue) => {
 
             return `${p1}\n${p2}`;
         }
-        case "too_short": return `The username must be at least ${minLen} characters long.`;
-        case "too_long": return `The username must be at most ${maxLen} characters long.`;
+        case "too_short": return `The teamname must be at least ${minLen} characters long.`;
+        case "too_long": return `The teamname must be at most ${maxLen} characters long.`;
     }
 };
 
-const getUsernameIssue = (name: string): UsernameIssue | null => {
+const getTeamnameIssue = (name: string): TeamnameIssue | null => {
     if (name.length < minLen) return { __type: "too_short", name };
     else if (name.length > maxLen) return { __type: "too_long", name };
     else if (name.split("").some(c => !charSet.has(c))) return {
@@ -63,6 +64,6 @@ const getUsernameIssue = (name: string): UsernameIssue | null => {
     else return null;
 }
 
-export default getUsernameIssue;
+export default getTeamnameIssue;
 
 

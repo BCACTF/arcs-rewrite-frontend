@@ -1,3 +1,8 @@
+export type CheckTeamnameAvailability = {
+    __tag: "available";
+    name: string;
+};
+
 export type CreateNewTeam = {
     __tag: "create";
 
@@ -33,7 +38,7 @@ export type GetAllTeams = {
     __tag: "get_all";
 };
 
-type InnerTeamQuery = CreateNewTeam | UpdateTeam | GetTeam | GetAllTeams;
+type InnerTeamQuery = CheckTeamnameAvailability | CreateNewTeam | UpdateTeam | GetTeam | GetAllTeams;
 
 type TeamQuery = {
     section: "team";

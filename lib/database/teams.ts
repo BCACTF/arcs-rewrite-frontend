@@ -43,6 +43,23 @@ const syncTeam = async ({ id }: { id: TeamId }): Promise<CachedTeamMeta | null> 
     return null;
 };
 
+type CheckTeamnameAvailableParams = {
+    name: string;
+}
+const checkTeamnameAvailable = async ({ name }: CheckTeamnameAvailableParams): Promise<boolean> => {
+    try {
+        return makeWebhookRequest<boolean>({
+            section: "team",
+            query: {
+                __tag: "available",
+                name,
+            },
+        });
+    } catch (err) {
+        console.error("failed to check teamname availability", err);
+        return false;
+    }
+};
 
 type AddNewTeamParams = {
     name: string;
@@ -118,5 +135,6 @@ const updateTeam = async ({
 
 export {
     syncAllTeams, syncTeam,
+    checkTeamnameAvailable,
     addNewTeam, updateTeam,
 }

@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useReducer } from "react";
-import getUsernameIssue, { UsernameIssue } from "utils/username";
+import getTeamnameIssue, { TeamnameIssue } from "utils/teamname";
 
 
 export type VerificationState = "pending" | "success" | "stalesuccess" | "failure";
@@ -7,7 +7,7 @@ export type VerificationState = "pending" | "success" | "stalesuccess" | "failur
 type CheckState = {
     output: VerificationState;
     value: string;
-    issue: UsernameIssue | null;
+    issue: TeamnameIssue | null;
 };
 
 type Action = {
@@ -37,7 +37,7 @@ const actionIds: Record<Action["__type"], number> = {
 
 const checkDuplicates = async (name: string) => {
     try {
-        const response = await fetch("/api/checks/username-available", { body: JSON.stringify({ name }), method: "PUT" });
+        const response = await fetch("/api/checks/teamname-available", { body: JSON.stringify({ name }), method: "PUT" });
         const json = await response.json();
         return !!json.output;
     } catch (_) { return false; }
@@ -53,7 +53,7 @@ function reducer(prevState: CheckState, action: Action): CheckState {
                 output: "failure",
             };
 
-            const issue = getUsernameIssue(action.value);
+            const issue = getTeamnameIssue(action.value);
             if (issue) {
                 actionIds.update = -1;
                 actionIds.clear = -1;
@@ -123,8 +123,8 @@ function reducer(prevState: CheckState, action: Action): CheckState {
     }
 }
 
-type HookReturn = [string, UsernameIssue | null, VerificationState, (v: string) => void];
-const useUsernameValidation = (): HookReturn => {
+type HookReturn = [string, TeamnameIssue | null, VerificationState, (v: string) => void];
+const useTeamnameValidation = (): HookReturn => {
     const [state, dispatch] = useReducer<typeof reducer>(reducer, { issue: null, output: "failure", value: "" });
 
     const update = useCallback(
@@ -140,4 +140,4 @@ const useUsernameValidation = (): HookReturn => {
     return retVal;
 };
 
-export default useUsernameValidation;
+export default useTeamnameValidation;
