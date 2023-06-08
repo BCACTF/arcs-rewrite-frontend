@@ -152,7 +152,8 @@ module.exports = {
         '1.25': '0.375rem'
       },
       rotate: {
-        '135': '135deg'
+        '135': '135deg',
+        '60': '60deg',
       },
       flexGrow: {
         '2': 2,
