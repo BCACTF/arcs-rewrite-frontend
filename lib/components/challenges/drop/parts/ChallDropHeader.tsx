@@ -44,7 +44,7 @@ const ChallDropHeader: FC<ChallDropProps & { open: boolean }> = ({ metadata: { n
             <span className="sm:w-28 text-right px-2 py-2 sm:hidden">
                 {points.toLocaleString('en-US', {maximumFractionDigits: 0})} pts
             </span>
-            <span className="w-1/3 text-right px-2 py-2 pr-4 max-sm:hidden">
+            <span className="sm:w-16 md:w-24 text-right px-2 py-2 pr-4 max-sm:hidden">
                 {solveCount.toLocaleString('en-US', {maximumFractionDigits: 0})} {solveCount === 1 ? "solve" : "solves"}
             </span>
         </span>

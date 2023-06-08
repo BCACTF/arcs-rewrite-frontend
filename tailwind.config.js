@@ -102,6 +102,7 @@ module.exports = {
         'chall-hover-transition-shadow-color': "#eb0000",   // doesn't do anything right now
         'chall-solved-side-color': "#20a02c",
         'chall-unsolved-side-color': "#3f3f3f",
+        'chall-drop-header-background-color': "#3f3f3f",
 
       },
       minWidth: {

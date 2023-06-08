@@ -77,7 +77,7 @@ const HeaderBanner: FC<HeaderBannerProps> = ({ account, meta, currPage }) => {
                 <Link href="#" className="text-2xl my-auto font-semibold text-navbar-text-color ml-5 pr-7 border-r-2 border-navbar-text-color-dark text-center">
                     {meta.name} 
                 </Link>
-                {[ HeaderBannerPage.HOME, HeaderBannerPage.PLAY, HeaderBannerPage.LEAD, HeaderBannerPage.RULE, HeaderBannerPage.ABOUT ]
+                {[ HeaderBannerPage.PLAY, HeaderBannerPage.LEAD, HeaderBannerPage.RULE, HeaderBannerPage.ABOUT ]
                     .map((page, idx) => 
                         <div className="
                             my-auto ml-3 pr-3 md:ml-5 md:pr-5

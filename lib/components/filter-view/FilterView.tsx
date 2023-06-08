@@ -61,7 +61,7 @@ const FilterView: FC<FilterViewProps> = ({ filterState, challs }) => {
         stops={points}/>
 
 
-    return <div className="flex flex-col justify-start items-start w-full border-r-2 border-play-selector-box-outline-color p-4 mr-4 mt-1 h-full">
+    return <div className="flex flex-col justify-start items-start w-full border-r-2 border-play-selector-box-outline-color p-4 pl-0 pr-3 mt-1 h-full">
         {
             categories.length > 0 ? categorySelectors : null
         }

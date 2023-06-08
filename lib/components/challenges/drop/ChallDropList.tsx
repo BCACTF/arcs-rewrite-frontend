@@ -28,7 +28,7 @@ const ChallDropList: FC<ChallDropListProps> = ({ cards }) => (
             items-center justify-start
             max-sm:mx-auto
             sm:w-[88%]
-            mt-1
+            px-2 pt-3
             gap-y-4 h-[85vh] pb-4 max-h-[100%] overflow-y-scroll overflow-x-clip bg-clip-border">
         {cards.map((card, idx) => <ChallDrop {...card} key={idx}/>)}
     </ul>

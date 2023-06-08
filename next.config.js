@@ -26,6 +26,15 @@ const nextConfig = {
         domains: [ logoUrl.split("://")[1].split("/")[0] ],
         // domains: [ "storage.googleapis.com" ],
     },
+    async redirects() { // TODO --> remove this when the settings page gets added
+        return [
+            {
+            source: '/account/settings',
+            destination: '/404',
+            permanent: true,
+            },
+        ]
+    },
 }
 
 module.exports = nextConfig
