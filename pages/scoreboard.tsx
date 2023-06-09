@@ -7,15 +7,15 @@ import HeaderBanner, { HeaderBannerPage } from "components/HeaderBanner";
 
 // Types
 import React, { FC } from 'react';
-import { GetServerSideProps } from 'next';
 import { Competition } from 'metadata/client';
 import { CachedTeamMeta } from "cache/teams";
+import { Account } from "account/validation";
 
 // Styles
 
 // Utils
 import getCompetition from "metadata/client";
-import getAccount, { Account } from "account/validation";
+import getAccount from "account/validation";
 import { getAllTeams, sortBy as sortTeamsBy } from "cache/teams";
 import { pageLogger, wrapServerSideProps } from "logging";
 
@@ -35,7 +35,7 @@ const Home: FC<TeamPageProps> = ({ metadata, teams, account }) => {
     )
 }
 
-export const getServerSideProps: GetServerSideProps<TeamPageProps> = wrapServerSideProps(async context => {
+export const getServerSideProps = wrapServerSideProps<TeamPageProps>(async function ScoreBoardSSP(context) {
     pageLogger.info`Recieved request for ${context.resolvedUrl}`;
 
     const account = await getAccount(context);

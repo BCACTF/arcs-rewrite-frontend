@@ -1,20 +1,20 @@
 // Components
 import WebsiteMeta from "components/WebsiteMeta";
 import HeaderBanner from "components/HeaderBanner";
+import Link from "next/link";
 
 // Hooks
 
 
 // Types
 import React, { FC } from 'react';
-import { GetServerSideProps } from 'next';
 import { Competition } from 'metadata/client';
+import { Account } from "account/validation";
 
 // Utils
 import getCompetition from "metadata/client";
-import getAccount, { Account } from "account/validation";
+import getAccount from "account/validation";
 import { wrapServerSideProps, pageLogger } from "logging";
-import Link from "next/link";
 
 interface AboutPageProps {
     metadata: Competition;
@@ -106,7 +106,7 @@ const AboutPage: FC<AboutPageProps> = ({ metadata, account }) => {
     )
 }
 
-export const getServerSideProps: GetServerSideProps<AboutPageProps> = wrapServerSideProps(async context => {
+export const getServerSideProps = wrapServerSideProps<AboutPageProps>(async function AboutSSP(context) {
     pageLogger.info`Received request for ${context.resolvedUrl}`;
 
     const props: AboutPageProps = {

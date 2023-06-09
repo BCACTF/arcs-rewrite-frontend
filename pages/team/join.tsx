@@ -7,16 +7,17 @@ import WebsiteMeta from "components/WebsiteMeta";
 // Hooks
 import { useState, useCallback } from "react";
 import { useRouter } from "next/router";
+import useJoinTeamnameValidation from "hooks/useJoinTeamnameValidation";
 
 // Types
-import { GetServerSideProps } from "next";
 import { FC } from "react"
 import { Competition } from "metadata/client";
 
 // Utils
 import getCompetition from "metadata/client";
 import getAccount from "account/validation";
-import useJoinTeamnameValidation from "hooks/useJoinTeamnameValidation";
+import { pageLogger, wrapServerSideProps } from "logging";
+import { fmtLogU } from "cache/ids";
 
 
 interface JoinTeamPageProps {
@@ -138,16 +139,23 @@ const JoinTeamPage: FC<JoinTeamPageProps> = ({ metadata }) => {
     </div>;
 };
 
-export const getServerSideProps: GetServerSideProps<JoinTeamPageProps> = async context => {
+export const getServerSideProps = wrapServerSideProps<JoinTeamPageProps>(async function JoinTeamSSP(context) {
+    pageLogger.info`Recieved request for ${context.resolvedUrl}`;
+    
     const account = await getAccount(context);
 
-    if (!account) return { notFound: true, redirect: "/" };
-
-
+    if (!account) {
+        pageLogger.warn`User not logged in, redirecting to '/'...`;
+        return { notFound: true, redirect: "/" };
+    }
+    
+    pageLogger.debug`User identified: ${account.clientSideMetadata.name} (${fmtLogU(account.userId)})`;
+    
     const props: JoinTeamPageProps = {
         metadata: await getCompetition(),
     };
+
     return { props };
-};
+});
 
 export default JoinTeamPage;

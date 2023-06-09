@@ -9,7 +9,6 @@ import { useEffect, useState } from 'react';
 
 // Types
 import React, { FC } from 'react';
-import { GetServerSideProps } from 'next';
 import { Competition } from 'metadata/client';
 import { JWT } from 'next-auth/jwt';
 import { Account } from "account/validation";
@@ -20,6 +19,7 @@ import getAccount from "account/validation";
 import Router from 'next/router';
 import { getProviders } from 'next-auth/react';
 import { getTokenSecret } from 'api/auth/[...nextauth]';
+import { pageLogger, wrapServerSideProps } from 'logging';
 
 
 
@@ -88,15 +88,21 @@ const SignIn: FC<SignInProps> = ({ providers, account, token, metadata }) => {
     );
 };
 
-export const getServerSideProps: GetServerSideProps<SignInProps> = async context => {
+export const getServerSideProps = wrapServerSideProps<SignInProps>(async function SignInSSP(context) {
+    pageLogger.info`Recieved request for ${context.resolvedUrl}`;
+    
     const providers = await getProviders();
     
-    if (!providers) return { notFound: true };
+    if (!providers) {
+        pageLogger.error`UNABLE TO FIND PROVIDERS!!`;
+        return { notFound: true };
+    }
+    
     const account = await getAccount(context);
     const token = await getTokenSecret(context);
-
-
-
+    
+    
+    
     const props: SignInProps = {
         metadata: await getCompetition(),
         account,
@@ -104,7 +110,9 @@ export const getServerSideProps: GetServerSideProps<SignInProps> = async context
         providers,
     };
 
+    pageLogger.trace`Sign in props built.`;
+
     return { props };
-};
+});
 
 export default SignIn;

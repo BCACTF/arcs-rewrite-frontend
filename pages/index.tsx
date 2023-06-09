@@ -41,7 +41,7 @@ const Home: FC<HomeProps> = ({ metadata, account }) => {
     )
 }
 
-export const getServerSideProps: GetServerSideProps<HomeProps> = wrapServerSideProps(async context => {
+export const getServerSideProps = wrapServerSideProps<HomeProps>(async function HomeSSP(context) {
     pageLogger.info`Recieved request for ${context.resolvedUrl}`;
 
     const props: HomeProps = {

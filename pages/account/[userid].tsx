@@ -1,22 +1,26 @@
 // Components
 import WebsiteMeta from "components/WebsiteMeta";
 import HeaderBanner from "components/HeaderBanner";
+import UserCard from "components/users/UserCard";
 
 // Hooks
 
 
 // Types
 import React, { FC } from 'react';
-import { GetServerSideProps } from 'next';
 import { Competition } from 'metadata/client';
+import { Account } from "account/validation";
+import { ClientSideMeta as ClientSideMetaUsers } from "cache/users";
+import { UserId, fmtLogT, fmtLogU } from "cache/ids";
+import { CachedTeamMeta } from "cache/teams";
 
 // Utils
 import getCompetition from "metadata/client";
-import getAccount, { Account } from "account/validation";
-import { ClientSideMeta as ClientSideMetaUsers, getUsers } from "cache/users";
-import { UserId, userIdFromStr } from "cache/ids";
-import UserCard from "components/users/UserCard";
-import { CachedTeamMeta, getTeams } from "cache/teams";
+import getAccount from "account/validation";
+import { getUsers } from "cache/users";
+import { userIdFromStr } from "cache/ids";
+import { getTeams } from "cache/teams";
+import { pageLogger, wrapServerSideProps } from "logging";
 
 interface UserPageProps {
     metadata: Competition;
@@ -39,18 +43,36 @@ const UserPage: FC<UserPageProps> = ({ metadata, user, team, userImgHref, accoun
     )
 }
 
-export const getServerSideProps: GetServerSideProps<UserPageProps> = async context => {
+export const getServerSideProps = wrapServerSideProps<UserPageProps>(async function UserPageSSP(context) {
+    pageLogger.info`Recieved request for ${context.resolvedUrl}`;
+    
     const account = await getAccount(context);
+
+    if (account) pageLogger.debug`Req was from ${fmtLogU(account.userId)}`;
+    else pageLogger.debug`User making request was not logged in`;
 
     const userIdRaw = context.query.userid?.toString() ?? "";
     const userId = userIdFromStr(userIdRaw);
     
-    if (!userId) return { notFound: true };
+    if (!userId) {
+        pageLogger.warn`Invalid user id: ${userIdRaw}`;
+        return { notFound: true };
+    }
+    
     
     const user = await getUsers([userId]).then(arr => arr[0]);
-    if (!user) return { notFound: true };
+    if (!user) {
+        pageLogger.warn`User ${userId} does not exist`;
+        return { notFound: true };
+    }
 
+    pageLogger.debug`User ${fmtLogU(userId)} identified as ${user.clientSideMetadata.name}`;
+    
     const team = user.teamId ? await getTeams([user.teamId]).then(teams => teams[0] ?? null) : null;
+    
+    if (team) pageLogger.debug`User ${fmtLogU(userId)} is on team ${team.name} (${fmtLogT(team.id)})`;
+    else pageLogger.debug`User ${fmtLogU(userId)} is not on a team`;
+
 
     const props: UserPageProps = {
         metadata: await getCompetition(),
@@ -61,6 +83,6 @@ export const getServerSideProps: GetServerSideProps<UserPageProps> = async conte
         account,
     };
     return { props };
-};
+});
 
 export default UserPage;

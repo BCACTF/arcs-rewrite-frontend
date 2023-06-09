@@ -20,6 +20,7 @@ import { Competition } from "metadata/client";
 import getCompetition from "metadata/client";
 import { getTokenSecret } from "api/auth/[...nextauth]";
 import { signOut } from "next-auth/react";
+import { pageLogger, wrapServerSideProps } from "logging";
 
 
 interface RegisterPageProps {
@@ -154,15 +155,24 @@ const RegisterPage: FC<RegisterPageProps> = ({ metadata }) => {
     </div>;
 };
 
-export const getServerSideProps: GetServerSideProps<RegisterPageProps> = async context => {
+export const getServerSideProps = wrapServerSideProps<RegisterPageProps>(async function RegisterSSP(context) {
+    pageLogger.info`Recieved request for ${context.resolvedUrl}`;
+
     const token = await getTokenSecret(context);
 
-    if (!token) return { notFound: true, redirect: "/" };
+    if (!token) {
+        pageLogger.info`No token found, sending to signin`;
+        return { notFound: true, redirect: "/account/signin" };
+    }
 
+    const censoredEmail = token.email?.split("@").slice(-2).map((v, i) => i ? v : "*".repeat(v.length / 2) + v.slice(-v.length / 2));
+
+    pageLogger.debug`Token: <sub ${token.sub}> <email ${censoredEmail}>`;
+    
     const props: RegisterPageProps = {
         metadata: await getCompetition(),
     };
     return { props };
-};
+});
 
 export default RegisterPage;

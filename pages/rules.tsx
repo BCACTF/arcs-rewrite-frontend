@@ -72,7 +72,7 @@ const RulePage: FC<RulePageProps> = ({ metadata, account }) => {
     )
 }
 
-export const getServerSideProps: GetServerSideProps<RulePageProps> = wrapServerSideProps(async context => {
+export const getServerSideProps = wrapServerSideProps<RulePageProps>(async function RulesSSP(context) {
     pageLogger.info`Received request for ${context.resolvedUrl}`;
 
     const props: RulePageProps = {

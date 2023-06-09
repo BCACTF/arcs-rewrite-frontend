@@ -4,13 +4,14 @@ import CheckboxInput from "components/inputs/CheckboxInput";
 import Divider from "components/inputs/Divider";
 import WebsiteMeta from "components/WebsiteMeta";
 import Link from "next/link";
+import TeamnameIssue from "components/inputs/TeamnameIssue";
 
 // Hooks
 import { useState, useCallback } from "react";
 import { useRouter } from "next/router";
+import useTeamnameValidation from "hooks/useTeamnameValidation";
 
 // Types
-import { GetServerSideProps } from "next";
 import { FC } from "react"
 import { Competition } from "metadata/client";
 
@@ -18,8 +19,8 @@ import { Competition } from "metadata/client";
 import getCompetition from "metadata/client";
 import getAccount from "account/validation";
 import { validatePassword } from "database";
-import useTeamnameValidation from "hooks/useTeamnameValidation";
-import TeamnameIssue from "components/inputs/TeamnameIssue";
+import { pageLogger, wrapServerSideProps } from "logging";
+import { fmtLogU } from "cache/ids";
 
 
 interface NewTeamPageProps {
@@ -196,17 +197,22 @@ const NewTeamPage: FC<NewTeamPageProps> = ({ metadata, canBeEligible }) => {
     );
 };
 
-export const getServerSideProps: GetServerSideProps<NewTeamPageProps> = async context => {
+export const getServerSideProps = wrapServerSideProps<NewTeamPageProps>(async function NewTeamSSP(context) {
+    pageLogger.info`Recieved request for ${context.resolvedUrl}`;
+
     const account = await getAccount(context);
+    if (!account) {
+        pageLogger.warn`User not logged in, redirecting to '/'...`;
+        return { notFound: true, redirect: "/" };
+    }
 
-    if (!account) return { notFound: true, redirect: "/" };
-
+    pageLogger.debug`User identified: ${account.clientSideMetadata.name} (${fmtLogU(account.userId)})`;
 
     const props: NewTeamPageProps = {
         metadata: await getCompetition(),
         canBeEligible: account.eligible,
     };
     return { props };
-};
+});
 
 export default NewTeamPage;

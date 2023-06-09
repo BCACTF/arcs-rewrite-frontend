@@ -9,7 +9,6 @@ import SolveList from "components/teams/SolveList";
 
 // Types
 import React, { FC } from 'react';
-import { GetServerSidePropsResult } from 'next';
 import { Competition } from 'metadata/client';
 import { CachedTeamMeta } from "cache/teams";
 import { ClientSideMeta as ClientSideMetaUser } from "cache/users";
@@ -22,7 +21,7 @@ import getCompetition from "metadata/client";
 import getAccount, { Account } from "account/validation";
 import { getTeams } from "cache/teams";
 import { getUsersByTeam, sortBy as sortUsersBy } from "cache/users";
-import { teamIdFromStr } from "cache/ids";
+import { fmtLogT, teamIdFromStr } from "cache/ids";
 import { getSolves } from "cache/solves";
 import { sortBy as sortSolvesBy } from "cache/solves";
 import { getAllChallenges } from "cache/challs";
@@ -58,7 +57,7 @@ const Home: FC<TeamPageProps> = ({ metadata, team, users, solves, challs, accoun
     )
 }
 
-export const getServerSideProps = wrapServerSideProps(async (context): Promise<GetServerSidePropsResult<TeamPageProps>> => {
+export const getServerSideProps = wrapServerSideProps<TeamPageProps>(async function TeamPageSSP(context) {
     pageLogger.info`Recieved request for ${context.resolvedUrl}`;
 
     const account = await getAccount(context);
@@ -70,7 +69,7 @@ export const getServerSideProps = wrapServerSideProps(async (context): Promise<G
     const team = await getTeams([teamId]).then(team => team[0]);
     if (!teamId) return { notFound: true } as const;
 
-    pageLogger.info`Uuid ${teamId} identified as ${team.name}`;
+    pageLogger.debug`Uuid ${fmtLogT(teamId)} identified as ${team.name}`;
 
     const users = sortUsersBy(await getUsersByTeam(teamId));
     const solves = sortSolvesBy(await getSolves(teamId)).reverse();
@@ -86,7 +85,7 @@ export const getServerSideProps = wrapServerSideProps(async (context): Promise<G
         account,
     } as const;
 
-    pageLogger.info`Props built for ${team.name} request`;
+    pageLogger.trace`Props built for ${team.name} request`;
     return { props };
 });
 

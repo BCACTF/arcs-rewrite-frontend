@@ -100,7 +100,7 @@ const Play: FC<PlayProps> = ({ metadata, challenges, teamSolves, account }) => {
     )
 }
 
-export const getServerSideProps = wrapServerSideProps<PlayProps>(async context => {
+export const getServerSideProps = wrapServerSideProps<PlayProps>(async function PlaySSP(context) {
     pageLogger.info`Recieved request for ${context.resolvedUrl}`;
 
     const [
@@ -127,9 +127,7 @@ export const getServerSideProps = wrapServerSideProps<PlayProps>(async context =
         },
     };
 
-    pageLogger.debug`Challenges: ${
-        challengesRaw.map(challenge => `${challenge.id}:${challenge.clientSideMetadata.name}`)
-    }`;
+    pageLogger.debug`Challenge count: ${challengesRaw.length}`;
 
     const teamSolves = await getSolves(account.teamId);
 
