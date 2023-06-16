@@ -58,7 +58,7 @@ const CheckBox: FC<CheckBoxProps> = ({ checked, set, label: inner }) => (
 );
 
 interface ChallCheckFilterProps {
-    list: string[];
+    list: ([string, [number, number]] | string)[];
     heading: string;
     has: (item: string) => boolean,
     set: (item: string, value: boolean) => void,
@@ -69,13 +69,17 @@ const ChallCheckFilter: FC<ChallCheckFilterProps> = ({ list, heading, has, set }
     <div className="flex flex-col justify-start items-start w-full">
         <h4 className="border-b border-b-play-selector-line-divider-color w-full mb-4 text-2xl pb-1">{heading}</h4>
         {list.map(
-            (item, idx) => (
-                <CheckBox
+            (input, idx) => typeof input === "string"
+                ? <CheckBox
                     key={idx}
-                    checked={has(item)}
-                    set={v => set(item, v)}
-                    label={item}/>
-            )
+                    checked={has(input)}
+                    set={v => set(input, v)}
+                    label={input}/>
+                : <CheckBox
+                    key={idx}
+                    checked={has(input[0])}
+                    set={v => set(input[0], v)}
+                    label={`${input[0]} (${input[1][0]}/${input[1][1]})`}/>
         )}
     </div>
 );

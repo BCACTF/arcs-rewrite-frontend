@@ -34,7 +34,7 @@ const Home: FC<HomeProps> = ({ metadata, account }) => {
                 <NoSsr>
                     <WebsiteCountdown
                         metadata={metadata}
-                        formatter={({days, hours, minutes, seconds}) => <div className={""}>{"T+"} {days}{"d"} {hours}{"h "}{minutes}{"m "}{seconds}{"s "}</div>} />
+                        formatter={({days, hours, minutes, seconds}) => <div className={""}>{"T-"} {days}{"d"} {hours}{"h "}{minutes}{"m "}{seconds}{"s "}</div>} />
                 </NoSsr>
             </div>
         </div>

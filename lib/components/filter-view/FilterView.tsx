@@ -21,14 +21,23 @@ import { FilterStateHook } from "hooks/useFilter";
 
 interface FilterViewProps {
     filterState: FilterStateHook;
-    challs: ClientSideMeta[];
+    challs: (ClientSideMeta & { solved: boolean })[];
 }
 
 const FilterView: FC<FilterViewProps> = ({ filterState, challs }) => {
     const categories = useMemo(
-        () => [...new Set(challs.flatMap(c => c.categories).map(s => s.toLowerCase())).values()].sort(),
+        () => [
+            ...new Set(challs.flatMap(c => c.categories).map(s => s.toLowerCase())).values()
+        ].sort().map(name => [
+            name,
+            challs
+                .filter(c => c.categories.includes(name))
+                .map(c => c.solved)
+                .reduce(([solved, total], challSolved) => [solved + Number(challSolved), total + 1], [0, 0] as [number, number]),
+        ] as [string, [number, number]]),
         [challs],
     );
+    
     const tags = useMemo(
         () => [...new Set(challs.flatMap(c => c.tags).map(s => s.toLowerCase())).values()].sort(),
         [challs],

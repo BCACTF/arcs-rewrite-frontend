@@ -2,7 +2,7 @@
 import ReactMarkdown from "react-markdown";
 
 // Hooks
-
+import { useState } from 'react'
 
 // Types
 
@@ -12,7 +12,6 @@ import React, { CSSProperties, FC } from "react"
 // Styles
 import { ChallDropProps } from "./ChallDrop";
 
-
 // Utils
 import remarkGfm from "remark-gfm";
 import ChallDropFlagInput from "./ChallDropFlagInput";
@@ -21,6 +20,18 @@ import ChallDropFlagInput from "./ChallDropFlagInput";
 const ListItem = ({ item, className, style }: { item: string, style?: CSSProperties, className?: string }) => (
     <span className={className} style={style}>{item}</span>
 )
+
+const Hint = ({ value }: { value: string }) => {
+    const [revealed, setRevealed] = useState(false);
+    return <div
+        className={`
+            block transition-all py-1 px-2 rounded-lg mb-2 select-none 
+            ${revealed ? "text-white bg-slate-800 cursor-default" : "text-transparent bg-slate-900 cursor-pointer"}`}
+        onClick={() => setRevealed(true)}>
+        {value}
+    </div>;
+};
+
 const EnglishList = ({ items: list, style, className }: { items: string[], style?: CSSProperties, className?: string }) => {
     if (list.length === 0) return <></>;
     else if (list.length === 1) return <code className={className} key={0}>{list[0]}</code>;
@@ -41,8 +52,8 @@ const EnglishList = ({ items: list, style, className }: { items: string[], style
 
 const BodyMeta: FC<Pick<
     ChallDropProps["metadata"],
-    "solveCount" | "categories" | "points" | "tags" | "authors"
->> = ({ solveCount, categories, points, authors }) => (
+    "solveCount" | "categories" | "points" | "tags" | "authors" | "hints"
+>> = ({ solveCount, categories, points, authors, hints }) => (
     <div className="w-full p-5 pt-2 pl-0 ml-auto flex flex-col"
         style={{ gridArea: "meta" }}>
         <div className="py-3">
@@ -53,6 +64,10 @@ const BodyMeta: FC<Pick<
         <span className="py-1.5">
             {solveCount.toLocaleString('en-US', {maximumFractionDigits: 0})} {solveCount === 1 ? "solve" : "solves"}
         </span>
+	<div className="py-3">
+            <h4 className="font-medium text-base mb-1">Hints:</h4>
+            {hints.map(hint => <Hint value={hint} />)}
+        </div>
         <div className="py-1.5 mb-auto">
             By <EnglishList className="font-mono text-chall-author-name-color" items={authors}/>
         </div>
@@ -106,7 +121,7 @@ const Links: FC<{ urls: string[], type: LinkType }> = ({ urls, type }) => {
 };
 
 const ChallDropBody: FC<ChallDropProps & { open: boolean }> = ({
-    metadata: { solveCount, categories, points, tags, desc, links, authors },
+    metadata: { solveCount, categories, points, tags, desc, links, authors, hints },
     solved,
     submission: { challId, userId, teamId }
 }) => (
@@ -126,20 +141,26 @@ const ChallDropBody: FC<ChallDropProps & { open: boolean }> = ({
                 remarkPlugins={[remarkGfm]}>
                 {desc}
             </ReactMarkdown>
-            <div className="
-                border-t-1 border-white border-opacity-20 border-t
-                pt-3 mt-3 w-full
-                flex flex-col gap-2">
-                <h4 className="text-xl font-bold">Resources:</h4>
+		{
+		Object.values(links).some(x => x.length > 0) ?
+		(
+			<div className="
+				border-t-1 border-white border-opacity-20 border-t
+				pt-3 mt-3 w-full
+				flex flex-col gap-2">
+				<h4 className="text-xl font-bold">Resources:</h4>
 
-                <Links urls={links.nc} type={"nc"} key={"nc"}/>
-                <Links urls={links.web} type={"web"} key={"web"}/>
-                <Links urls={links.admin} type={"admin"} key={"admin"}/>
-                <Links urls={links.static} type={"static"} key={"static"}/>
-            </div>
+				<Links urls={links.nc} type={"nc"} key={"nc"}/>
+				<Links urls={links.web} type={"web"} key={"web"}/>
+				<Links urls={links.admin} type={"admin"} key={"admin"}/>
+				<Links urls={links.static} type={"static"} key={"static"}/>
+			</div>
+		) : null
+		}            
+
         </div>
 
-        <BodyMeta {...{ solveCount, solved, points, tags, categories, links, authors }}/>
+        <BodyMeta {...{ solveCount, solved, points, tags, categories, links, authors,hints }}/>
 
         <ChallDropFlagInput {...{ challId, teamId, userId }} />
 
@@ -152,10 +173,10 @@ type ReactMarkdownComponentStyles = Parameters<typeof ReactMarkdown>[0]["compone
 const components: ReactMarkdownComponentStyles = {
 
     a: ({ className, children, ...props}) => (
-        <a {...props} className={`${className} text-rules-link-hover-color underline`}>{children}</a>
+        <a {...props} className={`${className} text-blue-300 underline`}>{children}</a>
     ),
     link: ({ className, children, ...props}) => (
-        <link {...props} className={`${className} text-rules-link-hover-color underline`}>{children}</link>
+        <link {...props} className={`${className} text-blue-300 underline`}>{children}</link>
     ),
     h1: ({ className, children, ...props}) => <h1 {...props} className={`${className} text-3xl font-bold`}>{children}</h1>,
     h2: ({ className, children, ...props}) => <h2 {...props} className={`${className} text-2xl font-semibold`}>{children}</h2>,

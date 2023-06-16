@@ -28,7 +28,7 @@ interface UserCardProps {
 
 const TeamLink: FC<{ team: CachedTeamMeta | null, isMe: boolean }> = ({ team, isMe }) => {
     const baseStyles = `
-        min-w-15 h-20
+        min-w-15 h-20 px-2
         border-2 border-user-profile-button-border-color rounded-lg
         flex flex-col items-center justify-center
         text-lg text-user-profile-button-text-color
