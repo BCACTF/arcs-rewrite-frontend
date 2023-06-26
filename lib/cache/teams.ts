@@ -97,22 +97,23 @@ export const removeStale = async (notStale: TeamId[]): Promise<TeamId[]> => {
     return removeIds.map(teamIdFromStr).flatMap(id => id ? [id] : []);
 };
 
-// export const sortBy = (teams: CachedTeamMeta[]) => [...teams].sort((a, b) => a.score - b.score);
+
+
 
 export enum SortingCriteria {
-    POINTS,
+    POINTS_HIGH_FIRST,
     LASTSOLVE_REV,
     NAME,
     ELIG,
 }
 
-const { POINTS, LASTSOLVE_REV, NAME, ELIG } = SortingCriteria;
+const { POINTS_HIGH_FIRST, LASTSOLVE_REV, NAME, ELIG } = SortingCriteria;
 
 
 const compareCriteria = (a: CachedTeamMeta, b: CachedTeamMeta, criteria: SortingCriteria) => {
     switch (criteria) {
-        case POINTS:
-            return a.score - b.score;
+        case POINTS_HIGH_FIRST:
+            return b.score - a.score;
         case LASTSOLVE_REV:
             return (b.lastSolve ?? -1) - (a.lastSolve ?? -1);
         case NAME:
@@ -123,7 +124,7 @@ const compareCriteria = (a: CachedTeamMeta, b: CachedTeamMeta, criteria: Sorting
 }
 
 
-export const sortBy = (challs: CachedTeamMeta[], criteria: SortingCriteria[] = [POINTS, LASTSOLVE_REV, NAME, ELIG]) => {
+export const sortBy = (challs: CachedTeamMeta[], criteria: SortingCriteria[] = [POINTS_HIGH_FIRST, LASTSOLVE_REV, NAME, ELIG]) => {
     const compareFn = (a: CachedTeamMeta, b: CachedTeamMeta) => criteria
         .map(c => compareCriteria(a, b, c))
         .find(v => v !== 0) ?? 0;

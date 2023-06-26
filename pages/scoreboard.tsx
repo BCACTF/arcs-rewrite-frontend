@@ -40,7 +40,7 @@ export const getServerSideProps = wrapServerSideProps<TeamPageProps>(async funct
 
     const account = await getAccount(context);
     
-    const teams = sortTeamsBy(await getAllTeams()).reverse();
+    const teams = sortTeamsBy(await getAllTeams());
 
     const props: TeamPageProps = {
         metadata: await getCompetition(),

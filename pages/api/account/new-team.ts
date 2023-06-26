@@ -67,7 +67,7 @@ const handler: NextApiHandler = wrapApiEndpoint(async function newTeam(req, res)
         return;
     }
     
-    apiLogger.debug`Req body: ${req.body}.`;
+    // apiLogger.debug`Req body: ${req.body}.`;
 
     const bodyParams = getParams(req);
     if (!bodyParams) {

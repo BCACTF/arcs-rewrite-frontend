@@ -44,6 +44,12 @@ const Play: FC<PlayProps> = ({ metadata, challenges, teamSolves, account }) => {
         () => challenges.filter(chall => filterState.matches(chall)),
         [challenges, filterState],
     );
+
+    const challengesWithSolves = useMemo(
+        () => filteredChallenges.map(chall => ({...chall, solved: solvedIds.has(chall.id) })),
+        [filteredChallenges],
+    );
+
     const challengeProps: ChallDropProps[] = useMemo(
         () => filteredChallenges.map(
             chall => ({
@@ -74,7 +80,7 @@ const Play: FC<PlayProps> = ({ metadata, challenges, teamSolves, account }) => {
                     (
                         account.admin ? (
                             <>
-                                <FilterView filterState={filterState} challs={challenges}/>
+                                <FilterView filterState={filterState} challs={challengesWithSolves}/>
                                 <ChallDropList cards={challengeProps}/>        
                             </>
                         ) : 
@@ -89,7 +95,7 @@ const Play: FC<PlayProps> = ({ metadata, challenges, teamSolves, account }) => {
                     (
                         <div className="flex flex-row place-content-between px-4 sm:px-8 w-screen h-full overflow-y-hidden">
                             <div className="max-sm:hidden w-[23%] mr-2 md:mr-4">
-                                <FilterView filterState={filterState} challs={challenges}/>
+                                <FilterView filterState={filterState} challs={challengesWithSolves}/>
                             </div>
                             <ChallDropList cards={challengeProps}/>        
                         </div>

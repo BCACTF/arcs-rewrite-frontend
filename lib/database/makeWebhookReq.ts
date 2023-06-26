@@ -1,9 +1,23 @@
 import { getConfig } from "metadata/server";
 import WebhookDbQuery from "./queries";
+import { DbChallengeMeta, DbTeamMeta, DbUserMeta } from "./db-types";
 
-const makeWebhookDbRequest = async <T>(query: WebhookDbQuery): Promise<T> => {
+type ReturnTypes = {
+    chall: DbChallengeMeta,
+    chall_arr: DbChallengeMeta[],
+
+    team: DbTeamMeta,
+    team_arr: DbTeamMeta[],
+
+    user: DbUserMeta,
+    user_arr: DbUserMeta[],
+
+    availability: boolean,
+    auth_status: boolean,
+};
+
+const makeWebhookDbRequest = async <RetType extends keyof ReturnTypes>(type: RetType, query: WebhookDbQuery): Promise<ReturnTypes[RetType]> => {
     const { webhook: { url: webhookUrl }, frontendAuthToken } = await getConfig();
-
     const init: RequestInit = {
         method: "POST",
         headers: {
@@ -11,14 +25,25 @@ const makeWebhookDbRequest = async <T>(query: WebhookDbQuery): Promise<T> => {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            _type: "sqlquery",
-            targets: { sql: query },
+            sql: query,
         }),
     };
     const fetchReturn = await fetch(webhookUrl, init);
-    const jsonVal = await fetchReturn.json();
-    if (fetchReturn.ok) return jsonVal.sql;
-    else throw jsonVal.sql
+    const returnVal = await fetchReturn.text();
+    const jsonVal = (() => {
+        try {
+            return JSON.parse(returnVal)
+        } catch (e) {
+            throw returnVal;
+        }
+    })();
+    
+    if (!fetchReturn.ok) throw jsonVal.sql;
+
+    const { __type, data } = jsonVal.sql;
+    if (__type !== type) throw jsonVal.sql;
+    
+    return data;
 };
 
 export default makeWebhookDbRequest;

@@ -5,61 +5,58 @@ export type Auth = {
     __type: "oauth";
     sub: string;
     provider: string;
-    trustedClientAuth: string;
+    oauth_allow_token: string;
 };
 
 export type CheckUsernameAvailability = {
-    __tag: "available";
+    query_name: "available";
     name: string;
 };
 
 export type CreateNewUser = {
-    __tag: "create";
+    query_name: "create";
 
     email: string;
     name: string;
     auth: Auth;
+
     eligible: boolean;
+    admin: boolean;
 };
 
 export type CheckUserAuth = {
-    __tag: "auth";
+    query_name: "check_auth";
     id: string;
     auth: Auth;
 };
 export type UpdateUserNamePass = {
-    __tag: "update";
+    query_name: "update_auth";
     id: string;
-    auth: Auth;
-
-    name: string;
-    newPassword: string | null;
-
-    eligible: boolean;
+    old_auth: Auth;
+    new_auth: Auth;
 };
 
 export type UserJoinTeam = {
-    __tag: "join";
+    query_name: "join";
     id: string;
     auth: Auth;
 
-    teamId: string;
-    teamPassword: string;
+    team_name: string;
+    team_pass: string;
 };
 
 export type GetUser = {
-    __tag: "get";
+    query_name: "get";
     id: string;
 };
 export type GetAllUsers = {
-    __tag: "get_all";
+    query_name: "get_all";
 };
 
 type InnerUserQuery = CreateNewUser | CheckUsernameAvailability | CheckUserAuth | UpdateUserNamePass | UserJoinTeam | GetUser | GetAllUsers;
 
 type UserQuery = {
-    section: "user";
-    query: InnerUserQuery;
-};
+    __type: "user";
+} & InnerUserQuery;
 
 export default UserQuery;

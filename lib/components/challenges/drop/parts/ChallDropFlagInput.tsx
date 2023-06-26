@@ -54,8 +54,14 @@ const ChallDropFlagInput: FC<ChallDropFlagInputProps> = ({challId, userId, teamI
                         method: "POST",
                         body: JSON.stringify({ challId, userId, teamId, flag: inputValue }),
                     });
-                    if (res.ok && await res.text() === "true") location.reload();
-                    else alert("Invalid Flag");
+                    if (res.ok) {
+                        if (await res.text() === "failed") {
+                            alert("Incorrect flag. Please try again.");
+                        }
+                        location.reload();
+                    } else {
+                        alert("Server error");
+                    }
                 }
             }}/>
         <div

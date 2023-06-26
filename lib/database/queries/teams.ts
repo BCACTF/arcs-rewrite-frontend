@@ -1,10 +1,10 @@
 export type CheckTeamnameAvailability = {
-    __tag: "available";
+    query_name: "available";
     name: string;
 };
 
 export type CreateNewTeam = {
-    __tag: "create";
+    query_name: "create";
 
     initialUser: string;
 
@@ -15,34 +15,30 @@ export type CreateNewTeam = {
 };
 
 export type UpdateTeam = {
-    __tag: "update";
+    query_name: "update";
 
     id: string;
     password: string;
 
-    eligible: boolean;
+    name: string | null;
+    description: string | null;
+    eligible: boolean | null;
     affiliation: string | null;
-
-    name: string;
-    description: string;
-
-    newPassword: string | null;
 };
 
 export type GetTeam = {
-    __tag: "get";
+    query_name: "get";
 
     id: string;
 };
 export type GetAllTeams = {
-    __tag: "get_all";
+    query_name: "get_all";
 };
 
-type InnerTeamQuery = CheckTeamnameAvailability | CreateNewTeam | UpdateTeam | GetTeam | GetAllTeams;
+type InnerTeamQuery = CheckTeamnameAvailability | CreateNewTeam /*| UpdateTeam*/ | GetTeam | GetAllTeams;
 
 type TeamQuery = {
-    section: "team";
-    query: InnerTeamQuery;
-};
+    __type: "team";
+} & InnerTeamQuery;
 
 export default TeamQuery;

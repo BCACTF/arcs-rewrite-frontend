@@ -8,8 +8,12 @@ import { syncAllTeams } from "database/teams";
 import { syncAllUsers } from "database/users";
 import { syncSolves } from "database/solves";
 
+/**
+ * @deprecated This functionality has been moved to 
+ */
 const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
     apiLogger.trace`${req.method} request recieved for ${req.url}`;
+    apiLogger.warn`This endpoint is deprecated and may be removed. Please the /api/sync endpoint with the new format.`;
 
     const authorizationHeaderRaw = req.headers.authorization;
     if (!authorizationHeaderRaw || !authorizationHeaderRaw.startsWith("Bearer ")) {

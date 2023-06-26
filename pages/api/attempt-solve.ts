@@ -60,13 +60,8 @@ const handler: NextApiHandler = async (req, res) =>  {
 
     try {
         const returnVal = await attemptSolve({ teamId, userId, challId, flag });
-        if (returnVal === "success") {
-            res.status(200).send(true);
-            return
-        } else {
-            res.status(200).send(false);
-            return;
-        }
+        res.status(200).send(returnVal);
+        return;
     } catch (e) {
         res.status(500).send("Internal Server Error!");
         return;
