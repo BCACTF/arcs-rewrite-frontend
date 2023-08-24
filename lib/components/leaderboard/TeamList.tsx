@@ -87,7 +87,7 @@ const TeamRow: FC<TeamRowProps> = ({ name, id, affiliation, eligible, lastSolve,
 
 const TeamList: FC<TeamListProps> = ({ teams }) => (
     <div className="flex flex-col w-11/12 mx-auto">
-        <TeamRow name="Name" score={0} lastSolve={null} eligible={true}  affiliation="Affiliation" isHeader={true} idx={-1}/>
+        <TeamRow name="Name" score={0} lastSolve={null} lastTiebreakerSolve={null} eligible={true}  affiliation="Affiliation" isHeader={true} idx={-1}/>
         {teams.map((team, idx) => <TeamRow {...team} key={teamIdToStr(team.id)} isHeader={false} idx={idx}/>)}
     </div>
 );

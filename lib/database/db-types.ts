@@ -113,6 +113,7 @@ export type DbTeamMeta = {
     description: string;
     score: number;
     last_solve: number | null;
+    last_tiebreaker_solve: number | null;
     eligible: boolean;
     affiliation: string | null;
 };
@@ -122,6 +123,7 @@ export const dbToCacheTeam = (dbTeam: DbTeamMeta): CachedTeamMeta | null => {
         id: idStr,
         name, score, eligible,
         last_solve: lastSolve, 
+        last_tiebreaker_solve: lastTiebreakerSolve,
         affiliation,
     } = dbTeam;
 
@@ -129,7 +131,7 @@ export const dbToCacheTeam = (dbTeam: DbTeamMeta): CachedTeamMeta | null => {
     if (!id) return null;
 
     const cachedTeam: CachedTeamMeta = {
-        id, name, score, lastSolve, eligible, affiliation
+        id, name, score, lastSolve, lastTiebreakerSolve, eligible, affiliation
     };
 
     return cachedTeam;

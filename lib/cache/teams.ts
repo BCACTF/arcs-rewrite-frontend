@@ -6,7 +6,8 @@ export interface CachedTeamMeta {
     name: string;
 
     score: number;
-    lastSolve: number | null,
+    lastSolve: number | null;
+    lastTiebreakerSolve: number | null;
 
     eligible: boolean;
     affiliation: string | null;
@@ -26,6 +27,7 @@ export const parseTeam = (teamJson: string): CachedTeamMeta | null => {
         eligible: eligRaw,
 
         lastSolve: lastSolveRaw,
+        lastTiebreakerSolve: lastTiebreakerSolveRaw,
         affiliation: affiliationRaw,
     } = parsed as Record<string, unknown>;
 
@@ -42,8 +44,9 @@ export const parseTeam = (teamJson: string): CachedTeamMeta | null => {
 
     {
         const lastSolve = typeof lastSolveRaw === 'number' || typeof lastSolveRaw === 'string' || lastSolveRaw === undefined || lastSolveRaw === null;
+        const lastTiebreakerSolve = typeof lastTiebreakerSolveRaw === 'number' || typeof lastTiebreakerSolveRaw === 'string' || lastTiebreakerSolveRaw === undefined || lastTiebreakerSolveRaw === null;
         const affiliation = typeof affiliationRaw === 'string' || affiliationRaw === undefined || affiliationRaw === null;
-        if (!lastSolve || !affiliation) return null;
+        if (!lastSolve || !lastTiebreakerSolve || !affiliation) return null;
     }
 
     const id = teamId;
@@ -56,9 +59,14 @@ export const parseTeam = (teamJson: string): CachedTeamMeta | null => {
             ? new Date(lastSolveRaw * 1000).getTime() / 1000
             : new Date(lastSolveRaw).getTime() / 1000
         : null;
+    const lastTiebreakerSolve = lastTiebreakerSolveRaw
+        ? typeof lastTiebreakerSolveRaw === "number"
+            ? new Date(lastTiebreakerSolveRaw * 1000).getTime() / 1000
+            : new Date(lastTiebreakerSolveRaw).getTime() / 1000
+        : null;
     const affiliation = affiliationRaw ?? null;
 
-    return { id, name, score, eligible, lastSolve, affiliation };
+    return { id, name, score, eligible, lastSolve, lastTiebreakerSolve, affiliation };
 }
 
 export const getTeams = async (ids: TeamId[]): Promise<CachedTeamMeta[]> => {
