@@ -1,5 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 
+const text = "#f7f6f8";
+const background = "#111119";
+const primary = "#985ace";
+const secondary = "#261a32";
+const accent = "#0f88de";
+
 module.exports = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx}",
@@ -8,116 +14,116 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'page-background-color': "#d0c5ac",
-        'page-default-text-color': "#131313",
+        'page-background-color': background,
+        'page-default-text-color': text,
         
         "main-color": {
-          "300": "#89cac8",
-          "500": "#6695bf",
-          "700": "#4969b7"
+          "300": primary,
+          "500": primary/70,
+          "700": primary/90
         },
 
-        'landing-timer-color': "#255eee",
-        'landing-text-color': "#db4838", 
+        'landing-timer-color': primary,
+        'landing-text-color': primary, 
 
-        'navbar-event-name': '#f4f4f4',
-        'navbar-text-color-normal': "#f4f4f4",
-        'navbar-text-color-dark': "#db4838",
-        'navbar-background-color': "rgb(10, 61, 104)",
-        'navbar-background-color-mobile-only': "rgb(10, 61, 104)",
+        'navbar-event-name': primary,
+        'navbar-text-color-normal': text,
+        'navbar-text-color-dark': primary,
+        'navbar-background-color': secondary,
+        'navbar-background-color-mobile-only': secondary,
 
-        'navbar-account-dropdown-background-color': "#ffffff",
-        'navbar-account-dropdown-background-color-hover': "#89cac8",
+        'navbar-account-dropdown-background-color': primary,
+        'navbar-account-dropdown-background-color-hover': accent,
         'navbar-account-dropdown-hover-color': "rgb(171, 205, 234)",
         'navbar-account-dropdown-text-color': "#000000",
 
-        'signin-light': "#89cac8",
-        'signin-text': "#ffffff",
-        'signin-text-header': "#ffffff",
-        'signin-background-color': "rgb(10, 61, 104)",
-        'signin-provider-outline': "#ffffff",
-        'signin-provider-hover-color': "#db4838",
-        'signin-provider-hover-color-light': "#89cac8",
-        'signin-button-hover-text-color': "#ffffff",
-        'signin-button-text-color': "#ffffff",
-        'signin-button-background-color': "rgb(10, 61, 104)",
-        'border-signin-button-border-color': "#ffffff",
-        'border-signin-button-ifthethingisdisabledshowthis-background-color': "#ffffff",
+        'signin-light': accent,
+        'signin-text': text,
+        'signin-text-header': text,
+        'signin-background-color': secondary,
+        'signin-provider-outline': text,
+        'signin-provider-hover-color': accent,
+        'signin-provider-hover-color-light': primary,
+        'signin-button-hover-text-color': text,
+        'signin-button-text-color': text,
+        'signin-button-background-color': secondary,
+        'border-signin-button-border-color': text,
+        'border-signin-button-ifthethingisdisabledshowthis-background-color': text,
 
-        '404-text-color': "#000000",
-        '404-text-color-header': "#db4838",
-        '404-text-color-alternate': "#255eee",
+        '404-text-color': text,
+        '404-text-color-header': primary,
+        '404-text-color-alternate': accent,
 
-        'user-profile-card-color': "#89cac856",
-        'user-profile-text-color': "#131313",
-        'user-profile-button-background-color': "#4969b7",
-        'user-profile-button-border-color': "#557ad6",
-        'user-profile-button-text-color': "#fcfbfb",
+        'user-profile-card-color': secondary,
+        'user-profile-text-color': text,
+        'user-profile-button-background-color': primary,
+        'user-profile-button-border-color': secondary,
+        'user-profile-button-text-color': text,
         'user-profile-create-team-background-color': "#008d0c", // TODO 
-        'user-profile-join-team-background-color': "#0030a8",
-        'user-profile-no-team-background-color': "#3d3d3d",
+        'user-profile-join-team-background-color': accent,
+        'user-profile-no-team-background-color': secondary,
 
-        'team-line-color': "#ffffff",
-        'team-team-name-color': "#db4838",
-        'team-boxes-background-color': "rgb(10, 61, 104)",
-        'team-boxes-border-color': "#ffffff",
-        'team-boxes-text-color': "#ffffff",
-        'team-entry-hover-color': "rgb(171, 205, 234)",
+        'team-line-color': accent,
+        'team-team-name-color': primary,
+        'team-boxes-background-color': secondary,
+        'team-boxes-border-color': accent,
+        'team-boxes-text-color': text,
+        'team-entry-hover-color': accent,
 
-        'leaderboard-row-hover-color': "#89cac8",
+        'leaderboard-row-hover-color': accent,
         'leaderboard-leaderboard-header-color': "#000000", // this isn't used anywhere
-        'leaderboard-firstplace-number-color': "#002a8c",
-        'leaderboard-secondplace-number-color': "#255eee",
-        'leaderboard-thirdplace-number-color': "#6695bf",
-        'leaderboard-number-color': "#2c3437",
-        'leaderboard-divider-color': "#787c84",
+        'leaderboard-firstplace-number-color': text,
+        'leaderboard-secondplace-number-color': text,
+        'leaderboard-thirdplace-number-color': text,
+        'leaderboard-number-color': text,
+        'leaderboard-divider-color': secondary,
 
-        'rules-header-color': "#db4838",
-        'rules-subheader-color': "#255eee",
-        'rules-divider-color': "rgb(10, 61, 104)",
-        'rules-link-color': "#db4838",
-        'rules-link-hover-color': "#255eee",
+        'rules-header-color': primary,
+        'rules-subheader-color': accent,
+        'rules-divider-color': accent,
+        'rules-link-color': primary,
+        'rules-link-hover-color': accent,
 
-        'about-header-color': "#db4838",
-        'about-subheader-color': "#255eee",
-        'about-divider-color': "rgb(10, 61, 104)",
-        'about-link-color': "#db4838",
-        'about-link-hover-color': "#255eee",
+        'about-header-color': primary,
+        'about-subheader-color': accent,
+        'about-divider-color': accent,
+        'about-link-color': primary,
+        'about-link-hover-color': accent,
 
-        'play-selector-box-outline-color': "#255eee",
-        'play-selector-line-divider-color': "#255eee",
+        'play-selector-box-outline-color': accent,
+        'play-selector-line-divider-color': accent,
         
-        'play-button-default-text-color': "rgb(10, 61, 104)",
-        'play-button-outline-color': "rgb(10, 61, 104)",
-        'play-button-selected-outline-color': "rgb(10, 61, 104)",
+        'play-button-default-text-color': text,
+        'play-button-outline-color': accent,
+        'play-button-selected-outline-color': accent,
 
-        'play-button-hover-unselected-fill-color': "#db4838",
-        'play-button-hover-unselected-text-color': "#db4838",
+        'play-button-hover-unselected-fill-color': accent,
+        'play-button-hover-unselected-text-color': text,
         
-        'play-button-hover-selected-fill-color': "#255eee",
-        'play-button-hover-selected-text-color': "#255eee",
+        'play-button-hover-selected-fill-color': secondary,
+        'play-button-hover-selected-text-color': text,
 
-        'play-button-selected-fill-color': "#255eee",
-        'play-button-selected-text-color': "#255eee",
+        'play-button-selected-fill-color': accent,
+        'play-button-selected-text-color': text,
       
-        'play-pointselector-dot-color-active': "#db4838",
-        'play-pointselector-dot-color-inactive': "#7e7e7e",
-        'play-pointselector-default-line-color': "#7e7e7e", // for the most part, you want this to be the same as inactive dot color
+        'play-pointselector-dot-color-active': primary,
+        'play-pointselector-dot-color-inactive': secondary,
+        'play-pointselector-default-line-color': secondary, // for the most part, you want this to be the same as inactive dot color
 
 
         'chall-hover-default-shadow-color': "#d5b900",      // doesn't do anything right now
         'chall-hover-transition-shadow-color': "#eb0000",   // doesn't do anything right now
         'chall-solved-side-color': "#26b434",
-        'chall-unsolved-side-color': "#3f3f3f",
-        'chall-drop-header-background-color': "rgb(10, 61, 104)",
-        'chall-border-color': "#ffffff",
-        'chall-background-color': "rgba(10, 62, 104, 0.701)",
-        'chall-text-color': "#ffffff",
-        'chall-author-name-color': "#ffffff",
-        'chall-divider-color': "#ffffff",
+        'chall-unsolved-side-color': background,
+        'chall-drop-header-background-color': secondary,
+        'chall-border-color': accent,
+        'chall-background-color': secondary,
+        'chall-text-color': text,
+        'chall-author-name-color': text,
+        'chall-divider-color': accent,
         'chall-nc-background-color': "#464646",
-        'chall-nc-border-color': "#89cac89e",
-        'chall-nc-text-color': "#89cac8",
+        'chall-nc-border-color': accent,
+        'chall-nc-text-color': accent,
       },
       minWidth: {
         '30': "30rem",
