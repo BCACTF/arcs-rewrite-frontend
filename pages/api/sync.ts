@@ -35,8 +35,6 @@ type SyncInfo = {
     id: UserId,
 };
 
-const uuidIsntAll0s = (uuid: string) => uuid.split("").filter(c => !isNaN(parseInt(c, 16))).every(c => c !== "0");
-
 const isValidBody = (body: unknown): body is { __type: string, id?: string } => {
     try {
         const { __type, id } = body as { __type: string, id?: string };
@@ -53,7 +51,7 @@ const isValidBody = (body: unknown): body is { __type: string, id?: string } => 
 const getSyncType = ({ __type, id }: { __type: string, id?: string }): SyncInfo | null => {
     const validatedId = id && uuidFromStr(id);
 
-    if (validatedId && uuidIsntAll0s(id)) {
+    if (validatedId) {
         switch (__type) {
             case "user": {
                 const userId = userIdFromStr(id);
@@ -73,6 +71,7 @@ const getSyncType = ({ __type, id }: { __type: string, id?: string }): SyncInfo 
             }
             case "chall": {
                 const challId = challIdFromStr(id);
+                apiLogger.trace`Chall Id: ${challId}`
                 if (!challId) return null;
                 else return {
                     __type: SyncType.CHALL,
