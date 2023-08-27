@@ -1,11 +1,15 @@
+import { Auth } from "./users";
+
 export type SubmitAttempt = {
-    query_name: "submit";
+    query_name: "attempt";
     
     user_id: string,
     team_id: string,
-    challenge_id: string,
+    chall_id: string,
 
-    flag: string,
+    flag_guess: string,
+
+    user_auth: Auth
 };
 
 export type GetTeamSolves = {

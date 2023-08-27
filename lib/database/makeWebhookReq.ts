@@ -1,6 +1,6 @@
 import { getConfig } from "metadata/server";
 import WebhookDbQuery from "./queries";
-import { DbChallengeMeta, DbTeamMeta, DbUserMeta } from "./db-types";
+import { DbChallengeMeta, DbTeamMeta, DbUserMeta, DbSolveMeta } from "./db-types";
 
 type ReturnTypes = {
     chall: DbChallengeMeta,
@@ -11,6 +11,9 @@ type ReturnTypes = {
 
     user: DbUserMeta,
     user_arr: DbUserMeta[],
+
+    solve: DbSolveMeta,
+    solve_arr: DbSolveMeta[],
 
     availability: boolean,
     auth_status: boolean,

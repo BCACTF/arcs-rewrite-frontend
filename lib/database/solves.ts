@@ -1,25 +1,27 @@
 import makeWebhookRequest from "./makeWebhookReq";
 import { ChallId, TeamId, UserId, challIdToStr, teamIdToStr, userIdToStr } from "cache/ids";
 import { addSolve } from "cache/solves";
-import { DbSolveMeta, dbToCacheSolve } from "./db-types";
-import { syncUser } from "./users";
+import { dbToCacheSolve } from "./db-types";
+import { InputAuth, syncUser } from "./users";
 import { syncTeam } from "./teams";
 import { syncChall } from "./challs";
+import { apiLogger } from "logging";
+import addClientPerms from "auth/webhookClientAuthPerms";
 
 const syncSolves = async (): Promise<void> => {
-    // try {
-    //     const allSolves = await makeWebhookRequest<DbSolveMeta[]>({
-    //         __type: "solve",
-    //         query_name: "get_all",
-    //     });
+    try {
+        const allSolves = await makeWebhookRequest("solve_arr", {
+            __type: "solve",
+            query_name: "get_all",
+        });
 
-    //     const solves = allSolves.map(dbToCacheSolve).flatMap(c => c ? [c] : []);
-    //     await Promise.all(solves.map(addSolve));
+        const solves = allSolves.map(dbToCacheSolve).flatMap(c => c ? [c] : []);
+        await Promise.all(solves.map(addSolve));
 
-    //     // return await getSolves();
-    // } catch (err) {
-    //     console.error("failed to rerequest challenges", err);
-    // }
+        // return await getSolves();
+    } catch (err) {
+        console.error("failed to rerequest challenges", err);
+    }
 };
 
 
@@ -30,35 +32,38 @@ type AddNewUserReq = (params: {
     teamId: TeamId;
     userId: UserId;
     flag: string;
+    auth: InputAuth;
 }) => Promise<SolvedReturn>;
 
-const attemptSolve: AddNewUserReq = async ({ challId, teamId, userId, flag }): Promise<SolvedReturn> => {
-    // try {
-    //     const solveRes = await makeWebhookRequest<DbSolveMeta>({
-    //         __type: "solve",
-    //         query_name: "submit",
-    //         user_id: userIdToStr(userId),
-    //         challenge_id: challIdToStr(challId),
-    //         team_id: teamIdToStr(teamId),
-    //         flag,
-    //     });
-    //     if (!solveRes.correct) return "failed";
-    //     if (!solveRes.counted) return "correct_no_points";
+const attemptSolve: AddNewUserReq = async ({ challId, teamId, userId, flag, auth }): Promise<SolvedReturn> => {
+    try {
+        const solveRes = await makeWebhookRequest("solve", {
+            __type: "solve",
+            query_name: "attempt",
+            user_id: userIdToStr(userId),
+            chall_id: challIdToStr(challId),
+            team_id: teamIdToStr(teamId),
+            flag_guess: flag,
+            user_auth: await addClientPerms(auth),
+        });
+        apiLogger.debug`Solve result: ${solveRes}`;
+        if (!solveRes.correct) return "failed";
+        if (!solveRes.counted) return "correct_no_points";
 
-    //     const solve = dbToCacheSolve(solveRes);
+        const solve = dbToCacheSolve(solveRes);
 
-    //     if (solve) {
-    //         await addSolve(solve);
-    //         await Promise.all([
-    //             syncUser({ id: userId }),
-    //             syncTeam({ id: teamId }),
-    //             syncChall({ id: challId }),
-    //         ])
-    //         return "success";
-    //     } else console.error("Bad SQL return:", solveRes);
-    // } catch (err) {
-    //     console.error("failed to submit solve", err);
-    // }
+        if (solve) {
+            await addSolve(solve);
+            await Promise.all([
+                syncUser({ id: userId }),
+                syncTeam({ id: teamId }),
+                syncChall({ id: challId }),
+            ])
+            return "success";
+        } else console.error("Bad SQL return:", solveRes);
+    } catch (err) {
+        console.error("failed to submit solve", err);
+    }
     return "failed";
 };
 
