@@ -78,7 +78,8 @@ const Play: FC<PlayProps> = ({ metadata, challenges, teamSolves, account }) => {
                     // to whoever maintains this code in the future, I am so
                     // sorry - yusuf june 3rd 2023
                     // I fixed it - Sky, August 27, 2023
-                    (metadata.start > Date.now() / 1000) || account.admin
+                    // it was not fixed, but now it is! - Yusuf, August 27, 2023
+                    (metadata.start <= Date.now() / 1000) || account.admin
                         ? (
                             <div className="flex flex-row place-content-between px-4 sm:px-8 w-screen h-full overflow-y-hidden">
                                 <div className="max-sm:hidden w-[23%] mr-2 md:mr-4">
