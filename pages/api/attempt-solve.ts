@@ -63,7 +63,7 @@ const handler: NextApiHandler = async (req, res) =>  {
         res.status(200).send(returnVal);
         return;
     } catch (e) {
-        res.status(500).send("Internal Server Error!");
+    res.status(500).send("Internal Server Error!");
         return;
     }
 };

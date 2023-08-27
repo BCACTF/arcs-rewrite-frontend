@@ -54,8 +54,22 @@ const RulePage: FC<RulePageProps> = ({ metadata, account }) => {
                 <hr className="border border-b-rules-divider-color w-3/5 mx-auto mt-6 mb-6"></hr>
 
                 <span className="text-3xl font-semibold text-center text-rules-subheader-color pb-3">Prizes</span>
-                <span className="text-xl font-semibold text-center pb-3">Information Coming Soon</span>
-                {/* <p className="text-md mx-16 pb-4">The top ten eligible teams will receive prizes out of a pool of <strong>$3000 USD</strong> courtesy of <Link className="underline text-rules-link-color hover:text-rules-link-hover-color transition" href="https://www.trailofbits.com/">Trail of Bits</Link> and <Link className="underline text-rules-link-color hover:text-rules-link-hover-color transition" href="https://www.digitalocean.com">DigitalOcean</Link>. The distribution is as follows:</p> */}
+		
+                <span className="py-2 text-xl font-semibold text-center pb-3">High School Division Prizes (class of 2023+)</span>
+		<ul className="list-circle mx-20">
+			<li>1st Place → 250 USD</li>
+			<li>2nd Place → 175 USD</li>
+			<li>3rd Place → 75  USD</li>
+                </ul>
+
+		<span className="py-2 text-xl font-semibold text-center pb-3">BCA Prizes</span>
+		<ul className="list-circle mx-20 pb-5">
+			<li>1st Place → 50 USD</li>
+			<li>2nd Place → 30 USD</li>
+			<li>3rd Place → 20 USD</li>
+                </ul>
+
+		{/* <p className="text-md mx-16 pb-4">The top ten eligible teams will receive prizes out of a pool of <strong>$3000 USD</strong> courtesy of <Link className="underline text-rules-link-color hover:text-rules-link-hover-color transition" href="https://www.trailofbits.com/">Trail of Bits</Link> and <Link className="underline text-rules-link-color hover:text-rules-link-hover-color transition" href="https://www.digitalocean.com">DigitalOcean</Link>. The distribution is as follows:</p> */}
                 {/* <p className="text-md mx-16 pb-4">The top ten eligible teams will receive prizes out of a pool of <strong>$3000 USD</strong> courtesy of <Link className="underline text-rules-link-color hover:text-rules-link-hover-color transition" href="https://www.trailofbits.com/">Trail of Bits</Link> and <Link className="underline text-rules-link-color hover:text-rules-link-hover-color transition" href="https://www.digitalocean.com">DigitalOcean</Link>. The distribution is as follows:</p>
                 <ul className="list-[circle] mx-20 pb-8">
                     <li>First place: $500 and $250 DO Credits</li>

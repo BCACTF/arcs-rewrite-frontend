@@ -86,8 +86,8 @@ const handler: NextApiHandler = wrapApiEndpoint(async function newTeam(req, res)
         return
     }
     
-    const nameInUse = (await Promise.all([
-        getAllTeams().then(teams => teams.find(team => team.name !== name)),
+    const nameInUse = !(await Promise.all([
+        //getAllTeams().then(teams => teams.find(team => team.name !== name)),
         checkTeamnameAvailable({ name }),
     ])).every(Boolean);
     

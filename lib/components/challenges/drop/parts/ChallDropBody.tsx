@@ -16,6 +16,7 @@ import remarkGfm from "remark-gfm";
 const ListItem = ({ item, className, style }: { item: string, style?: CSSProperties, className?: string }) => (
     <span className={className} style={style}>{item}</span>
 )
+
 const EnglishList = ({ items: list, style, className }: { items: string[], style?: CSSProperties, className?: string }) => {
     if (list.length === 0) return <></>;
     else if (list.length === 1) return <code className={className} key={0}>{list[0]}</code>;
@@ -136,17 +137,23 @@ const ChallDropBody: FC<ChallDropProps & { open: boolean }> = ({
                 remarkPlugins={[remarkGfm]}>
                 {desc}
             </ReactMarkdown>
-            <div className="
-                border-t-1 border-white border-opacity-20 border-t
-                pt-3 mt-3 w-full
-                flex flex-col gap-2">
-                <h4 className="text-xl font-bold">Resources:</h4>
+		{
+		Object.values(links).some(x => x.length > 0) ?
+		(
+			<div className="
+				border-t-1 border-white border-opacity-20 border-t
+				pt-3 mt-3 w-full
+				flex flex-col gap-2">
+				<h4 className="text-xl font-bold">Resources:</h4>
 
-                <Links urls={links.nc} type={"nc"} key={"nc"}/>
-                <Links urls={links.web} type={"web"} key={"web"}/>
-                <Links urls={links.admin} type={"admin"} key={"admin"}/>
-                <Links urls={links.static} type={"static"} key={"static"}/>
-            </div>
+				<Links urls={links.nc} type={"nc"} key={"nc"}/>
+				<Links urls={links.web} type={"web"} key={"web"}/>
+				<Links urls={links.admin} type={"admin"} key={"admin"}/>
+				<Links urls={links.static} type={"static"} key={"static"}/>
+			</div>
+		) : null
+		}            
+
         </div>
 
         <BodyMeta {...{ solveCount, solved, points, tags, categories, links, authors, hints }}/>
@@ -162,10 +169,10 @@ type ReactMarkdownComponentStyles = Parameters<typeof ReactMarkdown>[0]["compone
 const components: ReactMarkdownComponentStyles = {
 
     a: ({ className, children, ...props}) => (
-        <a {...props} className={`${className} text-rules-link-hover-color underline`}>{children}</a>
+        <a {...props} className={`${className} text-blue-300 underline`}>{children}</a>
     ),
     link: ({ className, children, ...props}) => (
-        <link {...props} className={`${className} text-rules-link-hover-color underline`}>{children}</link>
+        <link {...props} className={`${className} text-blue-300 underline`}>{children}</link>
     ),
     h1: ({ className, children, ...props}) => <h1 {...props} className={`${className} text-3xl font-bold`}>{children}</h1>,
     h2: ({ className, children, ...props}) => <h2 {...props} className={`${className} text-2xl font-semibold`}>{children}</h2>,

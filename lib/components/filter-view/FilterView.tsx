@@ -37,6 +37,7 @@ const FilterView: FC<FilterViewProps> = ({ filterState, challs }) => {
         ] as [string, [number, number]]),
         [challs],
     );
+    
     const tags = useMemo(
         () => [...new Set(challs.flatMap(c => c.tags).map(s => s.toLowerCase())).values()].sort(),
         [challs],
