@@ -105,7 +105,8 @@ const addUser = async ({ email, name, auth, eligible }: AddNewUserParams) => {
         const newUserRes = await makeWebhookRequest("user", {
             __type: "user",
             query_name: "create",
-            email, name, auth: await addClientPerms(auth), eligible, admin: false,
+            email, name, eligible, admin: false,
+            auth: await addClientPerms(auth),
         });
         const newUser = dbToCacheUser(newUserRes);
 

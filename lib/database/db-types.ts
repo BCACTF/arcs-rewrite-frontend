@@ -144,21 +144,21 @@ export const dbToCacheTeam = (dbTeam: DbTeamMeta): CachedTeamMeta | null => {
 export type DbSolveMeta = {
     id: string;
 
-    challenge_id: string;
+    chall_id: string;
     user_id: string;
     team_id: string;
 
     correct: boolean;
     counted: boolean;
 
-    timestamp: number;
+    time: number;
 };
 
 
 export const dbToCacheSolve = (dbSolve: DbSolveMeta): CachedSolveMeta | null => {
     const {
-        challenge_id: cidStr, user_id: uidStr, team_id: tidStr,
-        correct, counted, timestamp
+        chall_id: cidStr, user_id: uidStr, team_id: tidStr,
+        correct, counted, time
     } = dbSolve;
 
     if (!correct || !counted) return null;
@@ -171,7 +171,7 @@ export const dbToCacheSolve = (dbSolve: DbSolveMeta): CachedSolveMeta | null => 
 
     const cachedSolve: CachedSolveMeta = {
         teamId, userId, challId,
-        time: timestamp,
+        time,
     };
 
     return cachedSolve;
