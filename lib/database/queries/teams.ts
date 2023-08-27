@@ -9,6 +9,8 @@ export type CreateNewTeam = {
     initialUser: string;
 
     name: string;
+    description: string;
+    
     eligible: boolean;
     affiliation: string | null;
     password: string;

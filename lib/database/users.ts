@@ -1,9 +1,10 @@
 import makeWebhookRequest from "./makeWebhookReq";
 import { update as updateUser, removeStale as removeStaleUsers, getAllUsers, getUsers, CachedUser } from "cache/users";
-import { TeamId, UserId, teamIdToStr, userIdToStr } from "cache/ids";
-import { DbUserMeta, dbToCacheUser } from "./db-types";
+import { UserId, fmtLogU, userIdToStr } from "cache/ids";
+import { dbToCacheUser } from "./db-types";
 import { Auth } from "./queries/users";
 import addClientPerms from "auth/webhookClientAuthPerms";
+import { apiLogger } from "logging";
 
 export type InputAuth = (Auth & { __type: "pass" }) | Omit<Auth & { __type: "oauth" }, "oauth_allow_token">;
 
@@ -14,14 +15,23 @@ const syncAllUsers = async (): Promise<CachedUser[] | null> => {
             query_name: "get_all",
         });
         const users = allUsers.map(dbToCacheUser).flatMap(c => c ? [c] : []);
+        apiLogger.debug`Got users: ${users.map(u => `${fmtLogU(u.userId)} (${u.clientSideMetadata.name})`)}`;
+
         const usedIds = users.map(u => u.userId);
         await removeStaleUsers(usedIds);
-
-        await Promise.all(users.map(updateUser));
-
-        return await getAllUsers();
+        apiLogger.trace`Removed stale users`;
+        
+        const replaced = await Promise.all(users.map(updateUser));
+        apiLogger.trace`Updated all users`;
+        
+        apiLogger.debug`Replaced users: ${replaced.flatMap(u => u ? [fmtLogU(u.userId)] : [])}`;
+        
+        
+        const newUsers = await getAllUsers();
+        apiLogger.debug`Users: ${newUsers.map(u => u.clientSideMetadata.name)}`;
+        return newUsers;
     } catch (err) {
-        console.error("failed to rerequest users", err);
+        apiLogger.error`Failed to rerequest users: ${err}`;
     }
 
     return null;

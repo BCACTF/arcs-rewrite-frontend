@@ -89,7 +89,7 @@ const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
 
     const user = await joinTeam({
         id, auth: { __type: "oauth", sub, provider },
-        teamId, teamPassword,
+        teamName: name, teamPassword,
     });
 
     apiLogger.info`${user ? 'Succeeded' : 'Failed'} in joining team`;

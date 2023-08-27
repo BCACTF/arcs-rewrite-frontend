@@ -3,8 +3,11 @@ import { CachedTeamMeta, getAllTeams, getTeams, removeStale as removeStaleTeams,
 import { TeamId, UserId, teamIdToStr, userIdToStr } from "cache/ids";
 import { DbTeamMeta, dbToCacheTeam } from "./db-types";
 import { syncUser } from "./users";
+import { apiLogger } from "logging";
 
 const syncAllTeams = async (): Promise<CachedTeamMeta[] | null> => {
+    apiLogger.trace`Syncing all teams...`;
+    
     try {
         const allTeams = await makeWebhookRequest("team_arr", {
             __type: "team",
@@ -12,6 +15,9 @@ const syncAllTeams = async (): Promise<CachedTeamMeta[] | null> => {
         });
 
         const teams = allTeams.map(dbToCacheTeam).flatMap(c => c ? [c] : []);
+
+        apiLogger.trace`Cache teams: ${teams.map(t => t.name)}`;
+
         const usedIds = teams.map(t => t.id);
         removeStaleTeams(usedIds);
 
@@ -70,10 +76,13 @@ type AddNewTeamParams = {
 
 const addNewTeam = async ({ name, eligible, affiliation, password, initialUser }: AddNewTeamParams): Promise<CachedTeamMeta | null> => {
     try {
+        apiLogger.trace`Creating new team under name ${name}`;
+
         const newTeam = await makeWebhookRequest("team", {
             __type: "team",
             query_name: "create",
-            name, eligible, affiliation, password,
+            name, description: "",
+            eligible, affiliation, password,
             initialUser: userIdToStr(initialUser),
         });
         const team = dbToCacheTeam(newTeam);

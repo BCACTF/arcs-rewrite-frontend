@@ -6,19 +6,20 @@ import { syncAllTeams, syncTeam } from "database/teams";
 import { syncAllUsers, syncUser } from "database/users";
 import { syncSolves } from "database/solves";
 import { ChallId, TeamId, UserId, challIdFromStr, teamIdFromStr, userIdFromStr, uuidFromStr } from "cache/ids";
+import { apiLogger, wrapApiEndpoint } from "logging";
 
 
 enum SyncType {
-    ALL,
-    SOLVES,
+    ALL = "sync_all",
+    SOLVES = "sync_solves",
 
-    ALL_CHALLS,
-    ALL_TEAMS,
-    ALL_USERS,
+    ALL_CHALLS = "sync_all_challs",
+    ALL_TEAMS = "sync_all_teams",
+    ALL_USERS = "sync_all_users",
 
-    CHALL,
-    TEAM,
-    USER,
+    CHALL = "sync_one_chall",
+    TEAM = "sync_one_team",
+    USER = "sync_one_user",
 }
 
 type SyncInfo = {
@@ -93,12 +94,13 @@ const getSyncType = ({ __type, id }: { __type: string, id?: string }): SyncInfo 
 }
 
 
-const handler: NextApiHandler = async (req, res) =>  {
-    console.log("request recieved");
+const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
+    apiLogger.trace`${req.method} request recieved for ${req.url}`;
 
     const authorizationHeaderRaw = req.headers.authorization;
     if (!authorizationHeaderRaw || !authorizationHeaderRaw.startsWith("Bearer ")) {
-        console.log("Invalid bearer token:", authorizationHeaderRaw);
+        apiLogger.secWarn`Invalid bearer token: ${authorizationHeaderRaw}`;
+
         res.statusMessage = "Invalid bearer token";
         res.status(401);
         res.end();
@@ -110,7 +112,7 @@ const handler: NextApiHandler = async (req, res) =>  {
     const webhookTokenValue = await webhookToken();
 
     if (reqBearer.length !== webhookTokenValue.length) {
-        console.log("Invalid bearer token:", authorizationHeaderRaw);
+        apiLogger.secWarn`Invalid bearer token: ${authorizationHeaderRaw.slice(0, 42)}`;
         res.statusMessage = "Invalid bearer token";
         res.status(401);
         res.end();
@@ -118,7 +120,8 @@ const handler: NextApiHandler = async (req, res) =>  {
     }
     
     if (!timingSafeEqual(Buffer.from(reqBearer), Buffer.from(webhookTokenValue))) {
-        console.log("Incorrect bearer token:", reqBearer);
+        apiLogger.secWarn`Invalid bearer token: ${reqBearer}`;
+
         res.statusMessage = "Unauthorized";
         res.status(401);
         res.end();
@@ -128,6 +131,8 @@ const handler: NextApiHandler = async (req, res) =>  {
 
     const body = req.body;
     if (!isValidBody(body)) {
+        apiLogger.warn`Invalid request body: ${body}. Make sure you are using \`webhook-rs\`.`;
+
         res.status(400);
         res.statusMessage = "Invalid body";
         res.end();
@@ -135,75 +140,17 @@ const handler: NextApiHandler = async (req, res) =>  {
     }
 
     
-    let syncType = getSyncType(body);
+    const syncType = getSyncType(body);
+    if (!syncType) {
+        apiLogger.warn`Requested an invalid sync type ${body.__type}.`;
 
-    try {
-        const body = req.body as { __type: string, id?: string };
-
-        switch (body.__type) {
-            case "all":
-                syncType = {
-                    __type: SyncType.ALL
-                };
-                break;
-            case "solves":
-                syncType = {
-                    __type: SyncType.SOLVES
-                };
-                break;
-            case "user":
-                if (!body.id) throw new Error("no id provided");
-                if (uuidIsntAll0s(body.id)) {
-                    const id = userIdFromStr(body.id);
-                    if (!id) throw new Error("bad id format");
-                    syncType = {
-                        __type: SyncType.USER,
-                        id,
-                    };
-                } else {
-                    syncType = {
-                        __type: SyncType.ALL_USERS,
-                    };
-                }
-                break;
-            case "team":
-                if (!body.id) throw new Error("no id provided");
-                if (uuidIsntAll0s(body.id)) {
-                    const id = teamIdFromStr(body.id);
-                    if (!id) throw new Error("bad id format");
-                    syncType = {
-                        __type: SyncType.TEAM,
-                        id,
-                    };
-                } else {
-                    syncType = {
-                        __type: SyncType.ALL_TEAMS,
-                    };
-                }
-                break;
-            case "chall":
-                if (!body.id) throw new Error("no id provided");
-                if (uuidIsntAll0s(body.id)) {
-                    const id = challIdFromStr(body.id);
-                    if (!id) throw new Error("bad id format");
-                    syncType = {
-                        __type: SyncType.CHALL,
-                        id,
-                    };
-                } else {
-                    syncType = {
-                        __type: SyncType.ALL_CHALLS,
-                    };
-                }
-                break;
-            default:
-                throw new Error("Unknown sync type");
-        }
-    } catch (e) {
         res.status(400);
+        res.statusMessage = "Invalid sync type";
         res.end();
         return;
     }
+
+    apiLogger.trace`Performing sync of type ${syncType.__type}.`;
 
     try {
         let promises: ((() => Promise<unknown>) | Promise<unknown>)[];
@@ -236,16 +183,22 @@ const handler: NextApiHandler = async (req, res) =>  {
         }
 
         const awaitablePromises = promises.map(promise => typeof promise === "function" ? promise() : promise);
-
+        
+        apiLogger.trace`Beginning ${syncType.__type}...`;
+        
         await Promise.all(awaitablePromises);
+
+        apiLogger.info`${syncType.__type} completed successfully!`;
         
         res.statusMessage = "Sync Successful";
         res.status(200);
         res.end();
     } catch (e) {
+        apiLogger.warn`${syncType.__type} failed with error ${e}`;
+
         res.status(500);
         res.end();
     }
-};
+});
 
 export default handler;

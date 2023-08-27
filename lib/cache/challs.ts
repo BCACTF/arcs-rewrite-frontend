@@ -32,9 +32,7 @@ export interface CachedChall {
 export const CHALLENGE_HASH_KEY = "chall";
 
 export const parseChallenge = (challJson: string): CachedChall | null => {
-    console.log("tp0");
     const parsed: unknown = JSON.parse(challJson);
-    console.log(parsed);
 
     if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return null;
 
@@ -50,14 +48,11 @@ export const parseChallenge = (challJson: string): CachedChall | null => {
         if (!vis || !chall) return null;
     }
 
-    console.log("tp1");
-
     const challId = challIdFromStr(challRaw);
     if (!challId) return null;
 
     if (typeof csmRaw !== 'object' || csmRaw === null) return null;
 
-    console.log("tp2");
 
     const {
         name: nameRaw,
@@ -89,7 +84,6 @@ export const parseChallenge = (challJson: string): CachedChall | null => {
         ) return null;
     }
 
-    console.log("tp3");
 
     {
         const cats = catRaw.every((s) => typeof s === 'string');
@@ -100,7 +94,6 @@ export const parseChallenge = (challJson: string): CachedChall | null => {
         if (!cats || !auths || !hints || !tags) return null;
         if (typeof linksRaw !== 'object' || linksRaw === null) return null;
     }
-    console.log("tp4");
 
     const { web, nc, admin, static: staticLinks } = linksRaw as Record<string, unknown>;
     {
@@ -136,7 +129,6 @@ export const parseChallenge = (challJson: string): CachedChall | null => {
         name, points, desc, solveCount, categories, authors, hints, tags, links, id: challId
     };
 
-    console.log("tp5");
 
     return { visible, id: challId, clientSideMetadata };
 }
