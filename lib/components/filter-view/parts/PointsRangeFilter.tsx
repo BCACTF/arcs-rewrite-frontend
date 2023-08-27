@@ -51,7 +51,7 @@ const PointsRangeFilter: FC<PointsRangeFilterProps> = ({ max, range: [vLo, vHi],
                         low(Math.round(closestStop));
                         break;
                     case Moving.HIGH:
-                        high(Math.round(closestStop));
+                        high(Math.round(stops.length ? closestStop : max));
                         break;
                     case Moving.UNKNOWN:
                         unknown(Math.round(closestStop));

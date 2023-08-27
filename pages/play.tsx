@@ -46,8 +46,8 @@ const Play: FC<PlayProps> = ({ metadata, challenges, teamSolves, account }) => {
     );
 
     const challengesWithSolves = useMemo(
-        () => filteredChallenges.map(chall => ({...chall, solved: solvedIds.has(chall.id) })),
-        [filteredChallenges],
+        () => challenges.map(chall => ({...chall, solved: solvedIds.has(chall.id) })),
+        [challenges],
     );
 
     const challengeProps: ChallDropProps[] = useMemo(
