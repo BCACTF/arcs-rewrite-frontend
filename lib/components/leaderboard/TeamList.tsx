@@ -63,7 +63,7 @@ const TeamRow: FC<TeamRowProps> = ({ name, id, affiliation, eligible, lastSolve,
             {isHeader ? " " : (idx + 1 + ".")}
         </code>
         <code
-            className="w-72 overflow-ellipsis">{name}
+            className="w-72 overflow-ellipsis overflow-clip whitespace-nowrap">{name}
         </code>
         <code className="max-sm:hidden w-64 mx-4 text-center overflow-ellipsis overflow-clip whitespace-nowrap">
             {isHeader ? "Affiliation" :  (affiliation ?? "None")}

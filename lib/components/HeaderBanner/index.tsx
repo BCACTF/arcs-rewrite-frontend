@@ -67,13 +67,13 @@ const HeaderBanner: FC<HeaderBannerProps> = ({ account, meta, currPage }) => {
         } else {
             // return ` transition-all duration-500 p-3 py-3 px-7 h-${links.length * 8}`
             // TODO --> figure out a nicer thing for the height of navbar extension on mobile?
-            return (account ? `transition-all duration-500 h-72` : `transition-all duration-500 h-48`)
+            return (account ? `transition-all duration-500 h-72` : `transition-all duration-500 h-56`)
         }
     }
 
     return (
-        <div className="w-screen bg-navbar-background-color max-sm:bg-navbar-background-color-mobile-only sm:backdrop:backdrop-blur-md mb-4 h-16 sticky top-0">
-            <div className="max-sm:hidden flex flex-row h-full">
+        <div className="w-full bg-navbar-background-color max-sm:bg-navbar-background-color-mobile-only sm:backdrop:backdrop-blur-md mb-4 h-16 sticky top-0">
+            <div className="max-sm:hidden flex flex-row h-16">
                 <Link href="/" className="text-2xl my-auto font-semibold text-navbar-text-color ml-5 pr-5 border-r-2 border-navbar-text-color-dark text-center text-navbar-event-name">
                     {meta.name} 
                 </Link>

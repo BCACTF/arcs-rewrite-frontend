@@ -34,7 +34,7 @@ interface TeamInfoProps {
 // };
 
 function is_eligible(eligible: boolean, affiliation: string | null): boolean {
-    if (eligible && affiliation) return true; // i may have broken something with this
+    if (eligible) return true; // i may have broken something with this
     return false;
 }
 
@@ -64,7 +64,7 @@ const TeamInfo: FC<TeamInfoProps> = ({ team: { name, score, lastSolve, eligible,
         <code className="flex flex-col items-center mt-6 text-xl">
             <span className="text-md">
             {
-                (is_eligible(true, affiliation)) ? "Eligible for prizes" : "Ineligible for prizes"
+                (is_eligible(eligible, affiliation)) ? "Eligible for prizes" : "Ineligible for prizes"
             }
             </span>
         </code>

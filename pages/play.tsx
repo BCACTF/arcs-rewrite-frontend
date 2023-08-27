@@ -44,6 +44,12 @@ const Play: FC<PlayProps> = ({ metadata, challenges, teamSolves, account }) => {
         () => challenges.filter(chall => filterState.matches(chall)),
         [challenges, filterState],
     );
+
+    const challengesWithSolves = useMemo(
+        () => challenges.map(chall => ({...chall, solved: solvedIds.has(chall.id) })),
+        [challenges],
+    );
+
     const challengeProps: ChallDropProps[] = useMemo(
         () => filteredChallenges.map(
             chall => ({
@@ -71,25 +77,25 @@ const Play: FC<PlayProps> = ({ metadata, challenges, teamSolves, account }) => {
                 {
                     // to whoever maintains this code in the future, I am so sorry - yusuf june 3rd 2023
                     (metadata.start * 500 > (Date.now() / 2)) ? // checks event start
-                    (
-                        account.admin ? (
-                            <>
-                                <FilterView filterState={filterState} challs={challenges}/>
-                                <ChallDropList cards={challengeProps}/>        
-                            </>
-                        ) : 
-                        (
-                            <div className="flex flex-col items-center justify-center flex-grow h-full gap-y-4">
-                                <div className="text-2xl font-bold text-center text-navbar-text-color-dark">
-                                    Event has not started yet
-                                </div>
-                            </div>
-                        )
-                    ) :
+                    ( account.admin ? 
                     (
                         <div className="flex flex-row place-content-between px-4 sm:px-8 w-screen h-full overflow-y-hidden">
                             <div className="max-sm:hidden w-[23%] mr-2 md:mr-4">
-                                <FilterView filterState={filterState} challs={challenges}/>
+                                <FilterView filterState={filterState} challs={challengesWithSolves}/>
+                            </div>
+                            <ChallDropList cards={challengeProps}/>        
+                        </div>                            
+                    ) : (
+                        <div className="flex flex-col items-center justify-center flex-grow h-full gap-y-4">
+                            <div className="text-2xl font-bold text-center text-navbar-text-color-dark">
+                                Event has not started yet
+                            </div>
+                        </div>
+                    )
+                    ) : (
+                        <div className="flex flex-row place-content-between px-4 sm:px-8 w-screen h-full overflow-y-hidden">
+                            <div className="max-sm:hidden w-[23%] mr-2 md:mr-4">
+                                <FilterView filterState={filterState} challs={challengesWithSolves}/>
                             </div>
                             <ChallDropList cards={challengeProps}/>        
                         </div>
@@ -123,7 +129,7 @@ export const getServerSideProps = wrapServerSideProps<PlayProps>(async function 
     if (!account.teamId) return {
         redirect: {
             permanent: false,
-            destination: "/account/settings#team",
+            destination: "/team/join",
         },
     };
 

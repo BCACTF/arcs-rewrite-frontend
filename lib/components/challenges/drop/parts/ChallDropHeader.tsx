@@ -35,7 +35,7 @@ const ChallDropHeader: FC<ChallDropProps & { open: boolean }> = ({ metadata: { n
         <span className="max-h-min my-auto flex justify-end items-center">
             <span
                 aria-label="category"
-                className="w-20 text-right px-2 py-2 pl-4 border-l border-chall-divider-color max-sm:hidden">
+                className="w-20 text-center px-2 py-2 pl-4 border-l border-chall-divider-color max-sm:hidden">
                 {categories[0]}
             </span>
             <span className="sm:w-28 text-right px-2 py-2 max-sm:hidden">
