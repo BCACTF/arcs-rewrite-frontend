@@ -117,20 +117,20 @@ export const removeStale = async (notStale: TeamId[]): Promise<TeamId[]> => {
 
 export enum SortingCriteria {
     POINTS_HIGH_FIRST,
-    LASTSOLVE_REV,
+    LASTSOLVE,
     NAME,
     ELIG,
 }
 
-const { POINTS_HIGH_FIRST, LASTSOLVE_REV, NAME, ELIG } = SortingCriteria;
+const { POINTS_HIGH_FIRST, LASTSOLVE, NAME, ELIG } = SortingCriteria;
 
 
 const compareCriteria = (a: CachedTeamMeta, b: CachedTeamMeta, criteria: SortingCriteria) => {
     switch (criteria) {
         case POINTS_HIGH_FIRST:
             return b.score - a.score;
-        case LASTSOLVE_REV:
-            return (b.lastSolve ?? -1) - (a.lastSolve ?? -1);
+        case LASTSOLVE:
+            return (a.lastSolve ?? -1) - (b.lastSolve ?? -1);
         case NAME:
             return a.name.localeCompare(b.name);
         case ELIG:
@@ -139,7 +139,7 @@ const compareCriteria = (a: CachedTeamMeta, b: CachedTeamMeta, criteria: Sorting
 }
 
 
-export const sortBy = (challs: CachedTeamMeta[], criteria: SortingCriteria[] = [POINTS_HIGH_FIRST, LASTSOLVE_REV, NAME, ELIG]) => {
+export const sortBy = (challs: CachedTeamMeta[], criteria: SortingCriteria[] = [POINTS_HIGH_FIRST, LASTSOLVE, NAME, ELIG]) => {
     const compareFn = (a: CachedTeamMeta, b: CachedTeamMeta) => criteria
         .map(c => compareCriteria(a, b, c))
         .find(v => v !== 0) ?? 0;
