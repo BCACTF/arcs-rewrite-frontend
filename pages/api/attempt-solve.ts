@@ -11,14 +11,6 @@ import { apiLogger, wrapApiEndpoint } from "logging";
 const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
     apiLogger.trace`${req.method} request recieved for ${req.url}`;
 
-    const { start, end } = await getCompetition();
-    const now = Date.now() / 1000;
-    if (start > now || now > end) {
-        apiLogger.info`Flag submitted outside of challenge time.`;
-
-        res.status(400).send("Competition not running.");
-        return;
-    }
 
     {
         const staleAccount = await getAccount({ req });
@@ -48,6 +40,19 @@ const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
         apiLogger.error`Can't access team ${fmtLogT(account.teamId)}!`;
 
         res.status(500).send("Can't access team");
+        return;
+    }
+
+    const { start, end, allowAdminSolvesBeforeComp } = await getCompetition();
+    const now = Date.now() / 1000;
+    const isDuringCompetition = start <= now && now <= end;
+    const hasAdminSubmitPriveleges = allowAdminSolvesBeforeComp && account.admin;
+    const canSubmit = hasAdminSubmitPriveleges || isDuringCompetition;
+
+    if (!canSubmit) {
+        apiLogger.info`Flag submitted outside of challenge time.`;
+
+        res.status(400).send("Competition not running.");
         return;
     }
 
