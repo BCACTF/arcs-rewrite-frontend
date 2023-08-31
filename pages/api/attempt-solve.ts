@@ -46,8 +46,8 @@ const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
     const { start, end, allowAdminSolvesBeforeComp } = await getCompetition();
     const now = Date.now() / 1000;
     const isDuringCompetition = start <= now && now <= end;
-    const hasAdminSubmitPriveleges = allowAdminSolvesBeforeComp && account.admin;
-    const canSubmit = hasAdminSubmitPriveleges || isDuringCompetition;
+    const hasAdminSubmitPrivileges = allowAdminSolvesBeforeComp && account.admin;
+    const canSubmit = hasAdminSubmitPrivileges || isDuringCompetition;
 
     if (!canSubmit) {
         apiLogger.info`Flag submitted outside of challenge time.`;
