@@ -75,31 +75,26 @@ const Play: FC<PlayProps> = ({ metadata, challenges, teamSolves, account }) => {
 
             <div className="flex flex-row flex-grow h-min gap-x-4">
                 {
-                    // to whoever maintains this code in the future, I am so sorry - yusuf june 3rd 2023
-                    (metadata.start * 500 > (Date.now() / 2)) ? // checks event start
-                    ( account.admin ? 
-                    (
-                        <div className="flex flex-row place-content-between px-4 sm:px-8 w-screen h-full overflow-y-hidden">
-                            <div className="max-sm:hidden w-[23%] mr-2 md:mr-4">
-                                <FilterView filterState={filterState} challs={challengesWithSolves}/>
+                    // to whoever maintains this code in the future, I am so
+                    // sorry - yusuf june 3rd 2023
+                    // I fixed it - Sky, August 27, 2023
+                    // it was not fixed, but now it is! - Yusuf, August 27, 2023
+                    (metadata.start <= Date.now() / 1000) || account.admin
+                        ? (
+                            <div className="flex flex-row place-content-between px-4 sm:px-8 w-screen h-full overflow-y-hidden">
+                                <div className="max-sm:hidden w-[23%] mr-2 md:mr-4">
+                                    <FilterView filterState={filterState} challs={challengesWithSolves}/>
+                                </div>
+                                <ChallDropList cards={challengeProps}/>        
+                            </div>                            
+                        )
+                        : (
+                            <div className="flex flex-col items-center justify-center flex-grow h-full gap-y-4">
+                                <div className="text-2xl font-bold text-center text-navbar-text-color-dark">
+                                    Event has not started yet
+                                </div>
                             </div>
-                            <ChallDropList cards={challengeProps}/>        
-                        </div>                            
-                    ) : (
-                        <div className="flex flex-col items-center justify-center flex-grow h-full gap-y-4">
-                            <div className="text-2xl font-bold text-center text-navbar-text-color-dark">
-                                Event has not started yet
-                            </div>
-                        </div>
-                    )
-                    ) : (
-                        <div className="flex flex-row place-content-between px-4 sm:px-8 w-screen h-full overflow-y-hidden">
-                            <div className="max-sm:hidden w-[23%] mr-2 md:mr-4">
-                                <FilterView filterState={filterState} challs={challengesWithSolves}/>
-                            </div>
-                            <ChallDropList cards={challengeProps}/>        
-                        </div>
-                    )
+                        )
                 }
             </div>
         </div>

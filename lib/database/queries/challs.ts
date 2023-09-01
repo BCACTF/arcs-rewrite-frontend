@@ -1,16 +1,15 @@
 export type GetChallenge = {
-    __tag: "get";
+    query_name: "get";
     id: string;
 };
 export type GetAllChallenges = {
-    __tag: "get_all";
+    query_name: "get_all";
 };
 
 type InnerChallengeQuery = GetChallenge | GetAllChallenges;
 
 type ChallengeQuery = {
-    section: "challenge";
-    query: InnerChallengeQuery;
-};
+    __type: "chall";
+} & InnerChallengeQuery;
 
 export default ChallengeQuery;

@@ -2,35 +2,20 @@
 import ReactMarkdown from "react-markdown";
 
 // Hooks
-import { useState } from 'react'
+import { useState } from "react"
 
 // Types
-
 import React, { CSSProperties, FC } from "react"
-
-
-// Styles
 import { ChallDropProps } from "./ChallDrop";
+import ChallDropFlagInput from "./ChallDropFlagInput";
 
 // Utils
 import remarkGfm from "remark-gfm";
-import ChallDropFlagInput from "./ChallDropFlagInput";
 
 
 const ListItem = ({ item, className, style }: { item: string, style?: CSSProperties, className?: string }) => (
     <span className={className} style={style}>{item}</span>
 )
-
-const Hint = ({ value }: { value: string }) => {
-    const [revealed, setRevealed] = useState(false);
-    return <div
-        className={`
-            block transition-all py-1 px-2 rounded-lg mb-2 select-none 
-            ${revealed ? "text-white bg-slate-800 cursor-default" : "text-transparent bg-slate-900 cursor-pointer"}`}
-        onClick={() => setRevealed(true)}>
-        {value}
-    </div>;
-};
 
 const EnglishList = ({ items: list, style, className }: { items: string[], style?: CSSProperties, className?: string }) => {
     if (list.length === 0) return <></>;
@@ -50,6 +35,17 @@ const EnglishList = ({ items: list, style, className }: { items: string[], style
     </>;
 }
 
+const Hint = ({ value }: { value: string }) => {
+    const [revealed, setRevealed] = useState(false);
+    return <div
+        className={`
+            block transition-all py-1 px-2 rounded-lg mb-2 select-none 
+            ${revealed ? "text-white bg-slate-800 cursor-default" : "text-transparent bg-slate-900 cursor-pointer"}`}
+        onClick={() => setRevealed(true)}>
+        {value}
+    </div>;
+};
+
 const BodyMeta: FC<Pick<
     ChallDropProps["metadata"],
     "solveCount" | "categories" | "points" | "tags" | "authors" | "hints"
@@ -64,7 +60,7 @@ const BodyMeta: FC<Pick<
         <span className="py-1.5">
             {solveCount.toLocaleString('en-US', {maximumFractionDigits: 0})} {solveCount === 1 ? "solve" : "solves"}
         </span>
-	<div className="py-3">
+        <div className="py-3">
             <h4 className="font-medium text-base mb-1">Hints:</h4>
             {hints.map(hint => <Hint value={hint} />)}
         </div>
@@ -160,7 +156,7 @@ const ChallDropBody: FC<ChallDropProps & { open: boolean }> = ({
 
         </div>
 
-        <BodyMeta {...{ solveCount, solved, points, tags, categories, links, authors,hints }}/>
+        <BodyMeta {...{ solveCount, solved, points, tags, categories, links, authors, hints }}/>
 
         <ChallDropFlagInput {...{ challId, teamId, userId }} />
 

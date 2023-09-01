@@ -8,9 +8,9 @@ import { apiLogger } from "logging";
 
 const syncAllChalls = async () => {
     try {
-        const allChalls = await makeWebhookRequest<DbChallengeMeta[]>({
-            section: "challenge",
-            query: { __tag: "get_all" },
+        const allChalls = await makeWebhookRequest("chall_arr", {
+            __type: "chall",
+            query_name: "get_all",
         });
         const challs = allChalls.map(dbToCacheChall).flatMap(c => c ? [c] : []);
         const usedIds = challs.map(c => c.id);
@@ -28,9 +28,10 @@ const syncChall = async ({ id }: { id: ChallId }) => {
     try {
         apiLogger.trace`Runnning syncChall on chall ${id}.`;
 
-        const challData = await makeWebhookRequest<DbChallengeMeta>({
-            section: "challenge",
-            query: { __tag: "get", id: challIdToStr(id), },
+        const challData = await makeWebhookRequest("chall", {
+            __type: "chall",
+            query_name: "get",
+            id: challIdToStr(id),
         });
 
         apiLogger.trace`Challenge identified as ${challData.name}.`;
@@ -47,7 +48,7 @@ const syncChall = async ({ id }: { id: ChallId }) => {
         apiLogger.trace`Adding challenge to redis cache...`;
         
         const cachedChallenge = await updateChall(chall);
-        if (cachedChallenge) apiLogger.error`Replaced chall ${cachedChallenge}`;
+        if (cachedChallenge) apiLogger.warn`Replaced chall ${cachedChallenge}`;
         
         apiLogger.info`${challData.name} sync successful.`;
 

@@ -32,7 +32,7 @@ const setup = () => {
             flags: "a+",
         });
         
-        apiLogger = makeLoggingSuite("API", process.cwd(), line => apiLogFile.write(line));
+        apiLogger = makeLoggingSuite("API", `(api)/./`, line => apiLogFile.write(line));
         
         const pageLogFilePath = join(process.cwd(), "./logs/page.log");
         const pageLogFile = createWriteStream(pageLogFilePath, {

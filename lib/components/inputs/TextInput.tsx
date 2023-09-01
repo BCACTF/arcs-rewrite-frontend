@@ -44,7 +44,9 @@ const ValidityDisplay: FC<{ state: VerificationState }> = ({ state }) => {
     const tooltip = <div className="
         absolute bottom-3/4 right-3 translate-x-1/2
         rounded-md text-sm px-1.5 py-0.5
-        bg-signin-text
+        bg-signin-background-color
+        border border-signin-provider-hover-color/50
+        text-signin-text
         opacity-0
         peer-hover:opacity-100 transition-opacity
     ">{getText(state)}</div>;

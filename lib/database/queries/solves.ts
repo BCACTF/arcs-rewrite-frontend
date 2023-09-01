@@ -1,34 +1,37 @@
+import { Auth } from "./users";
+
 export type SubmitAttempt = {
-    __tag: "submit";
+    query_name: "attempt";
     
     user_id: string,
     team_id: string,
-    challenge_id: string,
+    chall_id: string,
 
-    flag: string,
+    flag_guess: string,
+
+    user_auth: Auth
 };
 
 export type GetTeamSolves = {
-    __tag: "get_team";
+    query_name: "get_team";
     id: string;
 };
 export type GetUserSolves = {
-    __tag: "get_user";
+    query_name: "get_user";
     id: string;
 };
 export type GetChallengeSolves = {
-    __tag: "get_challenge";
+    query_name: "get_challenge";
     id: string;
 };
 export type GetAllSolves = {
-    __tag: "get_all";
+    query_name: "get_all";
 };
 
 type InnerSolveQuery = SubmitAttempt | GetTeamSolves | GetUserSolves | GetChallengeSolves | GetAllSolves;
 
 type SolveQuery = {
-    section: "solve";
-    query: InnerSolveQuery;
-};
+    __type: "solve";
+} & InnerSolveQuery;
 
 export default SolveQuery;

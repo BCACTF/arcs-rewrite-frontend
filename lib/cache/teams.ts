@@ -1,5 +1,6 @@
 import { TeamId, teamIdToStr, teamIdFromStr } from "cache/ids";
 import cache from "cache/index";
+import { apiLogger } from "logging";
 
 export interface CachedTeamMeta {
     id: TeamId;
@@ -15,6 +16,8 @@ export interface CachedTeamMeta {
 export const TEAM_HASH_KEY = "team";
 
 export const parseTeam = (teamJson: string): CachedTeamMeta | null => {
+    // apiLogger.trace`Parsing team ${teamJson}`;
+
     const parsed: unknown = JSON.parse(teamJson);
 
     if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return null;
@@ -34,16 +37,28 @@ export const parseTeam = (teamJson: string): CachedTeamMeta | null => {
         const name = typeof nameRaw === 'string';
         const score = typeof scoreRaw === 'number' && Number.isInteger(scoreRaw) && scoreRaw >= 0;
         const elig = typeof eligRaw === 'boolean';
-        if (!id || !name || !score || !elig) return null;
+        if (!id || !name || !score || !elig) {
+            apiLogger.trace`Parsing team ${teamJson}`;
+            apiLogger.trace`Parsing failed: ${{ id, name, score, eligible: elig }}`;
+            return null;
+        }
     }
-
+    
     const teamId = teamIdFromStr(idRaw);
-    if (!teamId) return null;
+    if (!teamId) {
+        apiLogger.trace`Parsing team ${teamJson}`;
+        apiLogger.trace`Parsing failed: ${{ teamId }}`;
+        return null;
+    }
 
     {
         const lastSolve = typeof lastSolveRaw === 'number' || typeof lastSolveRaw === 'string' || lastSolveRaw === undefined || lastSolveRaw === null;
         const affiliation = typeof affiliationRaw === 'string' || affiliationRaw === undefined || affiliationRaw === null;
-        if (!lastSolve || !affiliation) return null;
+        if (!lastSolve || !affiliation) {
+            apiLogger.trace`Parsing team ${teamJson}`;
+            apiLogger.trace`Parsing failed: ${{ lastSolve, affiliation }}`;
+            return null;
+        }
     }
 
     const id = teamId;
@@ -97,22 +112,23 @@ export const removeStale = async (notStale: TeamId[]): Promise<TeamId[]> => {
     return removeIds.map(teamIdFromStr).flatMap(id => id ? [id] : []);
 };
 
-// export const sortBy = (teams: CachedTeamMeta[]) => [...teams].sort((a, b) => a.score - b.score);
+
+
 
 export enum SortingCriteria {
-    POINTS,
+    POINTS_HIGH_FIRST,
     LASTSOLVE_REV,
     NAME,
     ELIG,
 }
 
-const { POINTS, LASTSOLVE_REV, NAME, ELIG } = SortingCriteria;
+const { POINTS_HIGH_FIRST, LASTSOLVE_REV, NAME, ELIG } = SortingCriteria;
 
 
 const compareCriteria = (a: CachedTeamMeta, b: CachedTeamMeta, criteria: SortingCriteria) => {
     switch (criteria) {
-        case POINTS:
-            return a.score - b.score;
+        case POINTS_HIGH_FIRST:
+            return b.score - a.score;
         case LASTSOLVE_REV:
             return (b.lastSolve ?? -1) - (a.lastSolve ?? -1);
         case NAME:
@@ -123,7 +139,7 @@ const compareCriteria = (a: CachedTeamMeta, b: CachedTeamMeta, criteria: Sorting
 }
 
 
-export const sortBy = (challs: CachedTeamMeta[], criteria: SortingCriteria[] = [POINTS, LASTSOLVE_REV, NAME, ELIG]) => {
+export const sortBy = (challs: CachedTeamMeta[], criteria: SortingCriteria[] = [POINTS_HIGH_FIRST, LASTSOLVE_REV, NAME, ELIG]) => {
     const compareFn = (a: CachedTeamMeta, b: CachedTeamMeta) => criteria
         .map(c => compareCriteria(a, b, c))
         .find(v => v !== 0) ?? 0;

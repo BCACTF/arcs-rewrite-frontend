@@ -67,7 +67,7 @@ const handler: NextApiHandler = wrapApiEndpoint(async function newTeam(req, res)
         return;
     }
     
-    //apiLogger.debug`Req body: ${req.body}.`;
+    // apiLogger.debug`Req body: ${req.body}.`;
 
     const bodyParams = getParams(req);
     if (!bodyParams) {
@@ -86,14 +86,9 @@ const handler: NextApiHandler = wrapApiEndpoint(async function newTeam(req, res)
         return
     }
     
-    const nameInUse = !(await Promise.all([
-        //getAllTeams().then(teams => teams.find(team => team.name !== name)),
-        checkTeamnameAvailable({ name }),
-    ])).every(Boolean);
     
-    
-    if (nameInUse) {
-        apiLogger.warn`Team name ${name} in use.`;
+    if (!await checkTeamnameAvailable({ name })) {
+        apiLogger.info`Team name ${name} in use.`;
         res.status(400).send("A team with this name already exists");
         return;
     }

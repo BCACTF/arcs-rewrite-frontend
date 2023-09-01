@@ -5,6 +5,7 @@ import { NextApiHandler, NextApiRequest } from "next";
 import { addUser, checkUsernameAvailable } from "database/users";
 import { getTokenSecret } from "api/auth/[...nextauth]";
 import getUsernameIssue from "utils/username";
+import { apiLogger, wrapApiEndpoint } from "logging";
 
 
 interface NewUserApiParams {
@@ -34,7 +35,9 @@ const getParams = (req: NextApiRequest): NewUserApiParams | null => {
     }
 };
 
-const handler: NextApiHandler = async (req, res) =>  {
+const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
+    apiLogger.trace`Recieved ${req.method} request for ${req.url}.`;
+
     if (req.method !== "POST") {
         res.status(400).send("Invalid HTTP method");
         return;
@@ -42,10 +45,11 @@ const handler: NextApiHandler = async (req, res) =>  {
 
     const token = await getTokenSecret({ req });
 
-    console.log("create point 1", token);
-
+    apiLogger.trace`Got token for ${token?.name}.`;
+    
     if (!token) {
         res.status(401).send("No oauth token found");
+        apiLogger.secWarn`No oauth token found for create user request`;
         return;
     }
 
@@ -53,12 +57,14 @@ const handler: NextApiHandler = async (req, res) =>  {
 
     console.log({ email, sub, provider });
     if (!email || !sub || typeof provider !== "string") {
+        apiLogger.warn`Incorrect token format`;
         res.status(400).send("Incorrect token format");
         return
     }
 
     const bodyParams = getParams(req);
     console.log(bodyParams);
+
     if (!bodyParams) {
         res.status(400).send("Incorrect body format");
         return
@@ -66,19 +72,24 @@ const handler: NextApiHandler = async (req, res) =>  {
 
     const { username, eligible, affiliation } = bodyParams;
 
+    apiLogger.debug`User info: ${username} is ${eligible ? "eligible" : "not eligible"} and is affiliated with ${affiliation}`;
+    
     if (!await checkUsernameAvailable({ name: username })) {
+        apiLogger.info`Username was not available.`;
         res.status(400).send("Username is not available");
         return;
     }
 
-    await addUser({
+    const returnValue = await addUser({
         email,
         name: username,
         auth: { __type: "oauth", sub, provider },
         eligible,
     });
 
+    apiLogger.debug`addUser returned ${returnValue}`;
+
     res.status(200).send("Successfully created user");
-};
+});
 
 export default handler;

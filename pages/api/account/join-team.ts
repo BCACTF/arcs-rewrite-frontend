@@ -66,7 +66,7 @@ const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
 
 
     const bodyParams = getParams(req);
-    //console.log(bodyParams);
+    // console.log(bodyParams);
     if (!bodyParams) {
         apiLogger.info`Badly formatted body: ${req.body}`;
         res.status(400).send("Incorrect body format");
@@ -89,7 +89,7 @@ const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
 
     const user = await joinTeam({
         id, auth: { __type: "oauth", sub, provider },
-        teamId, teamPassword,
+        teamName: name, teamPassword,
     });
 
     apiLogger.info`${user ? 'Succeeded' : 'Failed'} in joining team`;

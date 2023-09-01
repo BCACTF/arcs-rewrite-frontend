@@ -83,6 +83,8 @@ export const parseChallenge = (challJson: string): CachedChall | null => {
             !hint    || !tag
         ) return null;
     }
+
+
     {
         const cats = catRaw.every((s) => typeof s === 'string');
         const auths = authRaw.every((s) => typeof s === 'string');
@@ -92,6 +94,7 @@ export const parseChallenge = (challJson: string): CachedChall | null => {
         if (!cats || !auths || !hints || !tags) return null;
         if (typeof linksRaw !== 'object' || linksRaw === null) return null;
     }
+
     const { web, nc, admin, static: staticLinks } = linksRaw as Record<string, unknown>;
     {
         const webArr = Array.isArray(web);
@@ -108,6 +111,7 @@ export const parseChallenge = (challJson: string): CachedChall | null => {
 
         if (!webValid || !ncValid || !adminValid || !staticValid) return null;
     }
+    
     const links = { nc, web, admin, static: staticLinks };
 
     const visible = visRaw;
@@ -124,6 +128,7 @@ export const parseChallenge = (challJson: string): CachedChall | null => {
     const clientSideMetadata: ClientSideMeta = {
         name, points, desc, solveCount, categories, authors, hints, tags, links, id: challId
     };
+
 
     return { visible, id: challId, clientSideMetadata };
 }

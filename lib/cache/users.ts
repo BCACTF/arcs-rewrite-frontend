@@ -1,5 +1,6 @@
 import { TeamId, teamIdFromStr, UserId, userIdFromStr, userIdToStr } from "cache/ids";
 import cache from "cache/index";
+import { apiLogger } from "logging";
 
 
 export interface ClientSideMeta {
@@ -31,6 +32,7 @@ export const USER_HASH_KEY = "user";
 
 export const parseUser = (userJson: string): CachedUser | null => {
     const parsed: unknown = JSON.parse(userJson);
+    // apiLogger.debug`Parsed: ${parsed}`;
 
     if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return null;
 
@@ -118,15 +120,18 @@ const getAllUserKeys = async (): Promise<string[]> => await (await cache()).hkey
 
 export const update = async (userData: CachedUser): Promise<CachedUser | null> => {
     const userIdStr = userIdToStr(userData.userId);
+    const userDataStr = JSON.stringify(userData);
 
     const setResult = await (await cache())
         .pipeline()
-        .hget(USER_HASH_KEY, userIdToStr(userData.userId))
-        .hset(USER_HASH_KEY, { [userIdStr]: JSON.stringify(userData) })
+        .hget(USER_HASH_KEY, userIdStr)
+        .hset(USER_HASH_KEY, userIdStr, userDataStr)
         .exec();
+    
     
     const retRes = setResult?.[0]?.[1];
     if (typeof retRes !== "string" || !retRes) return null;
+    
     return parseUser(retRes);
 };
 export const removeStale = async (notStale: UserId[]): Promise<UserId[]> => {
