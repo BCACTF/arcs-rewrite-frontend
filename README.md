@@ -1,34 +1,52 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# ARCS Frontend
 
-## Getting Started
 
-First, run the development server:
+## What is ARCS?
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+ARCS is the CTF framework created and maintained by the BCA CTF Club.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This repository contains the frontend section of the ARCS framework.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+For more information on the overall framework, see `this document`. <!-- TODO: actually link the other README --> 
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+## Frontend Overview
 
-## Learn More
+The frontend is a Next.js application used to serve as a layer between the
+participants and the [webhook server](https://github.com/BCACTF/arcs-webhook).
 
-To learn more about Next.js, take a look at the following resources:
+The webhook server acts as the single "source of truth" for the entire
+framework, and the ARCS team decided that giving unpredictable users as little
+access to the most critial part of the infrastructure would be the best idea.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Given that the webhook server is the source of truth, that means that it also
+has exclusive access to the main SQL database. This means that for the sake of
+speed, the frontend maintains its own cache.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+This means that the frontend is composed of 3 main parts:
+- The user view
+- The user-facing API
+- The cache
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### The User View
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+More information on the User View can be found
+[here](documentation/USER_VIEW.md).
+
+### The User-facing API
+
+More information on the User-facing API can be found
+[here](documentation/USER_API.md).
+
+### The Cache
+
+More information on the Cache can be found [here](documentation/CACHE.md).
+
+
+
+## How to use the frontend
+
+Instructions on how to run the frontend can be found
+[here](documentation/USAGE.md).
+
