@@ -171,6 +171,10 @@ module.exports = {
       },
       borderRadius: {
         'md/sm': '0.25rem'
+      },
+      gridTemplateColumns: {
+        '1,2': '1fr 2fr',
+        '2,1': '2fr 1fr',
       }
     },
   },

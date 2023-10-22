@@ -1,5 +1,6 @@
 import { TeamId, teamIdToStr, teamIdFromStr, UserId, ChallId, userIdFromStr, challIdFromStr, challIdToStr } from "cache/ids";
 import cache from "cache/index";
+import { getAllTeams } from "./teams";
 
 export interface CachedSolveMeta {
     teamId: TeamId;
@@ -12,7 +13,12 @@ export const SOLVE_HASH_KEY_PREFIX = "solve:";
 const getRedisKey = (teamId: TeamId) => `${SOLVE_HASH_KEY_PREFIX}${teamIdToStr(teamId)}`;
 
 export const parseSolve = (solveVal: string): CachedSolveMeta | null => {
-    const parsed: unknown = JSON.parse(solveVal);
+    let parsed: unknown = undefined;
+    try {
+        parsed = JSON.parse(solveVal);
+    } catch (e) {
+        return null;
+    }
 
     if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return null;
 
@@ -48,6 +54,24 @@ export const getSolves = async (id: TeamId): Promise<CachedSolveMeta[]> => {
 
     return optCachedSolves.flatMap(solve => solve ? [solve] : []);
 };
+
+export const getAllSolves = async (): Promise<CachedSolveMeta[]> => {
+    const allTeams = await getAllTeams();
+    const teamKeys = allTeams.map(team => getRedisKey(team.id));
+
+    const redis = await cache();
+
+    let multi = redis.multi({ pipeline: true });
+    teamKeys.forEach(key => multi = multi.hgetall(key));
+    
+    const rawCachedSolves = await multi.exec();
+    if (!rawCachedSolves) return [];
+    const rawSolvesFlat = rawCachedSolves.flatMap(res => res[1] && Object.values(res[1]));
+    const optCachedSolves = rawSolvesFlat.map(solveData => parseSolve(String(solveData)));
+    const cachedSolves = optCachedSolves.flatMap(solve => solve ? [solve] : []);
+    
+    return cachedSolves;
+}
 
 export const addSolve = async (solve: CachedSolveMeta): Promise<CachedSolveMeta | null> => {
     const redisKey = getRedisKey(solve.teamId);
