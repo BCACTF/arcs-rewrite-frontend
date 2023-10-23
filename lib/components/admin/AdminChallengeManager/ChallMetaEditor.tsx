@@ -130,7 +130,7 @@ function ChallMetaEditor({ challenge, solves, exitChallMetaEditor }: ChallMetaEd
                 className="w-fit text-lg mb-2">
                 Challenge Name
             </label>
-            <div className="relative">
+            <div className="relative w-3/4">
                 <span
                     onClick={() => setChallName(challenge.clientSideMetadata.name)}
                     className="absolute top-2 right-3 hover:opacity-100 opacity-10 transition-opacity cursor-pointer">
@@ -141,7 +141,7 @@ function ChallMetaEditor({ challenge, solves, exitChallMetaEditor }: ChallMetaEd
                     type="text"
                     className="
                         p-2 text-lg
-                        bg-slate-800 border-4 border-slate-900 rounded-lg"
+                        bg-slate-800 border-4 border-slate-900 rounded-lg w-full"
                     name="ChallNameInput"
                     onChange={e => setChallName(e.target.value)} value={challName}/>
             </div>
