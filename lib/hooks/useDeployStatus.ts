@@ -102,7 +102,7 @@ const pollDeploy = async (id: ChallId): Promise<DeployStatus> => {
 const useDeployStatus = (id: ChallId) => {
     const [deployStatus, setDeployStatus] = useState<DeployStatus>({ id, status: "loading" });
 
-    // useEffect(() => { pollDeploy(id).then(setDeployStatus) }, [id]);
+    useEffect(() => { pollDeploy(id).then(setDeployStatus) }, [id]);
     useInterval(async () => setDeployStatus(await pollDeploy(id)), 10000);
 
     return deployStatus;

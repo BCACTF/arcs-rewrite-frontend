@@ -7,6 +7,7 @@ import React from "react";
 interface ChallActionBarProps {
     challenge: CachedChall;
     setModalAction: (action: [() => Promise<unknown>, string]) => void;
+    initEditChallMetadataModal: () => void;
 }
 
 const clearChallSolves = async (id: ChallId) => {
@@ -36,12 +37,12 @@ const resyncChall = async (id: ChallId) => {
     return true;
 };
 
-const ChallActionBar: React.FC<ChallActionBarProps> = ({ challenge, setModalAction }) => {
+const ChallActionBar: React.FC<ChallActionBarProps> = ({ challenge, setModalAction, initEditChallMetadataModal }) => {
     const visibilityActionName = `set \`${challenge.clientSideMetadata.name}\` ${challenge.visible ? "invisible" : "visible"}`;
     const clearSolveActionName = `clear ALL solves for \`${challenge.clientSideMetadata.name}\``;
 
     return (
-        <div className="grid grid-flow-row grid-cols-3 gap-2">
+        <div className="grid grid-flow-row grid-cols-4 gap-2">
             <ActionButton
                 confirmed={false}
                 className="bg-green-900"
@@ -58,6 +59,14 @@ const ChallActionBar: React.FC<ChallActionBarProps> = ({ challenge, setModalActi
                 actionName={visibilityActionName}
                 setModalAction={setModalAction}
                 children={`Set ${challenge.visible ? "invisible" : "visible"}`}/>
+            <ActionButton
+                confirmed={false}
+                className="bg-yellow-700"
+
+                action={async () => initEditChallMetadataModal()}
+                actionName={visibilityActionName}
+                setModalAction={setModalAction}
+                children={`Metadata`}/>
             <ActionButton
                 confirmed={true}
                 className="bg-red-900"

@@ -14,7 +14,7 @@ function ActionModal({ actionName, modalAction, clearAction }: ActionModalProps)
     return <>
         <div
             onClick={clearAction}
-            className="fixed top-0 left-0 w-screen h-screen bg-slate-900 opacity-50"/>
+            className="fixed top-0 left-0 w-screen h-screen !my-0 bg-slate-900 opacity-50 z-50"/>
         <div className="
             fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50
             w-1/2 max-h-1/2 rounded-xl

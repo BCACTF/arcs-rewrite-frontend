@@ -7,6 +7,7 @@ import { apiLogger, wrapApiEndpoint } from "logging";
 import { ChallId, challIdFromStr, fmtLogU } from "cache/ids";
 import pollDeploy from "admin/poll";
 import updateMetadata from "admin/update-meta";
+import { syncChall } from "database/challs";
 
 
 interface PollDeployParams {
@@ -64,20 +65,20 @@ const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
 
     const account = await getAccount({ req });
 
-    // if (!account) {
-    //     apiLogger.secWarn`Admin requests require admin privileges`;
-    //     res.status(401).send("You must be signed in");
-    //     return;
-    // }
+    if (!account) {
+        apiLogger.secWarn`Admin requests require admin privileges`;
+        res.status(401).send("You must be signed in");
+        return;
+    }
 
-    // const userIdLog = fmtLogU(account.userId);
+    const userIdLog = fmtLogU(account.userId);
 
-    // apiLogger.debug`Request identified as from user ${account.clientSideMetadata.name} (${userIdLog})`;
-    // if (!account.admin) {
-    //     apiLogger.secWarn`Admin requests require admin privileges`;
-    //     res.status(403).send("You are not an admin");
-    //     return;
-    // }
+    apiLogger.debug`Request identified as from user ${account.clientSideMetadata.name} (${userIdLog})`;
+    if (!account.admin) {
+        apiLogger.secWarn`Admin requests require admin privileges`;
+        res.status(403).send("You are not an admin");
+        return;
+    }
 
 
     const queryParams = getParams(req);
@@ -92,6 +93,8 @@ const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
     const status = await updateMetadata(id, { name, desc, points, categories, tags });
 
     apiLogger.info`${status ? 'Succeeded' : 'Failed'} in polling deploy server`;
+
+    await syncChall({ id });
 
     if (status) res.status(200).json(status);
     else res.status(403).send("Failed to poll server");
