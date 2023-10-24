@@ -95,14 +95,26 @@ const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
 
     const { id, name, desc, points, categories, tags, visible } = queryParams;
 
-    const status = await updateMetadata(id, { name, desc, points, categories, tags, visible });
+    let failed: unknown = null;
+    let status: unknown;
 
-    apiLogger.info`${status ? 'Succeeded' : 'Failed'} in polling deploy server`;
+    try {
+        status = await updateMetadata(id, { name, desc, points, categories, tags, visible });
+        apiLogger.info`Succeeded in updating the metadata on the deploy server`;
+    } catch (e) {
+        apiLogger.error`Failed to update the metadata on the deploy server: ${e}`;
+        failed = e;
+    }
+    try {
+        await syncChall({ id });
+        apiLogger.error`Succeeded in syncing the metadata for the challenge`;
+    } catch (e) {
+        apiLogger.error`Failed to sync the metadata for the challenge: ${e}`;
+        failed = e;
+    }
 
-    await syncChall({ id });
-
-    if (status) res.status(200).json(status);
-    else res.status(403).send("Failed to poll server");
+    if (failed) res.status(500).send(failed);
+    else res.status(200).send(status);
 });
 
 export default handler;

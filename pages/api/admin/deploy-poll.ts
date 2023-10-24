@@ -63,12 +63,14 @@ const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
 
     const { id } = queryParams;
 
-    const status = await pollDeploy(id);
-
-    apiLogger.info`${status ? 'Succeeded' : 'Failed'} in polling deploy server`;
-
-    if (status) res.status(200).json(status);
-    else res.status(403).send("Failed to poll server");
+    try {
+        const status = await pollDeploy(id);
+        apiLogger.info`Succeeded in polling deploy server`;
+        res.status(200).json(status);
+    } catch (e) {
+        apiLogger.info`Failed in polling deploy server`;
+        res.status(403).send("Failed to poll server");
+    }
 });
 
 export default handler;
