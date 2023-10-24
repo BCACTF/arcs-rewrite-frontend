@@ -18,6 +18,7 @@ interface PollDeployParams {
     points?: number;
     categories?: string[];
     tags?: string[];
+    visible?: boolean;
 }
 
 const getParams = (req: NextApiRequest): PollDeployParams | null => {
@@ -28,6 +29,7 @@ const getParams = (req: NextApiRequest): PollDeployParams | null => {
         const points = req.query.points;
         const rawCategories = req.query.categories;
         const rawTags = req.query.tags;
+        const rawVisible = req.query.visible;
 
         const categories = typeof rawCategories === "string" ? [rawCategories] : rawCategories;
         const tags = typeof rawTags === "string" ? [rawTags] : rawTags;
@@ -36,6 +38,8 @@ const getParams = (req: NextApiRequest): PollDeployParams | null => {
         if (typeof name !== "string" && name !== undefined) return null;
         if (typeof desc !== "string" && desc !== undefined) return null;
         if (typeof points !== "number" && points !== undefined) return null;
+        if (rawVisible !== "true" && rawVisible !== "false" && rawVisible !== undefined) return null;
+        const visible = rawVisible === "true";
 
         const challId = challIdFromStr(id);
         if (!challId) return null;
@@ -47,6 +51,7 @@ const getParams = (req: NextApiRequest): PollDeployParams | null => {
             points,
             categories,
             tags,
+            visible,
         };
     } catch (e) {
         console.error(e);
@@ -88,9 +93,9 @@ const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
         return
     }
 
-    const { id, name, desc, points, categories, tags } = queryParams;
+    const { id, name, desc, points, categories, tags, visible } = queryParams;
 
-    const status = await updateMetadata(id, { name, desc, points, categories, tags });
+    const status = await updateMetadata(id, { name, desc, points, categories, tags, visible });
 
     apiLogger.info`${status ? 'Succeeded' : 'Failed'} in polling deploy server`;
 

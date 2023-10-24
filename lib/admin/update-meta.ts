@@ -25,6 +25,7 @@ interface Modifications {
     points?: number;
     categories?: string[];
     tags?: string[];
+    visible?: boolean;
 }
 
 
@@ -49,7 +50,7 @@ const updateMetadata = async (id: ChallId, modifications: Modifications): Promis
     const returnVal = await fetchReturn.text();
     const jsonVal = (() => {
         try {
-            return JSON.parse(returnVal)
+            return JSON.parse(returnVal);
         } catch (e) {
             throw returnVal;
         }

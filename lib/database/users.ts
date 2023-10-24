@@ -29,7 +29,11 @@ const syncAllUsers = async (): Promise<CachedUser[] | null> => {
         
         const newUsers = await getAllUsers();
         apiLogger.debug`Users: ${newUsers.map(u => u.clientSideMetadata.name)}`;
+
+        apiLogger.info`Successfully recached users`;
         return newUsers;
+
+
     } catch (err) {
         apiLogger.error`Failed to rerequest users: ${err}`;
     }

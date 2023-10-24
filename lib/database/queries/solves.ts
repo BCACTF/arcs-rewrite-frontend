@@ -27,8 +27,12 @@ export type GetChallengeSolves = {
 export type GetAllSolves = {
     query_name: "get_all";
 };
+export type ClearAllSolvesForChallenge = {
+    query_name: "clear_all_chall";
+    id: string;
+}
 
-type InnerSolveQuery = SubmitAttempt | GetTeamSolves | GetUserSolves | GetChallengeSolves | GetAllSolves;
+type InnerSolveQuery = SubmitAttempt | GetTeamSolves | GetUserSolves | GetChallengeSolves | GetAllSolves | ClearAllSolvesForChallenge;
 
 type SolveQuery = {
     __type: "solve";

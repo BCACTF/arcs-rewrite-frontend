@@ -1,35 +1,41 @@
 import { CachedChall } from "cache/challs";
-import { ChallId } from "cache/ids";
+import { ChallId, challIdToStr } from "cache/ids";
 
 import ActionButton from "../../ActionButton";
 import React from "react";
 
 interface ChallActionBarProps {
     challenge: CachedChall;
-    setModalAction: (action: [() => Promise<unknown>, string]) => void;
+    setModalAction: (action: [() => Promise<unknown>, string, boolean]) => void;
     initEditChallMetadataModal: () => void;
 }
 
 const clearChallSolves = async (id: ChallId) => {
-    const response = await fetch("/api/admin/chall", { body: JSON.stringify({ clear: true, id }), method: "PUT" });
+    const response = await fetch(`/api/admin/clear-all-solves?id=${id}`);
     if (!response.ok) {
-        alert(`Failed to clear solves for ${id}`);
+        alert(`Failed to clear all solves for challenge ${id}: ${await response.text()}`);
         return false;
     }
     return true;
 }
 
-const setChallVis = async (id: ChallId, visible: boolean) => {
-    const response = await fetch("/api/admin/chall", { body: JSON.stringify({ visible, id }), method: "PUT" });
+const setChallVis = async (
+    id: ChallId,
+    visible: boolean,
+) => {
+    const query = `id=${challIdToStr(id)}&visible=${visible ? "true" : "false"}`;
+    const response = await fetch(`/api/admin/update-chall-metadata?${query}`, { method: "PUT" });
     if (!response.ok) {
-        alert(`Failed to set challenge visibility to ${visible} for ${id}`);
+        const text = await response.text();
+        alert(`Failed to set chall ${id} visibility to ${visible}: ${text}`);
         return false;
     }
     return true;
 };
 
 const resyncChall = async (id: ChallId) => {
-    const response = await fetch("/api/admin/chall", { body: JSON.stringify({ resync: true, id }), method: "PUT" });
+    const response = await fetch(`/api/admin/sync/chall?id=${id}`);
+    console.log(await response.text());
     if (!response.ok) {
         alert(`Failed to resync challenge ${id}`);
         return false;
@@ -69,6 +75,8 @@ const ChallActionBar: React.FC<ChallActionBarProps> = ({ challenge, setModalActi
                 children={`Metadata`}/>
             <ActionButton
                 confirmed={true}
+                doubleConfirmed={true}
+
                 className="bg-red-900"
 
                 action={() => clearChallSolves(challenge.id)}

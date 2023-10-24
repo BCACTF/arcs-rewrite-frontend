@@ -25,7 +25,7 @@ import getCompetition from "metadata/client";
 import getAccount, { Account } from "account/validation";
 import { wrapServerSideProps, pageLogger } from "logging";
 
-interface HomeProps {
+interface AdminPanelProps {
     metadata: Competition;
     account: Account;
 
@@ -40,7 +40,7 @@ interface HomeProps {
     challSolveMap: Record<string, CachedSolveMeta[]>;
 }
 
-const Home: FC<HomeProps> = ({
+const AdminPanel: FC<AdminPanelProps> = ({
     metadata, account,
     teams, users, solves, challenges,
     teamUserMap, teamSolveMap, userSolveMap, challSolveMap,
@@ -65,7 +65,7 @@ import { getAllTeams } from "cache/teams";
 import { challIdToStr, teamIdToStr, userIdToStr } from "cache/ids";
 import AdminChallengeManager from "components/admin/AdminChallengeManager";
 
-export const getServerSideProps = wrapServerSideProps<HomeProps>(async function HomeSSP(context) {
+export const getServerSideProps = wrapServerSideProps<AdminPanelProps>(async function AdminPanelSSP(context) {
     const account = await getAccount(context);
     if (!account || !account.admin) {
         pageLogger.secWarn`User (${account?.userId}) attempted to access admin page without admin privileges.`
@@ -74,10 +74,17 @@ export const getServerSideProps = wrapServerSideProps<HomeProps>(async function 
     
     pageLogger.info`Recieved request for ${context.resolvedUrl}`;
 
-    const teams = await getAllTeams();
-    const users = await getAllUsers();
-    const solves = await getAllSolves();
-    const challenges = await getAllChallenges();
+    const [teams, users, allSolves, challenges] = await Promise.all([
+        getAllTeams(),
+        getAllUsers(),
+        getAllSolves(),
+        getAllChallenges()
+    ]);
+
+    const solves = allSolves;
+    // pageLogger.debug`${ allSolves }`
+
+    // pageLogger.info`${challenges.map(chall => [chall.id, chall.clientSideMetadata.name, chall.clientSideMetadata.solveCount])}`;
 
     pageLogger.info`Finished fetching data for ${context.resolvedUrl}`;
 
@@ -114,9 +121,10 @@ export const getServerSideProps = wrapServerSideProps<HomeProps>(async function 
     }
 
 
+    // pageLogger.debug`${challSolveMap}`;
 
 
-    const props: HomeProps = {
+    const props: AdminPanelProps = {
         metadata: await getCompetition(),
         account: account,
 
@@ -133,4 +141,4 @@ export const getServerSideProps = wrapServerSideProps<HomeProps>(async function 
     return { props };
 });
 
-export default Home;
+export default AdminPanel;

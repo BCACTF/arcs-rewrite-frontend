@@ -17,7 +17,7 @@ export interface ChallViewProps {
 
 
 const ChallView: React.FC<ChallViewProps> = ({ challenge, solves }) => {
-    const [[modalAction, actionName], setModalAction] = useState<[null | (() => Promise<unknown>), string]>([null, ""]);
+    const [[modalAction, actionName, doubleConfirmed], setModalAction] = useState<[null | (() => Promise<unknown>), string, boolean]>([null, "", false]);
     const [editingChallMetadata, setEditingChallMetadata] = useState(false); 
 
     return <>
@@ -32,7 +32,7 @@ const ChallView: React.FC<ChallViewProps> = ({ challenge, solves }) => {
             <DeployStatus challenge={challenge} solves={solves}/>
         </div>
 
-        <ActionModal actionName={actionName} modalAction={modalAction} clearAction={() => setModalAction([null, ""])}/>
+        <ActionModal actionName={actionName} modalAction={modalAction} clearAction={() => setModalAction([null, "", false])} doubleConfirm={doubleConfirmed}/>
         {editingChallMetadata && <ChallMetaEditor challenge={challenge} solves={solves} exitChallMetaEditor={() => setEditingChallMetadata(false)} />}
     </>;
 };

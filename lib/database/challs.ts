@@ -16,8 +16,9 @@ const syncAllChalls = async () => {
         const usedIds = challs.map(c => c.id);
         await removeStaleChalls(usedIds);
         await Promise.all(challs.map(c => updateChall(c)));
-        return challs;
-    
+
+        apiLogger.info`Successfully recached challs`;
+        return challs;    
     } catch (err) {
         console.error("failed to rerequest challenges", err);
     }

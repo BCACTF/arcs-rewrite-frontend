@@ -1,6 +1,7 @@
 import { TeamId, teamIdToStr, teamIdFromStr, UserId, ChallId, userIdFromStr, challIdFromStr, challIdToStr } from "cache/ids";
 import cache from "cache/index";
 import { getAllTeams } from "./teams";
+import { apiLogger } from "logging";
 
 export interface CachedSolveMeta {
     teamId: TeamId;
@@ -65,6 +66,7 @@ export const getAllSolves = async (): Promise<CachedSolveMeta[]> => {
     teamKeys.forEach(key => multi = multi.hgetall(key));
     
     const rawCachedSolves = await multi.exec();
+    console.log(rawCachedSolves);
     if (!rawCachedSolves) return [];
     const rawSolvesFlat = rawCachedSolves.flatMap(res => res[1] && Object.values(res[1]));
     const optCachedSolves = rawSolvesFlat.map(solveData => parseSolve(String(solveData)));
@@ -87,5 +89,18 @@ export const addSolve = async (solve: CachedSolveMeta): Promise<CachedSolveMeta 
     if (typeof retRes !== "string" || !retRes) return null;
     return parseSolve(retRes);
 };
+
+export const clearAllSolves = async (): Promise<number> =>  {
+    const redis = await cache();
+    const prefix = redis.options.keyPrefix ?? "";
+
+    const rawKeys = await redis.keys(`${prefix}${SOLVE_HASH_KEY_PREFIX}*`);
+    const keys = rawKeys.map(key => key.slice(0, prefix.length) === prefix ? key.slice(prefix.length) : key);
+    apiLogger.info`AAAAAAAAAA: ${await redis.keys("*")}`;
+    apiLogger.info`Deleting solves for keys ${keys}`;
+    const val = await redis.del(...keys);
+    apiLogger.info`${val}`;
+    return val;
+}
 
 export const sortBy = (solves: CachedSolveMeta[]) => [...solves].sort((a, b) => a.time - b.time);

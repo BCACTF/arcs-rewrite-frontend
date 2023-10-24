@@ -23,7 +23,10 @@ const syncAllTeams = async (): Promise<CachedTeamMeta[] | null> => {
 
         await Promise.all(teams.map(updateTeamCache));
 
+        apiLogger.info`Successfully recached teams`;
+
         return await getAllTeams();
+
     } catch (err) {
         console.error("failed to rerequest teams", err);
     }

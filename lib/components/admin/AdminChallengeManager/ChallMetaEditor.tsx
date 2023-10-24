@@ -20,6 +20,7 @@ const sendMetadataModifyReq = async (
     points: number | null,
     categories: string[] | null,
     tags: string[] | null,
+    visible: boolean,
 ) => {
     const queryParams = new URLSearchParams();
     queryParams.set("id", challIdToStr(id));
@@ -32,6 +33,7 @@ const sendMetadataModifyReq = async (
     if (tags) for (const tag of tags) {
         queryParams.append("tags", tag);
     }
+    queryParams.set("visible", visible.toString());
 
     const response = await fetch(`/api/admin/update-chall-metadata?${queryParams.toString()}`, { method: "PUT" });
     if (!response.ok) {
@@ -86,21 +88,23 @@ function ChallMetaEditor({ challenge, solves, exitChallMetaEditor }: ChallMetaEd
     const [challPoints, setChallPoints] = useState<number | null>(null);
     const [challCategoryStr, setChallCategories] = useState("");
     const challCategories = useMemo(() => challCategoryStr.split(",").map(a => a.trim()).filter(a => a.length > 0), [challCategoryStr]);
+    const [challVisible, setChallVisible] = useState(challenge.visible);
 
     const isChanged = useMemo(() => {
         const nameDiffer = challName !== "" &&  (challName !== challenge.clientSideMetadata.name);
         const descDiffers = challDesc !== "" && (challDesc !== challenge.clientSideMetadata.desc);
         const pointsDiffers = challPoints !== null && (challPoints !== challenge.clientSideMetadata.points);
+        const visibleDiffers = challVisible !== challenge.visible;
 
-        const scalarsDiffer = nameDiffer || descDiffers || pointsDiffers;
+        const primitivesDiffer = nameDiffer || descDiffers || pointsDiffers || visibleDiffers;
 
 
         const newCategoriesInOld = challCategories.every(category => challenge.clientSideMetadata.categories.includes(category));
         const oldCategoriesInNew = challenge.clientSideMetadata.categories.every(category => challCategories.includes(category));
         const categoriesDiffer = challCategoryStr !== "" && (!newCategoriesInOld || !oldCategoriesInNew);
 
-        return scalarsDiffer || categoriesDiffer;
-    }, [challName, challDesc, challPoints, challCategories, challenge]);
+        return primitivesDiffer || categoriesDiffer;
+    }, [challName, challDesc, challPoints, challCategories, challVisible, challenge]);
 
     const descRef = useRef<HTMLTextAreaElement>(null);
     useEffect(() => {
@@ -203,7 +207,7 @@ function ChallMetaEditor({ challenge, solves, exitChallMetaEditor }: ChallMetaEd
                         [&::-webkit-outer-spin-button]:appearance-none
                         [&::-webkit-inner-spin-button]:appearance-none"
                     name="ChallPointsInput"
-                    onChangeCapture={e => {
+                    onChange={e => {
                         const number = parseInt(e.currentTarget.value);
 
                         if (e.currentTarget.value === "") setChallPoints(null);
@@ -238,11 +242,40 @@ function ChallMetaEditor({ challenge, solves, exitChallMetaEditor }: ChallMetaEd
             <span className="text-md mt-2">{challCategories.join(", ")}</span>
             <br/>
 
+            <label
+                htmlFor="ChallVisibleInput"
+                className="w-fit text-lg mb-2">
+                Visible
+            </label>
+            <div className="flex flex-col justify-center items-center">
+                <input
+                    type="checkbox"
+                    className="
+                        bg-slate-800 checked:bg-slate-600
+                        border-4 border-slate-900
+                        rounded-lg w-8 h-8
+                        appearance-none relative
+                        
+                        after:absolute
+                        after:border-b-3 after:border-r-3 after:w-2.5 after:h-4
+                        after:rotate-45 after:translate-x-0 after:left-[0.45rem] after:top-[0.05rem]
+                        after:opacity-0 checked:after:opacity-100"
+                    name="ChallVisibleInput"
+                    checked={challVisible}
+                    onChange={e => setChallVisible(e.target.checked)} value={challName}/>
+                <span
+                    onClick={() => setChallVisible(challenge.visible)}
+                    className="hover:opacity-100 opacity-10 transition-opacity cursor-pointer">
+                    Reset
+                </span>
+            </div>
+            <br/>
+
             <div className="w-2/3 min-w-44 flex flex-row space-x-3 mx-auto mb-4">
                 <button
                     onClick={() => setModalAction([
                         async () => {
-                            await sendMetadataModifyReq(challenge.id, challName, challDesc, challPoints, challCategories, null);
+                            await sendMetadataModifyReq(challenge.id, challName, challDesc, challPoints, challCategories, null, challVisible);
                             refreshProps();
                         },
                         `update the metadata for ${challenge.clientSideMetadata.name}`,
@@ -259,6 +292,7 @@ function ChallMetaEditor({ challenge, solves, exitChallMetaEditor }: ChallMetaEd
                 </button>
             </div>
         </div>
+
         <ActionModal {...{ actionName, modalAction, clearAction: () => setModalAction([null, ""]) }}/>
     </>;
 }

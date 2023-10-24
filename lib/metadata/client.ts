@@ -8,6 +8,7 @@ export interface Competition {
     end: number;
     logoUrl: string;
     maxTeamSize: number;
+    allowAdminSolvesBeforeComp: boolean;
 }
 
 const validateJSON = (rawJson: unknown): rawJson is Competition => {
@@ -16,13 +17,14 @@ const validateJSON = (rawJson: unknown): rawJson is Competition => {
 
     const json = rawJson as Record<string, unknown>;
 
-    const { name, start, end, logoUrl, maxTeamSize } = json;
+    const { name, start, end, logoUrl, maxTeamSize, allowAdminSolvesBeforeComp } = json;
 
     if (typeof name !== "string") return false;
     if (typeof start !== "number") return false;
     if (typeof end !== "number") return false;
     if (typeof logoUrl !== "string") return false;
     if (typeof maxTeamSize !== "number") return false;
+    if (typeof allowAdminSolvesBeforeComp !== "boolean") return false;
 
     return true;
 };

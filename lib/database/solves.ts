@@ -1,12 +1,35 @@
 import makeWebhookRequest from "./makeWebhookReq";
 import { ChallId, TeamId, UserId, challIdToStr, teamIdToStr, userIdToStr } from "cache/ids";
-import { addSolve } from "cache/solves";
+import { addSolve, clearAllSolves } from "cache/solves";
 import { dbToCacheSolve } from "./db-types";
 import { InputAuth, syncUser } from "./users";
 import { syncTeam } from "./teams";
 import { syncChall } from "./challs";
 import { apiLogger } from "logging";
 import addClientPerms from "auth/webhookClientAuthPerms";
+
+const decacheAndSyncSolves = async (): Promise<void> => {
+    for (let i = 0; i < 10; i++) {
+        try {
+            const allSolves = await makeWebhookRequest("solve_arr", {
+                __type: "solve",
+                query_name: "get_all",
+            });
+            
+            const solves = allSolves.map(dbToCacheSolve).flatMap(c => c ? [c] : []);
+            apiLogger.debug`${{ allSolves, solves }}`;
+
+            
+            await clearAllSolves();
+            await Promise.all(solves.map(addSolve));
+    
+            apiLogger.info`Successfully recached solves`;
+            return;
+        } catch (err) {
+            apiLogger.error`failed to rerequest challenges: ${err}`;
+        }
+    }
+};
 
 const syncSolves = async (): Promise<void> => {
     try {
@@ -71,4 +94,5 @@ const attemptSolve: AddNewUserReq = async ({ challId, teamId, userId, flag, auth
 export {
     syncSolves,
     attemptSolve,
+    decacheAndSyncSolves
 };
