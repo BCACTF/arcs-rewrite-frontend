@@ -35,7 +35,6 @@ const setChallVis = async (
 
 const resyncChall = async (id: ChallId) => {
     const response = await fetch(`/api/admin/sync/chall?id=${id}`);
-    console.log(await response.text());
     if (!response.ok) {
         alert(`Failed to resync challenge ${id}`);
         return false;

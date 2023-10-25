@@ -66,7 +66,6 @@ export const getAllSolves = async (): Promise<CachedSolveMeta[]> => {
     teamKeys.forEach(key => multi = multi.hgetall(key));
     
     const rawCachedSolves = await multi.exec();
-    console.log(rawCachedSolves);
     if (!rawCachedSolves) return [];
     const rawSolvesFlat = rawCachedSolves.flatMap(res => res[1] && Object.values(res[1]));
     const optCachedSolves = rawSolvesFlat.map(solveData => parseSolve(String(solveData)));

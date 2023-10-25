@@ -22,7 +22,7 @@ export type DeployStatus = {
 
 interface RawResponse {
     status: "building" | "pulling" | "pushing" | "uploading" | "success" | "failure" | "unknown";
-    status_time: number;
+    status_time: { secs: number, nanos: number };
     chall_name?: string;
     poll_id: string;
 }
@@ -33,7 +33,6 @@ const pollDeploy = async (id: ChallId): Promise<DeployStatus> => {
         const json = await response.json();
         if (!response.ok) return { id, status: "error", error: `Polling error: ${json}` };
         const status: RawResponse = json.deploy;
-
 
         const step = (() => {
             switch (status.status) {
@@ -51,10 +50,11 @@ const pollDeploy = async (id: ChallId): Promise<DeployStatus> => {
         })();
 
 
+        const statusTime = status.status_time.secs + status.status_time.nanos / 1e9;
         const EXPECTED_TIME_SECS = 500;
         const POWER = 2;
         const divisor = (EXPECTED_TIME_SECS / 2) ** POWER;
-        const exponent = status.status_time ** POWER;
+        const exponent = statusTime ** POWER;
         const frac = exponent / divisor;
 
         const amount = (step + frac / (1 + frac)) / 4;

@@ -39,7 +39,7 @@ const DeployStatus: React.FC<DeployStatusProps> = ({ challenge, solves }) => {
             case "loading": return "Fetching data...";
             case "idle": return "Not currently deploying";
             case "error": return `Error: ${status.error}`;
-            case "working": return `Deploying: ${status.amount * 100}%`;
+            case "working": return `Deploying: ${(status.amount * 100).toFixed(2)}%`;
         }
     })(status);
 
