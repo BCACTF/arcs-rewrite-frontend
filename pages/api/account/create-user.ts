@@ -81,7 +81,7 @@ const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
     const returnValue = await addUser({
         email,
         name: username,
-        auth: { __type: "oauth", sub, provider },
+        auth: { __type: "o_auth", params: { sub, provider } },
         eligible,
     });
 

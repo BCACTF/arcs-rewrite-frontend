@@ -12,7 +12,7 @@ import { Competition } from 'metadata/client';
 import { CachedSolveMeta } from "cache/solves";
 import { CachedUser } from "cache/users";
 import { CachedTeamMeta } from "cache/teams";
-import { CachedChall } from "cache/challs";
+import { CachedChall, sortBy } from "cache/challs";
 
 import { UserId } from "cache/ids";
 
@@ -74,7 +74,7 @@ export const getServerSideProps = wrapServerSideProps<AdminPanelProps>(async fun
     
     pageLogger.info`Recieved request for ${context.resolvedUrl}`;
 
-    const [teams, users, allSolves, challenges] = await Promise.all([
+    const [teams, users, allSolves, unsortedChallenges] = await Promise.all([
         getAllTeams(),
         getAllUsers(),
         getAllSolves(),
@@ -82,6 +82,7 @@ export const getServerSideProps = wrapServerSideProps<AdminPanelProps>(async fun
     ]);
 
     const solves = allSolves;
+    const challenges = sortBy(unsortedChallenges);
     // pageLogger.debug`${ allSolves }`
 
     // pageLogger.info`${challenges.map(chall => [chall.id, chall.clientSideMetadata.name, chall.clientSideMetadata.solveCount])}`;

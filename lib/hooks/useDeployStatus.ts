@@ -1,8 +1,7 @@
 import { ChallId } from "cache/ids";
 
 import useInterval from "./useInterval";
-import { useEffect, useState } from "react";
-import { set } from "monocle-ts/lib/Traversal";
+import { useCallback, useEffect, useState } from "react";
 
 export type DeployStatus = {
     id: ChallId;
@@ -99,13 +98,17 @@ const pollDeploy = async (id: ChallId): Promise<DeployStatus> => {
     }
 };
 
-const useDeployStatus = (id: ChallId) => {
+const useDeployStatus = (id: ChallId): [DeployStatus, () => void] => {
     const [deployStatus, setDeployStatus] = useState<DeployStatus>({ id, status: "loading" });
 
-    useEffect(() => { pollDeploy(id).then(setDeployStatus) }, [id]);
-    useInterval(async () => setDeployStatus(await pollDeploy(id)), 10000);
+    const interval = deployStatus.status === "working" ? 2000 : 20000;
 
-    return deployStatus;
+    useEffect(() => { pollDeploy(id).then(setDeployStatus) }, [id]);
+    useInterval(async () => setDeployStatus(await pollDeploy(id)), interval);
+
+    const immediatePoll = useCallback(async () => setDeployStatus(await pollDeploy(id)), [id]);
+
+    return [deployStatus, immediatePoll];
 };
 
 export default useDeployStatus;

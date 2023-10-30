@@ -1,31 +1,15 @@
-import { CachedChall } from "cache/challs";
-import { CachedSolveMeta } from "cache/solves";
-import NoSsr from "components/NoSsr/NoSsr";
-import useDeployStatus, { DeployStatus } from "hooks/useDeployStatus";
+import { DeployStatus } from "hooks/useDeployStatus";
 import React from "react";
 
 export interface DeployStatusProps {
-    challenge: CachedChall;
-    solves: CachedSolveMeta[];
+    deployStatus: DeployStatus;
 }
-
-const getSolveTimeString = (time: number) => {
-    const date = new Date(time * 1000);
-    return date.toLocaleString();
-};
-
 
 const StatusDot = ({ className }: { className: string }) => {
     return <div className={`w-3 h-3 rounded-full ${className}`} />;
 };
 
-
-const DeployStatus: React.FC<DeployStatusProps> = ({ challenge, solves }) => {
-    const firstSolve = solves.sort((a, b) => a.time - b.time)[0];
-    const solveTime = firstSolve?.time ? getSolveTimeString(firstSolve.time) : "N/A";
-
-    const status = useDeployStatus(challenge.id);
-
+const DeployStatus: React.FC<DeployStatusProps> = ({ deployStatus: status }) => {
     const color = ((status: DeployStatus) => {
         switch (status.status) {
             case "loading": return "bg-gray-500";

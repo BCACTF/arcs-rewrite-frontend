@@ -70,8 +70,10 @@ const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
     try {
         await makeWebhookDbRequest("solve_arr", {
             __type: "solve",
-            query_name: "clear_all_chall",
-            id: challIdToStr(id),
+            details: {
+                __query_name: "clear_all_chall",
+                params: { id: challIdToStr(id) },
+            }
         });
         await decacheAndSyncSolves();
         await syncAllChalls();

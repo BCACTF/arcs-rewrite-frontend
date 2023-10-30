@@ -87,7 +87,7 @@ const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
     apiLogger.debug`User ${userIdLog} is requesting to join team ${name} (${teamIdLog})`;
 
     const user = await joinTeam({
-        id, auth: { __type: "oauth", sub, provider },
+        id, auth: { __type: "o_auth", params: { sub, provider } },
         teamName: name, teamPassword,
     });
 

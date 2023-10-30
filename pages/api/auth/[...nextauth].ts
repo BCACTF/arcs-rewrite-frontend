@@ -89,7 +89,7 @@ const getNextAuthOptions = async () => {
                 
                 const checkOauthParams: Parameters<typeof checkUserOauth>[0] = {
                     id: user.userId,
-                    auth: { __type: "oauth", sub, provider: oauthMeta.provider },
+                    auth: { __type: "o_auth", params: { sub, provider: oauthMeta.provider } },
                 };
                 
                 const methodsMatch = await checkUserOauth(checkOauthParams);

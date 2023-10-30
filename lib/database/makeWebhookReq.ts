@@ -1,25 +1,10 @@
 import { getConfig } from "metadata/server";
-import WebhookDbQuery from "./queries";
-import { DbChallengeMeta, DbTeamMeta, DbUserMeta, DbSolveMeta } from "./db-types";
+import { FromSql, Outgoing } from "./types/outgoing.schema";
+import { ToSql } from "./types/incoming.schema";
 
-type ReturnTypes = {
-    chall: DbChallengeMeta,
-    chall_arr: DbChallengeMeta[],
+type DataType<Key extends FromSql["__type"]> = (FromSql & { __type: Key })["data"];
 
-    team: DbTeamMeta,
-    team_arr: DbTeamMeta[],
-
-    user: DbUserMeta,
-    user_arr: DbUserMeta[],
-
-    solve: DbSolveMeta,
-    solve_arr: DbSolveMeta[],
-
-    availability: boolean,
-    auth_status: boolean,
-};
-
-const makeWebhookDbRequest = async <RetType extends keyof ReturnTypes>(type: RetType, query: WebhookDbQuery): Promise<ReturnTypes[RetType]> => {
+const makeWebhookDbRequest = async <RetType extends FromSql["__type"]>(type: RetType, query: ToSql): Promise<DataType<RetType>> => {
     const { webhook: { url: webhookUrl }, frontendAuthToken } = await getConfig();
     const init: RequestInit = {
         method: "POST",
@@ -33,20 +18,26 @@ const makeWebhookDbRequest = async <RetType extends keyof ReturnTypes>(type: Ret
     };
     const fetchReturn = await fetch(webhookUrl, init);
     const returnVal = await fetchReturn.text();
-    const jsonVal = (() => {
+    const jsonVal: Outgoing = (() => {
         try {
-            return JSON.parse(returnVal)
+            return JSON.parse(returnVal);
         } catch (e) {
             throw returnVal;
         }
     })();
     
-    if (!fetchReturn.ok) throw jsonVal.sql;
+    const sql = jsonVal.sqll;
 
-    const { __type, data } = jsonVal.sql;
-    if (__type !== type) throw jsonVal.sql;
-    
-    return data;
+    if (!fetchReturn.ok) throw sql;
+    if (!sql) throw jsonVal;
+    if ("Err" in sql) {
+        throw sql.Err;
+    }
+
+    const fromSql = sql.Ok;
+
+    if (type === fromSql.__type) return fromSql.data as DataType<RetType>;
+    else throw fromSql
 };
 
 export default makeWebhookDbRequest;

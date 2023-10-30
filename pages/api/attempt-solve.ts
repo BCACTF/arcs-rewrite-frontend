@@ -88,7 +88,7 @@ const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
     try {
         const returnVal = await attemptSolve({
             teamId, userId, challId,
-            auth: { __type: "oauth", sub: account.sub, provider: account.provider },
+            auth: { __type: "o_auth", params: { sub: account.sub, provider: account.provider } },
             flag,
         });
         apiLogger.warn`Return value: ${returnVal}`;

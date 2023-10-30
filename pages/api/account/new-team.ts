@@ -94,7 +94,9 @@ const handler: NextApiHandler = wrapApiEndpoint(async function newTeam(req, res)
     }
     
     const createdTeam = await addNewTeam({
-        name, eligible, affiliation, password, initialUser,
+        name, eligible, affiliation,
+        password,
+        initialUser, userAuth: { __type: "o_auth", params: { sub: account.sub, provider: account.provider } },
     });
 
     if (!createdTeam) {

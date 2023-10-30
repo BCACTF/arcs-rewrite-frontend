@@ -1,19 +1,24 @@
 import makeWebhookRequest from "./makeWebhookReq";
 import { update as updateUser, removeStale as removeStaleUsers, getAllUsers, getUsers, CachedUser } from "cache/users";
 import { UserId, fmtLogU, userIdToStr } from "cache/ids";
-import { dbToCacheUser } from "./db-types";
-import { Auth } from "./queries/users";
 import addClientPerms from "auth/webhookClientAuthPerms";
 import { apiLogger } from "logging";
 
-export type InputAuth = (Auth & { __type: "pass" }) | Omit<Auth & { __type: "oauth" }, "oauth_allow_token">;
+import { Auth } from "./types/incoming.schema";
+import { dbToCacheUser } from "./db-types";
+import { User } from "./types/outgoing.schema";
+
+export type PasswordAuth = Auth & { __type: "pass" };
+export type OAuthAuth = Auth & { __type: "o_auth" };
+export type NoAllowTokenOAuthAuth = Omit<OAuthAuth, "params"> & { params: Omit<OAuthAuth["params"], "oauth_allow_token"> };
+export type InputAuth = PasswordAuth | NoAllowTokenOAuthAuth;
 
 const syncAllUsers = async (): Promise<CachedUser[] | null> => {
     try {
         const allUsers = await makeWebhookRequest("user_arr", {
             __type: "user",
-            query_name: "get_all",
-        });
+            details: { __query_name: "get_all" },
+        }) as User[];
         const users = allUsers.map(dbToCacheUser).flatMap(c => c ? [c] : []);
         apiLogger.debug`Got users: ${users.map(u => `${fmtLogU(u.userId)} (${u.clientSideMetadata.name})`)}`;
 
@@ -45,9 +50,11 @@ const syncUser = async ({ id }: { id: UserId }): Promise<CachedUser | null> => {
     try {
         const userData = await makeWebhookRequest("user", {
             __type: "user",
-            query_name: "get",
-            id: userIdToStr(id),
-        });
+            details: {
+                __query_name: "get",
+                params: { id: userIdToStr(id) },
+            },
+        }) as User;
         const user = dbToCacheUser(userData);
         if (user) {
             await updateUser(user);
@@ -66,11 +73,13 @@ type CheckUsernameAvailableParams = {
 }
 const checkUsernameAvailable = async ({ name }: CheckUsernameAvailableParams): Promise<boolean> => {
     try {
-        return makeWebhookRequest("availability", {
+        return await makeWebhookRequest("availability", {
             __type: "user",
-            query_name: "available",
-            name,
-        });
+            details: {
+                __query_name: "available",
+                params: { name },
+            },
+        }) as boolean;
     } catch (err) {
         console.error("failed to check username availability", err);
         return false;
@@ -79,16 +88,20 @@ const checkUsernameAvailable = async ({ name }: CheckUsernameAvailableParams): P
 
 type CheckUserOauthParams = {
     id: UserId;
-    auth: InputAuth & { __type: "oauth" };
+    auth: InputAuth & { __type: "o_auth" };
 }
 const checkUserOauth = async ({ id, auth }: CheckUserOauthParams): Promise<boolean> => {
     try {
         const userData = await makeWebhookRequest("auth_status", {
             __type: "user",
-            query_name: "check_auth",
-            id: userIdToStr(id),
-            auth: await addClientPerms(auth),
-        });
+            details: {
+                __query_name: "check_auth",
+                params: {
+                    id: userIdToStr(id),
+                    auth: await addClientPerms(auth),
+                },
+            }
+        }) as boolean;
         return userData;
     } catch (err) {
         console.error("failed to rerequest users", err);
@@ -108,10 +121,14 @@ const addUser = async ({ email, name, auth, eligible }: AddNewUserParams) => {
         
         const newUserRes = await makeWebhookRequest("user", {
             __type: "user",
-            query_name: "create",
-            email, name, eligible, admin: false,
-            auth: await addClientPerms(auth),
-        });
+            details: {
+                __query_name: "create",
+                params: {
+                    email, name, eligible, admin: false,
+                    auth: await addClientPerms(auth),
+                },
+            },
+        }) as User;
         const newUser = dbToCacheUser(newUserRes);
 
         if (newUser) {
@@ -167,12 +184,16 @@ const joinTeam = async ({ id, auth, teamName, teamPassword }: JoinTeamParams): P
     try {
         const joinedUser = await makeWebhookRequest("user", {
             __type: "user",
-            query_name: "join",
-            id: userIdToStr(id),
-            auth: await addClientPerms(auth),
-            team_name: teamName,
-            team_pass: teamPassword,
-        });
+            details: {
+                __query_name: "join",
+                params: {
+                    id: userIdToStr(id),
+                    auth: await addClientPerms(auth),
+                    team_name: teamName,
+                    team_pass: teamPassword,
+                },
+            }
+        }) as User;
         const user = dbToCacheUser(joinedUser);
 
         if (user) {
