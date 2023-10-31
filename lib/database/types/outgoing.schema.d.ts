@@ -5,12 +5,14 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type ResultOf_FromDeployOr_FromDeployErr =
+export type DeployResult =
   | {
-      Ok: FromDeploy;
+      ok: "success";
+      data: FromDeploy;
     }
   | {
-      Err: FromDeployErr;
+      ok: "err";
+      data: FromDeployErr;
     };
 export type FromDeploy = DeploymentStatus;
 export type Status = "started" | "building" | "pulling" | "pushing" | "uploading" | "success" | "failure" | "unknown";
@@ -22,20 +24,24 @@ export type FromDeployErr =
         body: number[];
       };
     };
-export type ResultOf_FromDiscordOr_FromDiscordErr =
+export type DiscordResult =
   | {
-      Ok: FromDiscord;
+      ok: "success";
+      data: FromDiscord;
     }
   | {
-      Err: FromDiscordErr;
+      ok: "err";
+      data: FromDiscordErr;
     };
 export type FromDiscord = null;
-export type ResultOf_FromFrontendOr_FromFrontendErr =
+export type FrontendResult =
   | {
-      Ok: FromFrontend;
+      ok: "success";
+      data: FromFrontend;
     }
   | {
-      Err: FromFrontendErr;
+      ok: "err";
+      data: FromFrontendErr;
     };
 export type FromFrontend = {
   __type: "synced";
@@ -78,12 +84,14 @@ export type FromFrontendErr =
       __type: "webhook_server_error";
       info: string;
     };
-export type ResultOf_FromSqlOr_FromSqlErr =
+export type SqlResult =
   | {
-      Ok: FromSql;
+      ok: "success";
+      data: FromSql;
     }
   | {
-      Err: FromSqlErr;
+      ok: "err";
+      data: FromSqlErr;
     };
 export type FromSql =
   | {
@@ -154,10 +162,10 @@ export type FromSqlErr =
     };
 
 export interface Outgoing {
-  depl?: ResultOf_FromDeployOr_FromDeployErr | null;
-  disc?: ResultOf_FromDiscordOr_FromDiscordErr | null;
-  fron?: ResultOf_FromFrontendOr_FromFrontendErr | null;
-  sqll?: ResultOf_FromSqlOr_FromSqlErr | null;
+  deploy?: DeployResult | null;
+  discord?: DiscordResult | null;
+  frontend?: FrontendResult | null;
+  sql?: SqlResult | null;
 }
 export interface DeploymentStatus {
   status: Status;

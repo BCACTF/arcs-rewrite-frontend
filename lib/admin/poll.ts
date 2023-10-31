@@ -1,4 +1,5 @@
-import { ChallId } from "cache/ids";
+import { ChallId, challIdToStr } from "cache/ids";
+import { ToDeploy } from "database/types/incoming.schema";
 import { getConfig } from "metadata/server";
 
 // Started,
@@ -24,18 +25,19 @@ interface Response {
 
 const pollDeploy = async (id: ChallId): Promise<Response> => {
     const { webhook: { url: webhookUrl }, frontendAuthToken } = await getConfig();
+
+    const body: ToDeploy = {
+        __type: "poll",
+        data: { id: challIdToStr(id) },
+    };
+
     const init: RequestInit = {
         method: "POST",
         headers: {
             "authorization": `Bearer ${frontendAuthToken}`,
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-            deploy: {
-                __type: "poll",
-                id,
-            }
-        }),
+        body: JSON.stringify({ deploy: body }),
     };
 
     const fetchReturn = await fetch(webhookUrl, init);

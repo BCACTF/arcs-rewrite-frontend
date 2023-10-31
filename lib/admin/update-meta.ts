@@ -1,4 +1,5 @@
-import { ChallId } from "cache/ids";
+import { ChallId, challIdToStr } from "cache/ids";
+import { ToDeploy } from "database/types/incoming.schema";
 import { getConfig } from "metadata/server";
 
 // Started,
@@ -30,6 +31,14 @@ interface Modifications {
 
 
 const updateMetadata = async (id: ChallId, modifications: Modifications): Promise<Response> => {
+    const body: ToDeploy = {
+        __type: "modify_meta",
+        data: {
+            id: challIdToStr(id),
+            ...modifications,
+        },
+    };
+
     const { webhook: { url: webhookUrl }, frontendAuthToken } = await getConfig();
     const init: RequestInit = {
         method: "POST",
@@ -37,13 +46,7 @@ const updateMetadata = async (id: ChallId, modifications: Modifications): Promis
             "authorization": `Bearer ${frontendAuthToken}`,
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-            deploy: {
-                __type: "modify_meta",
-                id,
-                ...modifications,
-            }
-        }),
+        body: JSON.stringify({ deploy: body }),
     };
 
     const fetchReturn = await fetch(webhookUrl, init);
