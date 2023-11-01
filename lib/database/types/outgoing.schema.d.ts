@@ -14,7 +14,15 @@ export type DeployResult =
       ok: "err";
       data: FromDeployErr;
     };
-export type FromDeploy = DeploymentStatus;
+export type FromDeploy =
+  | {
+      __type: "status";
+      data: DeploymentStatus;
+    }
+  | {
+      __type: "chall_name_list";
+      data: string[];
+    };
 export type Status = "started" | "building" | "pulling" | "pushing" | "uploading" | "success" | "failure" | "unknown";
 export type FromDeployErr =
   | ("BadSend" | "BadResponse" | "DbError")
@@ -172,6 +180,7 @@ export interface DeploymentStatus {
   status_time: Duration;
   chall_name?: string | null;
   poll_id: string;
+  err_msg?: string | null;
 }
 export interface Duration {
   secs: number;

@@ -25,11 +25,8 @@ const makeWebhookDbRequest = async <RetType extends FromSql["__type"]>(type: Ret
             throw returnVal;
         }
     })();
-    console.log(jsonVal);
     
     const sql = jsonVal.sql;
-
-    console.log(fetchReturn);
 
     if (!fetchReturn.ok) throw sql;
     if (!sql) throw jsonVal;
@@ -40,7 +37,7 @@ const makeWebhookDbRequest = async <RetType extends FromSql["__type"]>(type: Ret
     const fromSql = sql.data;
 
     if (type === fromSql.__type) return fromSql.data as DataType<RetType>;
-    else throw fromSql
+    else throw { aaa: fromSql };
 };
 
 export default makeWebhookDbRequest;

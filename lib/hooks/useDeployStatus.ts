@@ -2,6 +2,7 @@ import { ChallId } from "cache/ids";
 
 import useInterval from "./useInterval";
 import { useCallback, useEffect, useState } from "react";
+import { DeploymentStatus as WebhookDeploymentStatus, FromDeploy } from "database/types/outgoing.schema";
 
 export type DeployStatus = {
     id: ChallId;
@@ -19,19 +20,12 @@ export type DeployStatus = {
     amount: number;
 };
 
-interface RawResponse {
-    status: "building" | "pulling" | "pushing" | "uploading" | "success" | "failure" | "unknown";
-    status_time: { secs: number, nanos: number };
-    chall_name?: string;
-    poll_id: string;
-}
-
 const pollDeploy = async (id: ChallId): Promise<DeployStatus> => {
     try {
         const response = await fetch(`/api/admin/deploy-poll?id=${id}`);
         const json = await response.json();
         if (!response.ok) return { id, status: "error", error: `Polling error: ${json}` };
-        const status: RawResponse = json.deploy;
+        const status: WebhookDeploymentStatus = json;
 
         const step = (() => {
             switch (status.status) {
@@ -61,6 +55,13 @@ const pollDeploy = async (id: ChallId): Promise<DeployStatus> => {
 
         const result: DeployStatus = (() => {
             switch (status.status) {
+                case "started":
+                    return {
+                        id,
+                        status: "working",
+                        amount: 0,
+                    };
+
                 case "building":
                 case "pulling":
                 case "pushing":

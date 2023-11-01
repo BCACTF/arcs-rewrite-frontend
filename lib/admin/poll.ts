@@ -1,29 +1,9 @@
 import { ChallId, challIdToStr } from "cache/ids";
 import { ToDeploy } from "database/types/incoming.schema";
+import { DeploymentStatus, Outgoing } from "database/types/outgoing.schema";
 import { getConfig } from "metadata/server";
 
-// Started,
-//     Building,
-//     Pulling,
-//     Pushing,
-//     Uploading,
-//     Success,
-
-//     Failure,
-
-//     Unknown,
-
-interface Response {
-    status: "building" | "pulling" | "pushing" | "uploading" | "success" | "failure" | "unknown";
-    status_time: number;
-    chall_name?: string;
-    poll_id: string;
-}
-
-
-
-
-const pollDeploy = async (id: ChallId): Promise<Response> => {
+const pollDeploy = async (id: ChallId): Promise<DeploymentStatus> => {
     const { webhook: { url: webhookUrl }, frontendAuthToken } = await getConfig();
 
     const body: ToDeploy = {
@@ -42,17 +22,25 @@ const pollDeploy = async (id: ChallId): Promise<Response> => {
 
     const fetchReturn = await fetch(webhookUrl, init);
     const returnVal = await fetchReturn.text();
-    const jsonVal = (() => {
+    const jsonVal: Outgoing = (() => {
         try {
             return JSON.parse(returnVal)
         } catch (e) {
             throw returnVal;
         }
     })();
-    
-    if (!fetchReturn.ok) throw jsonVal;
 
-    return jsonVal;
+    if (!fetchReturn.ok) throw jsonVal;
+    if (!jsonVal.deploy) throw jsonVal;
+    const deploy = jsonVal.deploy;
+
+    if (deploy.ok === "err") throw deploy.data;
+    const deployData = deploy.data;
+
+    if (deployData.__type !== "status") throw deployData;
+    const status = deployData.data;
+
+    return status;
 };
 
 export default pollDeploy;

@@ -36,6 +36,9 @@ export type ToDeploy =
         tags?: string[] | null;
         visible?: boolean | null;
       };
+    }
+  | {
+      __type: "list_challs";
     };
 export type ChallIdentifier = string;
 export type ToDiscord =

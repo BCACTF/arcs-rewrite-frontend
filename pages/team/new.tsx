@@ -59,7 +59,6 @@ const NewTeamPage: FC<NewTeamPageProps> = ({ metadata, canBeEligible }) => {
                     password,
                 }),
             };
-            console.log(options);
             const response = await fetch("/api/account/new-team", options);
 
             if (response.ok) router.push("/");
