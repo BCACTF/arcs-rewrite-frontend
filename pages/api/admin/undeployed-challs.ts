@@ -5,27 +5,8 @@ import { NextApiHandler, NextApiRequest } from "next";
 import getAccount from "account/validation";
 import { apiLogger, wrapApiEndpoint } from "logging";
 import { ChallId, challIdFromStr, fmtLogU } from "cache/ids";
-import pollDeploy from "admin/poll";
-
-
-interface PollDeployParams {
-    id: ChallId;
-}
-
-const getParams = (req: NextApiRequest): PollDeployParams | null => {
-    try {
-        const id = req.query.id;
-        if (typeof id !== "string") return null;
-        const challId = challIdFromStr(id);
-
-        if (!challId) return null;
-
-        return { id: challId };
-    } catch (e) {
-        console.error(e);
-        return null;
-    }
-};
+import getAllChallsInRepository from "admin/all-challs";
+import { getAllChallenges } from "cache/challs";
 
 const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
     apiLogger.trace`Recieved ${req.method} request at ${req.url}`;
@@ -54,21 +35,18 @@ const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
     }
 
 
-    const queryParams = getParams(req);
-    if (!queryParams) {
-        apiLogger.warn`Badly formatted query: ${JSON.stringify(req.query)}`;
-        res.status(400).send("Incorrect query format");
-        return
-    }
-
-    const { id } = queryParams;
-
     try {
-        const status = await pollDeploy(id);
-        apiLogger.info`Succeeded in polling deploy server`;
-        res.status(200).json(status);
+        const [allChalls, deployedChalls] = await Promise.all([
+            await getAllChallsInRepository(),
+            getAllChallenges().then(arr => arr.map(c => c.sourceFolder)).then(arr => new Set(arr)),
+        ]);
+    
+        const undeployedChalls = allChalls.filter(chall => !deployedChalls.has(chall));
+
+        apiLogger.info`Succeeded in getting undeployed challenges`;
+        res.status(200).json(undeployedChalls);
     } catch (e) {
-        apiLogger.info`Failed in polling deploy server`;
+        apiLogger.info`Failed in getting undeployed challenges: ${e}`;
         res.status(500).send("Failed to poll server");
     }
 });

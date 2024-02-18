@@ -5,7 +5,7 @@ import ActionModal from "../ActionModal";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { ChallId, challIdToStr } from "cache/ids";
-import useServerSidePropsRefetcher from "hooks/useServerSidePropsRefetcher";
+import useServerSidePropsRefetcher from "hooks/admin/useServerSidePropsRefetcher";
 
 interface ChallMetaEditorProps {
     challenge: CachedChall;

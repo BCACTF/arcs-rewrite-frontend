@@ -6,6 +6,8 @@ import React, { useState } from 'react';
 import ChallView from './ChallView';
 import DropdownHeader from '../DropdownHeader';
 import DropdownBody from '../DropdownBody';
+import useUndeployedChallenges from 'hooks/admin/useUndeployedChallenges';
+import ChallengeDeployer from './ChallengeDeployer';
 
 interface AdminChallengeManagerProps {
     challenges: CachedChall[];
@@ -14,6 +16,7 @@ interface AdminChallengeManagerProps {
 
 const AdminChallengeManager: React.FC<AdminChallengeManagerProps> = ({ challenges, challSolveMap }) => {
     const [collapsed, setCollapsed] = useState(false);
+    const [undeployedChallenges] = useUndeployedChallenges();
 
     return (
         <div className="flex flex-col w-full max-sm:mx-20 mx-32 lg:mx-40">
@@ -22,6 +25,7 @@ const AdminChallengeManager: React.FC<AdminChallengeManagerProps> = ({ challenge
                 {challenges.map(chall => (
                     <ChallView challenge={chall} key={String(chall.id)} solves={challSolveMap[challIdToStr(chall.id)]}/>
                 ))}
+                <ChallengeDeployer/>
             </DropdownBody>
         </div>
     );

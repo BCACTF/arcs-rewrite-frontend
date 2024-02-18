@@ -1,4 +1,4 @@
-import { DeployStatus } from "hooks/useDeployStatus";
+import { DeployStatus } from "hooks/admin/useDeployStatus";
 import React from "react";
 
 export interface DeployStatusProps {

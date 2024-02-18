@@ -1,4 +1,4 @@
-import useServerSidePropsRefetcher from "hooks/useServerSidePropsRefetcher";
+import useServerSidePropsRefetcher from "hooks/admin/useServerSidePropsRefetcher";
 import { useCallback } from "react";
 
 const ActionButton = ({

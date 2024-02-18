@@ -4,23 +4,30 @@ import { NextApiHandler, NextApiRequest } from "next";
 // Utils
 import getAccount from "account/validation";
 import { apiLogger, wrapApiEndpoint } from "logging";
-import { ChallId, challIdFromStr, fmtLogU } from "cache/ids";
-import pollDeploy from "admin/poll";
+import { fmtLogU } from "cache/ids";
+import initiateDeployment from "admin/init-deploy";
 
 
-interface PollDeployParams {
-    id: ChallId;
+interface InitiateDeployParams {
+    name: string;
 }
 
-const getParams = (req: NextApiRequest): PollDeployParams | null => {
+const getBodyJSON = (req: NextApiRequest): unknown => {
     try {
-        const id = req.query.id;
-        if (typeof id !== "string") return null;
-        const challId = challIdFromStr(id);
+        return JSON.parse(req.body);
+    } catch (e) {
+        console.error(e);
+        return null;
+    }
+};
 
-        if (!challId) return null;
+const getBody = (body: unknown): InitiateDeployParams | null => {
+    try {
+        if (typeof body !== "object" || body === null) return null;
+        const name = (body as Record<string, unknown>).name;
+        if (typeof name !== "string") return null;
 
-        return { id: challId };
+        return { name };
     } catch (e) {
         console.error(e);
         return null;
@@ -30,7 +37,7 @@ const getParams = (req: NextApiRequest): PollDeployParams | null => {
 const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
     apiLogger.trace`Recieved ${req.method} request at ${req.url}`;
 
-    if (req.method !== "GET") {
+    if (req.method !== "POST") {
         apiLogger.info`Requested with ${req.method} instead of GET`;
         res.status(400).send("Invalid HTTP method");
         return;
@@ -53,22 +60,23 @@ const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
         return;
     }
 
+    const body = getBodyJSON(req);
 
-    const queryParams = getParams(req);
-    if (!queryParams) {
-        apiLogger.warn`Badly formatted query: ${JSON.stringify(req.query)}`;
+    const params = getBody(body);
+    if (!params) {
+        apiLogger.warn`Badly formatted query: ${body}`;
         res.status(400).send("Incorrect query format");
         return
     }
 
-    const { id } = queryParams;
+    const { name } = params;
 
     try {
-        const status = await pollDeploy(id);
-        apiLogger.info`Succeeded in polling deploy server`;
+        const status = await initiateDeployment(name);
+        apiLogger.info`Succeeded in initiating deployment of ${name} on the deploy server`;
         res.status(200).json(status);
     } catch (e) {
-        apiLogger.info`Failed in polling deploy server`;
+        apiLogger.info`Failed in initiating deployment of ${name}`;
         res.status(500).send("Failed to poll server");
     }
 });

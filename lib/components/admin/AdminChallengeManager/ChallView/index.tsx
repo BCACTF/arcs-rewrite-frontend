@@ -8,7 +8,7 @@ import ChallActionBar from './ChallActionBar';
 import ChallInfoBar from './ChallInfoBar';
 import DeployStatus from './DeployStatus';
 import ChallMetaEditor from '../ChallMetaEditor';
-import useDeployStatus from 'hooks/useDeployStatus';
+import useDeployStatus from 'hooks/admin/useDeployStatus';
 
 export interface ChallViewProps {
     challenge: CachedChall;

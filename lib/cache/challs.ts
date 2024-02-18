@@ -27,6 +27,7 @@ export interface CachedChall {
     clientSideMetadata: ClientSideMeta;
 
     visible: boolean;
+    sourceFolder: string;
 }
 
 export const CHALLENGE_HASH_KEY = "chall";
@@ -38,17 +39,19 @@ export const parseChallenge = (challJson: string): CachedChall | null => {
 
     const {
         visible: visRaw,
-        id: challRaw,
+        id: challIdRaw,
         clientSideMetadata: csmRaw,
+        sourceFolder: sourceFolderRaw,
     } = parsed as Record<string, unknown>;
 
     {
         const vis = typeof visRaw === 'boolean';
-        const chall = typeof challRaw === 'string';
-        if (!vis || !chall) return null;
+        const chall = typeof challIdRaw === 'string';
+        const sourceFolder = typeof sourceFolderRaw === 'string';
+        if (!vis || !chall || !sourceFolder) return null;
     }
 
-    const challId = challIdFromStr(challRaw);
+    const challId = challIdFromStr(challIdRaw);
     if (!challId) return null;
 
     if (typeof csmRaw !== 'object' || csmRaw === null) return null;
@@ -124,13 +127,14 @@ export const parseChallenge = (challJson: string): CachedChall | null => {
     const authors = authRaw;
     const hints = hintsRaw;
     const tags = tagsRaw;
+    const sourceFolder = sourceFolderRaw;
 
     const clientSideMetadata: ClientSideMeta = {
-        name, points, desc, solveCount, categories, authors, hints, tags, links, id: challId
+        name, points, desc, solveCount, categories, authors, hints, tags, links, id: challId,
     };
 
 
-    return { visible, id: challId, clientSideMetadata };
+    return { visible, id: challId, clientSideMetadata, sourceFolder };
 }
 
 export const getAllChallenges = async (): Promise<CachedChall[]> => {

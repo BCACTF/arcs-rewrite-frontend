@@ -1,6 +1,6 @@
 import { ChallId } from "cache/ids";
 
-import useInterval from "./useInterval";
+import useInterval from "../useInterval";
 import { useCallback, useEffect, useState } from "react";
 import { DeploymentStatus as WebhookDeploymentStatus, FromDeploy } from "database/types/outgoing.schema";
 

@@ -13,7 +13,7 @@ export const dbToCacheChall = (dbChall: DbChall): CachedChall | null => {
         name, points, description: desc,
         solve_count: solveCount,
         categories, authors, hints, tags,
-        links, visible,
+        links, visible, source_folder: sourceFolder,
     } = dbChall;
 
     const id = challIdFromStr(idStr);
@@ -34,6 +34,7 @@ export const dbToCacheChall = (dbChall: DbChall): CachedChall | null => {
         id: id,
         visible,
         clientSideMetadata: clientSide,
+        sourceFolder,
     };
 
     return cachedChall;
