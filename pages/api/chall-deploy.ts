@@ -9,7 +9,7 @@ import { syncAllUsers } from "database/users";
 import { syncSolves } from "database/solves";
 
 /**
- * @deprecated This functionality has been moved to 
+ * @deprecated This functionality has been moved to /api/sync
  */
 const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
     apiLogger.trace`${req.method} request recieved for ${req.url}`;

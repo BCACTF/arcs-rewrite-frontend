@@ -55,7 +55,6 @@ const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
 
     const { email, sub, provider } = token;
 
-    console.log({ email, sub, provider });
     if (!email || !sub || typeof provider !== "string") {
         apiLogger.warn`Incorrect token format`;
         res.status(400).send("Incorrect token format");
@@ -63,7 +62,6 @@ const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
     }
 
     const bodyParams = getParams(req);
-    console.log(bodyParams);
 
     if (!bodyParams) {
         res.status(400).send("Incorrect body format");
@@ -83,7 +81,7 @@ const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
     const returnValue = await addUser({
         email,
         name: username,
-        auth: { __type: "oauth", sub, provider },
+        auth: { __type: "o_auth", params: { sub, provider } },
         eligible,
     });
 

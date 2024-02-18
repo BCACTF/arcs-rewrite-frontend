@@ -11,9 +11,27 @@ import { apiLogger, wrapApiEndpoint } from "logging";
 const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
     apiLogger.trace`${req.method} request recieved for ${req.url}`;
 
-    const { start, end } = await getCompetition();
+    const account = await getAccount({ req });
+    if (!account) {
+        apiLogger.secWarn`User not signed in when flag submitted.`;
+
+        res.status(401).send("Not signed in");
+        return;
+    }
+    if (!account.teamId) {
+        apiLogger.warn`${account.clientSideMetadata.name} was not on a team`;
+
+        res.status(403).send("Cannot submit solves without a team!");
+        return;
+    }
+
+
+    const { start, end, allowAdminSolvesBeforeComp } = await getCompetition();
     const now = Date.now() / 1000;
-    if (start > now || now > end) {
+    const outsideOfTime = start > now || now > end;
+    const adminOverride = account.admin && allowAdminSolvesBeforeComp;
+
+    if (outsideOfTime && !adminOverride) {
         apiLogger.info`Flag submitted outside of challenge time.`;
 
         res.status(400).send("Competition not running.");
@@ -30,19 +48,9 @@ const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
         }
         await syncUser({ id: staleAccount.userId });
     }
-    const account = await getAccount({ req });
-    if (!account) {
-        apiLogger.secWarn`User not signed in when flag submitted.`;
 
-        res.status(401).send("Not signed in");
-        return;
-    }
-    if (!account.teamId) {
-        apiLogger.warn`${account.clientSideMetadata.name} was not on a team`;
 
-        res.status(403).send("Cannot submit solves without a team!");
-        return;
-    }
+
     const team = (await getTeams([ account.teamId ])).find(team => team.id === account.teamId);
     if (!team) {
         apiLogger.error`Can't access team ${fmtLogT(account.teamId)}!`;
@@ -80,7 +88,7 @@ const handler: NextApiHandler = wrapApiEndpoint(async (req, res) =>  {
     try {
         const returnVal = await attemptSolve({
             teamId, userId, challId,
-            auth: { __type: "oauth", sub: account.sub, provider: account.provider },
+            auth: { __type: "o_auth", params: { sub: account.sub, provider: account.provider } },
             flag,
         });
         apiLogger.warn`Return value: ${returnVal}`;

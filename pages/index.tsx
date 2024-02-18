@@ -9,7 +9,6 @@ import HeaderBanner, { HeaderBannerPage } from "components/HeaderBanner";
 
 // Types
 import React, { FC } from 'react';
-import { GetServerSideProps } from 'next';
 import { Competition } from 'metadata/client';
 
 // Styles
@@ -29,7 +28,7 @@ const Home: FC<HomeProps> = ({ metadata, account }) => {
     return (
         <div className="flex flex-col place-content-evenly h-screen">
             <HeaderBanner account={account} meta={metadata} currPage={HeaderBannerPage.HOME}/>
-            <div className="sm:pb-20 sm:my-auto max-sm:mb-auto grid place-content-center">
+            <div className="sm:pb-20 sm:my-auto max-sm:mb-auto grid place-content-center grid-cols-none">
                 <WebsiteMeta metadata={metadata} pageName="Home"/>
                 <NoSsr>
                     <WebsiteCountdown

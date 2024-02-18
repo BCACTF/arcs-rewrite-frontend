@@ -1,8 +1,9 @@
 import { removeStale as removeStaleChalls, update as updateChall } from "cache/challs";
 import makeWebhookRequest from "./makeWebhookReq";
 import { ChallId, challIdToStr } from "cache/ids";
-import { DbChallengeMeta, dbToCacheChall } from "./db-types";
+import { dbToCacheChall } from "./db-types";
 import { apiLogger } from "logging";
+import { Chall } from "./types/outgoing.schema";
 
 
 
@@ -10,14 +11,15 @@ const syncAllChalls = async () => {
     try {
         const allChalls = await makeWebhookRequest("chall_arr", {
             __type: "chall",
-            query_name: "get_all",
-        });
+            details: { __query_name: "get_all" },
+        }) as Chall[];
         const challs = allChalls.map(dbToCacheChall).flatMap(c => c ? [c] : []);
         const usedIds = challs.map(c => c.id);
         await removeStaleChalls(usedIds);
         await Promise.all(challs.map(c => updateChall(c)));
-        return challs;
-    
+
+        apiLogger.info`Successfully recached challs`;
+        return challs;    
     } catch (err) {
         console.error("failed to rerequest challenges", err);
     }
@@ -30,9 +32,16 @@ const syncChall = async ({ id }: { id: ChallId }) => {
 
         const challData = await makeWebhookRequest("chall", {
             __type: "chall",
-            query_name: "get",
-            id: challIdToStr(id),
-        });
+            details: {
+                __query_name: "get",
+                params: { id: challIdToStr(id) },
+            },
+        }) as Chall;
+
+        if (!challData) {
+            apiLogger.error`Webhook returned no data for chall ${id}.`;
+            return null;
+        }
 
         apiLogger.trace`Challenge identified as ${challData.name}.`;
 

@@ -75,27 +75,23 @@ const getNextAuthOptions = async () => {
                 };
             },
             signIn: async ({ profile: oauth, account: oauthMeta }) => {
-                console.log("a");
                 if (!oauth || !oauthMeta) return "/account/signin?methodError=true";
                 
                 const email = oauth.email;
                 const sub = oauth.sub || oauthMeta.providerAccountId;
                 
-                console.log("b");
                 if (!email || !sub) return "/account/signin?methodError=true";
                 
                 const users = await getAllUsers();
                 const user = users.find(user => user.email === email);
                 
-                console.log("c");
                 if (!user) return true;
                 
                 const checkOauthParams: Parameters<typeof checkUserOauth>[0] = {
                     id: user.userId,
-                    auth: { __type: "oauth", sub, provider: oauthMeta.provider },
+                    auth: { __type: "o_auth", params: { sub, provider: oauthMeta.provider } },
                 };
                 
-                console.log("d");
                 const methodsMatch = await checkUserOauth(checkOauthParams);
 
                 return methodsMatch || "/account/signin?methodError=true";

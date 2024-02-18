@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "npm run sync && next start",
     "lint": "next lint",
-    "find-dead": "ts-prune -p tsconfig.ts-prune.json"
+    "find-dead": "ts-prune -p tsconfig.ts-prune.json",
+    "typegen": "json2ts --no-additionalProperties -o lib/database/types/ -i "
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.3.0",
@@ -56,6 +57,7 @@
     "eslint": "8.29.0",
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "json-schema-to-typescript": "^13.1.1",
     "postcss": "^8.4.21",
     "tailwindcss": "^3.2.7"
   }

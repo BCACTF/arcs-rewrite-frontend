@@ -3,40 +3,17 @@ import { CachedUser, ClientSideMeta as UserCSM } from "cache/users";
 import { challIdFromStr, teamIdFromStr, userIdFromStr } from "cache/ids";
 import { CachedTeamMeta } from "cache/teams";
 import { CachedSolveMeta } from "cache/solves";
+import { User as DbUser, Team as DbTeam, Chall as DbChall, Solve as DbSolve } from "./types/outgoing.schema";
 
 
-/**
- * NOTE: **Challenges**
- */
-export type DbChallengeMeta = {
-    id: string;
-    
-    name: string;
-    description: string;
-    points: number;
 
-    authors: string[] | null;
-    hints: string[] | null;
-    categories: string[] | null;
-    tags: string[] | null;
-    links: {
-        nc: string[];
-        web: string[];
-        admin: string[];
-        static: string[];
-    };
-
-    solve_count: number;
-    visible: boolean;
-    source_folder: string;
-};
-export const dbToCacheChall = (dbChall: DbChallengeMeta): CachedChall | null => {
+export const dbToCacheChall = (dbChall: DbChall): CachedChall | null => {
     const {
         id: idStr,
         name, points, description: desc,
         solve_count: solveCount,
         categories, authors, hints, tags,
-        links, visible,
+        links, visible, source_folder: sourceFolder,
     } = dbChall;
 
     const id = challIdFromStr(idStr);
@@ -57,26 +34,13 @@ export const dbToCacheChall = (dbChall: DbChallengeMeta): CachedChall | null => 
         id: id,
         visible,
         clientSideMetadata: clientSide,
+        sourceFolder,
     };
 
     return cachedChall;
 };
 
-/**
- * NOTE: **Users**
- */
-
-export type DbUserMeta = {
-    id: string;
-    email: string;
-    name: string;
-    team_id: string | null;
-    score: number;
-    last_solve: number | null;
-    eligible: boolean;
-    admin: boolean;
-};
-export const dbToCacheUser = (dbUser: DbUserMeta): CachedUser | null => {
+export const dbToCacheUser = (dbUser: DbUser): CachedUser | null => {
     const {
         id: idStr,
         email, name, score, eligible, admin,
@@ -90,7 +54,8 @@ export const dbToCacheUser = (dbUser: DbUserMeta): CachedUser | null => {
     const clientSide: UserCSM = {
         userId: id,
         name, score, eligible, admin,
-        teamId, lastSolve,
+        teamId,
+        lastSolve: lastSolve ?? null,
     };
 
     const cachedUser: CachedUser = {
@@ -101,23 +66,7 @@ export const dbToCacheUser = (dbUser: DbUserMeta): CachedUser | null => {
 
     return cachedUser;
 };
-
-
-/**
- * NOTE: **Team**
- */
-
-export type DbTeamMeta = {
-    id: string;
-    name: string;
-    description: string;
-    score: number;
-    last_solve: number | null;
-    eligible: boolean;
-    affiliation: string | null;
-};
-
-export const dbToCacheTeam = (dbTeam: DbTeamMeta): CachedTeamMeta | null => {
+export const dbToCacheTeam = (dbTeam: DbTeam): CachedTeamMeta | null => {
     const {
         id: idStr,
         name, score, eligible,
@@ -129,33 +78,15 @@ export const dbToCacheTeam = (dbTeam: DbTeamMeta): CachedTeamMeta | null => {
     if (!id) return null;
 
     const cachedTeam: CachedTeamMeta = {
-        id, name, score, lastSolve, eligible, affiliation
+        id, name, score, eligible,
+        lastSolve: lastSolve ?? null,
+        affiliation: affiliation ?? null,
     };
 
     return cachedTeam;
 };
 
-
-
-/**
- * NOTE: **Solve**
- */
-
-export type DbSolveMeta = {
-    id: string;
-
-    chall_id: string;
-    user_id: string;
-    team_id: string;
-
-    correct: boolean;
-    counted: boolean;
-
-    time: number;
-};
-
-
-export const dbToCacheSolve = (dbSolve: DbSolveMeta): CachedSolveMeta | null => {
+export const dbToCacheSolve = (dbSolve: DbSolve): CachedSolveMeta | null => {
     const {
         chall_id: cidStr, user_id: uidStr, team_id: tidStr,
         correct, counted, time
